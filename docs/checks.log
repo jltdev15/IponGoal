@@ -1,0 +1,24 @@
+
+> IponGoal@1.0.0 check
+> npm run typecheck && npm run lint && npm test -- --runInBand
+
+
+> IponGoal@1.0.0 typecheck
+> tsc --noEmit
+
+
+> IponGoal@1.0.0 lint
+> eslint .
+
+
+> IponGoal@1.0.0 test
+> jest --runInBand
+
+PASS __tests__/domain.test.ts
+PASS __tests__/formAction.test.tsx
+
+Test Suites: 2 passed, 2 total
+Tests:       30 passed, 30 total
+Snapshots:   0 total
+Time:        3.692 s, estimated 5 s
+Ran all test suites.

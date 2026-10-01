@@ -1,0 +1,203 @@
+import { Obstacle } from '../src/games/savingsFlight/components/Obstacle';
+import React from 'react';
+import { act, create, ReactTestRenderer } from 'react-test-renderer';
+import { AppState } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { MainStackParams } from '../src/navigation/types';
+import { appConfig } from '../src/config/appConfig';
+import { SavingsFlightScreen } from '../src/games/savingsFlight/SavingsFlightScreen';
+import { GamesScreen } from '../src/screens/GamesScreen';
+import { AppButton } from '../src/components/AppButton';
+import { HUD } from '../src/games/savingsFlight/components/HUD';
+import { SavingsFlightResult } from '../src/games/savingsFlight/SavingsFlightResult';
+import { SavingsFlightEngine } from '../src/games/savingsFlight/SavingsFlightEngine';
+
+jest.mock(
+  'react-native-safe-area-context',
+  () => require('react-native-safe-area-context/jest/mock').default,
+);
+let renderer: ReactTestRenderer | undefined;
+let callbacks: Map<number, (time: number) => void>;
+let nextId: number;
+let time: number;
+const navigation = { navigate: jest.fn(), addListener: jest.fn() };
+const props = {
+  route: { params: { levelId: 'needs', mode: 'assisted' } },
+  navigation,
+} as unknown as NativeStackScreenProps<MainStackParams, 'SavingsFlight'>;
+async function mount(component = <SavingsFlightScreen {...props} />) {
+  await act(async () => {
+    renderer = create(component);
+  });
+}
+async function press(title: string) {
+  await act(async () => {
+    renderer!.root
+      .findAllByType(AppButton)
+      .find(button => button.props.title === title)!
+      .props.onPress();
+  });
+}
+async function tick(frames: number) {
+  await act(async () => {
+    for (let i = 0; i < frames; i++) {
+      time += 1000 / 60;
+      const work = [...callbacks.values()];
+      callbacks.clear();
+      work.forEach(callback => callback(time));
+    }
+  });
+}
+beforeEach(() => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  callbacks = new Map();
+  nextId = 0;
+  time = 0;
+  jest
+    .spyOn(globalThis, 'requestAnimationFrame')
+    .mockImplementation(callback => {
+      const id = ++nextId;
+      callbacks.set(id, callback);
+      return id;
+    });
+  jest.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation(id => {
+    callbacks.delete(id);
+  });
+  navigation.navigate.mockReset();
+  navigation.addListener.mockReset().mockReturnValue(jest.fn());
+});
+afterEach(async () => {
+  if (renderer) {
+    await act(async () => {
+      renderer!.unmount();
+    });
+    renderer = undefined;
+  }
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
+  jest.restoreAllMocks();
+});
+
+test('flight defaults off while Games exposes only the available introductory games', async () => {
+  expect(appConfig.ENABLE_SAVINGS_FLIGHT).toBe(false);
+  await mount();
+  expect(renderer!.root.findAllByType(HUD)).toHaveLength(0);
+  expect(callbacks.size).toBe(0);
+  await press('Back to Games');
+  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+  await act(async () => {
+    renderer!.update(
+      <GamesScreen
+        {...(props as unknown as NativeStackScreenProps<
+          MainStackParams,
+          'Games'
+        >)}
+      />,
+    );
+  });
+  expect(
+    renderer!.root.findAllByType(AppButton).map(b => b.props.title),
+  ).toEqual([
+    'Play Needs or Wants',
+    'Play Budget Challenge',
+    'Play Save or Spend',
+    'Play Goal Builder',
+    'Back to Home',
+  ]);
+});
+
+test('backgrounding and navigation blur pause, restart clears state, exit returns to Games, and unmount cancels callbacks', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  const pause = jest.spyOn(SavingsFlightEngine.prototype, 'pause');
+  const listener = jest.spyOn(AppState, 'addEventListener');
+  await mount();
+  await press('Start Flight');
+  await tick(30);
+  const background = listener.mock.calls[listener.mock.calls.length - 1][1];
+  await act(async () => {
+    background('background');
+  });
+  expect(pause).toHaveBeenCalled();
+  const frozen = renderer!.root.findByType(HUD).props.state;
+  await tick(180);
+  expect(renderer!.root.findByType(HUD).props.state).toEqual(frozen);
+  await press('Resume');
+  const blur =
+    navigation.addListener.mock.calls[
+      navigation.addListener.mock.calls.length - 1
+    ][1];
+  await act(async () => {
+    blur();
+  });
+  await press('Restart');
+  expect(renderer!.root.findByType(HUD).props.state).toMatchObject({
+    gameStatus: 'idle',
+    decisionCount: 0,
+    practiceSavings: 80000,
+    lives: 3,
+  });
+  await press('Start Flight');
+  await tick(1);
+  expect(callbacks.size).toBe(1);
+  await act(async () => {
+    renderer!.unmount();
+  });
+  renderer = undefined;
+  expect(callbacks.size).toBe(0);
+  await mount();
+  await press('Back to Games');
+  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+});
+
+test('viewport changes pause, but resizing the scene for answer buttons does not', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  await mount();
+  await press('Start Flight');
+  const views = [
+    renderer!.root.findByProps({ testID: 'flight-viewport' }),
+    renderer!.root.findByProps({ testID: 'flight-scene' }),
+  ];
+  const event = (width: number, height: number) => ({
+    nativeEvent: { layout: { width, height, x: 0, y: 0 } },
+  });
+  await act(async () => {
+    views[0].props.onLayout(event(360, 600));
+    views[1].props.onLayout(event(360, 400));
+  });
+  await act(async () => {
+    views[1].props.onLayout(event(360, 220));
+  });
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('playing');
+  await act(async () => {
+    views[0].props.onLayout(event(600, 360));
+  });
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('paused');
+});
+
+test('assisted screen completes with untimed buttons, shows separate result, and Play Again resets', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  await mount();
+  await press('Start Flight');
+  for (let i = 0; i < 5; i++) {
+    await tick(1300);
+    const state = renderer!.root.findByType(HUD).props.state;
+    expect(state.gameStatus).toBe('decision');
+    expect(renderer!.root.findAllByType(Obstacle)).toHaveLength(0);
+    const button = state.currentScenario.options.find(
+      (o: { recommended: boolean }) => o.recommended,
+    ).label;
+    await press(button);
+    await press('Continue');
+  }
+  const result = renderer!.root.findByType(SavingsFlightResult).props.result;
+  expect(result).toMatchObject({
+    gameStatus: 'completed',
+    mode: 'assisted',
+    score: 0,
+    correctDecisionCount: 5,
+  });
+  await press('Play Again');
+  expect(renderer!.root.findByType(HUD).props.state).toMatchObject({
+    gameStatus: 'idle',
+    decisionCount: 0,
+  });
+});

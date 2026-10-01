@@ -1,0 +1,12 @@
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.pluginManager.withPlugin('com.android.application') {
+            p.extensions.getByName('androidComponents').finalizeDsl { android ->
+                android.defaultConfig.applicationId = 'com.ipongoal.profileqa'
+            }
+        }
+        p.pluginManager.withPlugin('com.facebook.react') {
+            p.extensions.getByName('react').entryFile.set(new File(p.rootDir.parentFile, 'scripts/profile-qa-entry.js'))
+        }
+    }
+}
