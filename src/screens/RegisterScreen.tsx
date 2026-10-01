@@ -1,5 +1,6 @@
+import { usePreventRemove } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Text } from 'react-native';
+import { AccessibilityInfo, Text } from 'react-native';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
@@ -13,6 +14,11 @@ export function RegisterScreen() {
     [confirm, setConfirm] = useState('');
   const { busy, error, run } = useFormAction(),
     register = useAuthStore(s => s.register);
+  usePreventRemove(busy, () => {
+    AccessibilityInfo.announceForAccessibility(
+      'Please wait for your account action to finish.',
+    );
+  });
   return (
     <ScreenContainer>
       <Text style={theme.title}>Start your saving journey</Text>
@@ -22,6 +28,7 @@ export function RegisterScreen() {
       <AppInput
         label="Full Name"
         placeholder="Enter your full name"
+        editable={!busy}
         value={name}
         onChangeText={setName}
         autoComplete="name"
@@ -30,6 +37,7 @@ export function RegisterScreen() {
       <AppInput
         label="Username"
         placeholder="Choose a username"
+        editable={!busy}
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
@@ -40,6 +48,7 @@ export function RegisterScreen() {
       <AppInput
         label="Password"
         placeholder="Create a password"
+        editable={!busy}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -49,6 +58,7 @@ export function RegisterScreen() {
       <AppInput
         label="Confirm Password"
         placeholder="Re-enter your password"
+        editable={!busy}
         value={confirm}
         onChangeText={setConfirm}
         secureTextEntry
@@ -67,6 +77,7 @@ export function RegisterScreen() {
       <AppButton
         title="Create Account"
         loading={busy}
+        disabled={busy}
         onPress={() => {
           void run(async () => {
             await register(name, username, password, confirm, '');

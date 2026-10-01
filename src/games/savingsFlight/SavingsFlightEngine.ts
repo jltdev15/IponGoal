@@ -15,6 +15,7 @@ import {
   overlaps,
   playerBounds,
 } from './SavingsFlightPhysics';
+import { formatCurrency } from '../../utils/currency';
 
 export type DecisionRecord = {
   scenarioId: string;
@@ -117,6 +118,13 @@ export class SavingsFlightEngine {
   }
   getResult(): FlightResult {
     return { ...this.getSnapshot(), level: this.level, mode: this.mode };
+  }
+  isAdvancing(): boolean {
+    return (
+      this.state.gameStatus === 'playing' ||
+      (this.state.gameStatus === 'decision' &&
+        this.state.decisionPhase === 'choosing')
+    );
   }
   getFrame(): FlightFrame {
     const index =
@@ -230,7 +238,7 @@ export class SavingsFlightEngine {
       (s.budgetRemaining === null || outcome.budgetCost <= s.budgetRemaining) &&
       s.practiceSavings + outcome.savingsDelta >= 0;
     let explanation = option.explanation;
-    const thoughtful = option.recommended && affordable;
+    let thoughtful = option.recommended && affordable;
     if (!affordable) {
       explanation =
         'There is not enough practice money for this choice. No money was moved. Earlier spending can leave later needs or savings unfunded.';
@@ -240,10 +248,25 @@ export class SavingsFlightEngine {
       s.practiceReserved += outcome.reserved;
       if (s.budgetRemaining !== null) {
         s.budgetRemaining -= outcome.budgetCost;
-        const remainingPlan = [25000, 15000, 11000, 6000, 0][s.decisionCount];
+        const remainingPlan = SCENARIOS.budget
+          .slice(s.decisionCount + 1)
+          .reduce(
+            (total, item) =>
+              total +
+              item.options.find(answer => answer.recommended)!.outcome
+                .budgetCost,
+            0,
+          );
         if (s.budgetRemaining < remainingPlan) {
-          explanation +=
-            ' Your remaining budget cannot cover the rest of the original plan; a shortfall remains.';
+          const shortfall = formatCurrency(
+            remainingPlan - s.budgetRemaining,
+            true,
+          );
+          explanation += ` The remaining plan has a ${shortfall} shortfall.`;
+          if (scenario.id === 'budget-snack') {
+            thoughtful = false;
+            explanation = `This snack leaves too little for the planned savings. The remaining plan has a ${shortfall} shortfall. Adjust optional spending to protect your priorities.`;
+          }
         }
       }
     }
@@ -299,15 +322,11 @@ export class SavingsFlightEngine {
     if (!Number.isFinite(seconds) || seconds <= 0) {
       return;
     }
-    const running = () =>
-      this.state.gameStatus === 'playing' ||
-      (this.state.gameStatus === 'decision' &&
-        this.state.decisionPhase === 'choosing');
-    if (!running()) {
+    if (!this.isAdvancing()) {
       return;
     }
     this.accumulator += Math.min(seconds, FLIGHT.maxFrameDelta);
-    while (this.accumulator >= FLIGHT.fixedStep && running()) {
+    while (this.accumulator >= FLIGHT.fixedStep && this.isAdvancing()) {
       this.accumulator -= FLIGHT.fixedStep;
       this.step(FLIGHT.fixedStep);
     }

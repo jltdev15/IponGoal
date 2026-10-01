@@ -1,5 +1,6 @@
+import { usePreventRemove } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { AccessibilityInfo, Pressable, Text, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParams } from '../navigation/types';
 import { ScreenContainer } from '../components/ScreenContainer';
@@ -19,6 +20,11 @@ export function LoginScreen({
     [remember, setRemember] = useState(false);
   const { busy, error, run } = useFormAction(),
     login = useAuthStore(s => s.login);
+  usePreventRemove(busy, () => {
+    AccessibilityInfo.announceForAccessibility(
+      'Please wait for your account action to finish.',
+    );
+  });
   return (
     <ScreenContainer>
       <BrandLogo size={80} />
@@ -27,6 +33,7 @@ export function LoginScreen({
       <AppInput
         label="Username"
         placeholder="Enter your username"
+        editable={!busy}
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
@@ -36,6 +43,7 @@ export function LoginScreen({
       <AppInput
         label="Password"
         placeholder="Enter your password"
+        editable={!busy}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -43,7 +51,8 @@ export function LoginScreen({
       />
       <Pressable
         accessibilityRole="checkbox"
-        accessibilityState={{ checked: remember }}
+        accessibilityState={{ checked: remember, disabled: busy }}
+        disabled={busy}
         accessibilityLabel="Remember Me"
         onPress={() => setRemember(!remember)}
         style={{
@@ -76,9 +85,15 @@ export function LoginScreen({
           {error}
         </Text>
       )}
+      {busy && (
+        <Text accessibilityRole="alert" style={theme.muted}>
+          Signing in securely. Please wait.
+        </Text>
+      )}
       <AppButton
         title="Login"
         loading={busy}
+        disabled={busy}
         onPress={() => {
           void run(async () => {
             await login(username, password, remember);
@@ -88,6 +103,7 @@ export function LoginScreen({
       />
       <AppButton
         title="Create a Local Account"
+        disabled={busy}
         variant="secondary"
         onPress={() => navigation.navigate('Register')}
       />

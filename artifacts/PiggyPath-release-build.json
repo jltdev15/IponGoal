@@ -1,14 +1,12 @@
 {
   "apk": "PiggyPath-release.apk",
-  "bytes": 34643828,
-  "sizeMB": 34.64,
-  "previousDebugMB": 167.69,
-  "reductionPercent": 79.3,
+  "bytes": 34767872,
+  "sizeMB": 34.77,
   "architectures": [
     "arm64-v8a",
     "armeabi-v7a"
   ],
-  "sha256": "721b1b60efec921c2bd9d68ee2b0c7e7ddd843d7cfae65212fb2949d54c2ab4e",
+  "sha256": "eecf8f69cb2ebe5558413746929e4c75450d70b18de5b312213f892e92f16e29",
   "signing": "Existing development key",
   "internetPermission": false,
   "optimization": "R8 code optimization and optimized resource shrinking"

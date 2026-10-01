@@ -16,11 +16,16 @@ jest.mock(
   'react-native-safe-area-context',
   () => require('react-native-safe-area-context/jest/mock').default,
 );
+const defaultFlightEnabled = appConfig.ENABLE_SAVINGS_FLIGHT;
 let renderer: ReactTestRenderer | undefined;
 let callbacks: Map<number, (time: number) => void>;
 let nextId: number;
 let time: number;
-const navigation = { navigate: jest.fn(), addListener: jest.fn() };
+const navigation = {
+  navigate: jest.fn(),
+  popTo: jest.fn(),
+  addListener: jest.fn(),
+};
 const props = {
   route: { params: { levelId: 'needs', mode: 'assisted' } },
   navigation,
@@ -64,6 +69,7 @@ beforeEach(() => {
     callbacks.delete(id);
   });
   navigation.navigate.mockReset();
+  navigation.popTo.mockReset();
   navigation.addListener.mockReset().mockReturnValue(jest.fn());
 });
 afterEach(async () => {
@@ -73,17 +79,17 @@ afterEach(async () => {
     });
     renderer = undefined;
   }
-  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: defaultFlightEnabled });
   jest.restoreAllMocks();
 });
 
-test('flight defaults off while Games exposes only the available introductory games', async () => {
-  expect(appConfig.ENABLE_SAVINGS_FLIGHT).toBe(false);
+test('disabled flag still guards flight routes and hides Games controls', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
   await mount();
   expect(renderer!.root.findAllByType(HUD)).toHaveLength(0);
   expect(callbacks.size).toBe(0);
   await press('Back to Games');
-  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await act(async () => {
     renderer!.update(
       <GamesScreen
@@ -145,7 +151,7 @@ test('backgrounding and navigation blur pause, restart clears state, exit return
   expect(callbacks.size).toBe(0);
   await mount();
   await press('Back to Games');
-  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
 });
 
 test('viewport changes pause, but resizing the scene for answer buttons does not', async () => {
@@ -200,4 +206,78 @@ test('assisted screen completes with untimed buttons, shows separate result, and
     gameStatus: 'idle',
     decisionCount: 0,
   });
+});
+
+test('reading and feedback stop frame callbacks until Continue', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  await mount();
+  await press('Start Flight');
+  await tick(1300);
+  await tick(1); // Draw the newly committed reading overlay once.
+  expect(callbacks.size).toBe(0);
+  const reading = renderer!.root.findByType(HUD).props.state;
+  await tick(10000);
+  expect(renderer!.root.findByType(HUD).props.state).toEqual(reading);
+  await press(reading.currentScenario.options[0].label);
+  expect(callbacks.size).toBe(1); // One drawing frame, with no advancing loop.
+  await tick(1);
+  expect(callbacks.size).toBe(0);
+  const feedback = renderer!.root.findByType(HUD).props.state;
+  await tick(10000);
+  expect(renderer!.root.findByType(HUD).props.state).toEqual(feedback);
+  await press('Continue');
+  expect(callbacks.size).toBe(1);
+  await tick(2);
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('playing');
+});
+
+test('exiting a paused flight removes its route and cannot resume stale progress', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  await mount();
+  await press('Start Flight');
+  const blur =
+    navigation.addListener.mock.calls[
+      navigation.addListener.mock.calls.length - 1
+    ][1];
+  await act(async () => blur());
+  await press('Exit Game');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
+  expect(navigation.navigate).not.toHaveBeenCalled();
+});
+
+test('release configuration exposes every level with typed manual and assisted routes', async () => {
+  expect(defaultFlightEnabled).toBe(true);
+  await mount(
+    <GamesScreen
+      {...(props as unknown as NativeStackScreenProps<
+        MainStackParams,
+        'Games'
+      >)}
+    />,
+  );
+  const levels = [
+    ['Needs vs Wants', 'needs'],
+    ['Save or Spend', 'save'],
+    ['Budget Flight', 'budget'],
+    ['Goal Rush', 'goal'],
+  ] as const;
+  for (const [title, levelId] of levels) {
+    await press(`Practice ${title}`);
+    expect(navigation.navigate).toHaveBeenLastCalledWith('SavingsFlight', {
+      levelId,
+      mode: 'manual',
+    });
+  }
+  await press('Assisted flight');
+  for (const [title, levelId] of levels) {
+    await press(`Practice ${title}`);
+    expect(navigation.navigate).toHaveBeenLastCalledWith('SavingsFlight', {
+      levelId,
+      mode: 'assisted',
+    });
+  }
+  await act(async () => renderer!.update(<SavingsFlightScreen {...props} />));
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('idle');
+  await press('Start Flight');
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('playing');
 });

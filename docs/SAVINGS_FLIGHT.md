@@ -4,9 +4,9 @@ An offline practice activity with four levels and two control modes. Every fligh
 
 ## Release gate
 
-`src/config/appConfig.ts` keeps `ENABLE_SAVINGS_FLIGHT` false. Home exposes Learning Games for all four introductory games. Games hides Savings Flight controls, and a direct SavingsFlight route displays an unavailable screen. The regular app entry is `index.js`.
+`src/config/appConfig.ts` now sets `ENABLE_SAVINGS_FLIGHT` true after the user confirmed the remaining acceptance checks passed. Home → Learning Games exposes the four introductory games, manual/assisted mode selection, and all four flight levels. The regular app entry is `index.js`. Setting the flag false still hides flight controls and guards direct routes.
 
-Do not enable this flag until all of these have recorded passing QA:
+The release gate covers:
 
 - Needs or Wants
 - Budget Challenge
@@ -14,7 +14,7 @@ Do not enable this flag until all of these have recorded passing QA:
 - Goal Builder
 - Savings Flight native acceptance checks below
 
-All four introductory games are implemented. Remaining accessibility/usability QA and Savings Flight acceptance checks must still be documented and completed. Savings Flight does not unlock automatically based on gameplay or user data.
+The user confirmed manual-play QA was complete, then confirmed all remaining TalkBack, physical-phone, and prerequisite-game QA was done. This is user-reported acceptance, not a new agent-observed device audit; device model, Android version, and measured frame timings were not supplied. Savings Flight does not unlock automatically based on gameplay or user data.
 
 ## Architecture and money
 
@@ -57,6 +57,12 @@ Native acceptance checklist:
 - Inspect 360-dp small screens and large font settings. Scroll all scenario, feedback, HUD, and result content without clipped essential controls.
 - Use TalkBack to select assisted mode, hear scenarios and feedback, answer all five decisions, and reach results. The decorative scene must not receive focus in assisted mode or behind an overlay.
 - Profile manual play on a representative average physical Android device. Aim for 60 FPS; do not treat emulator timing as physical-device evidence.
-- Verify the regular Games menu offers all four introductory games while hiding Savings Flight and rejecting direct flight access with the default flag.
+- Verify the regular Games menu offers all introductory games and flight levels; setting the feature flag false still hides flight controls and guards direct routes.
 
-See the validation record in `docs/QA.md`. Unverified acceptance items remain release blockers.
+See the validation record in `docs/QA.md`. See the user-confirmed enablement record there; earlier entries describe the checks that were pending at the time.
+
+## Gameplay validation follow-up — 2026-10-01
+
+Flight exit now pops to the existing Games route, discarding the flight route so reopening starts fresh. Budget feedback states the remaining plan's shortfall in pesos. An affordable optional snack is not scored as thoughtful when it crowds out the planned savings; affordable essential spending can still be thoughtful after an earlier mistake. The frame loop checks the engine's current status and stops immediately on reaching reading/feedback, without allocating a React snapshot each frame.
+
+Automated coverage now includes all 128 complete answer sequences, all 40 gate/button outcomes, manual completion of each level, Goal Rush's three coin denominations, rapid taps, preserved partial learning results after exhausted hearts, paused gate steering, and stopped callbacks during untimed reading/feedback. The release flag remained false during that validation pass; the later user-confirmed enablement is recorded above.

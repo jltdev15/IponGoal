@@ -41,7 +41,7 @@ export function SavingsFlightScreen(props: Props) {
         <Text style={theme.body}>This practice game is not available yet.</Text>
         <AppButton
           title="Back to Games"
-          onPress={() => props.navigation.navigate('Games')}
+          onPress={() => props.navigation.popTo('Games')}
         />
       </ScreenContainer>
     );
@@ -71,7 +71,7 @@ function FlightSession({ navigation, route }: Props) {
     setEngine(fresh);
     setState(fresh.getSnapshot());
   };
-  const exit = () => navigation.navigate('Games');
+  const exit = () => navigation.popTo('Games');
   useEffect(() => {
     let animationFrame = 0;
     let last: number | null = null;
@@ -96,10 +96,7 @@ function FlightSession({ navigation, route }: Props) {
         revision = engine.revision;
         setState(engine.getSnapshot());
       }
-      if (
-        state.gameStatus === 'playing' ||
-        (state.gameStatus === 'decision' && state.decisionPhase === 'choosing')
-      ) {
+      if (engine.isAdvancing()) {
         animationFrame = requestAnimationFrame(draw);
       }
     };
@@ -456,7 +453,7 @@ function FlightSession({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   hud: { padding: 12, gap: 8 },
   pause: {
-    minHeight: 46,
+    minHeight: 48,
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',

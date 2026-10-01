@@ -148,7 +148,7 @@ Colors are centralized in `src/theme/colors.ts`. Android system fonts, generous 
 
 SQLite is the only persistent source of truth. Zustand stores short-lived session state and cached query results. `app_settings` contains only preferences/session metadata. Remember Me persists a user ID and session flags; without it, a fresh process asks for login. Registration signs in for the current process without automatically remembering the account.
 
-Passwords use 16 random salt bytes and 210,000 PBKDF2-SHA256 iterations. The hash is versioned and compared without an early exit on mismatched hash bytes. The local SQLite file is **not encrypted**; local accounts provide profile separation, not banking security or protection from rooted-device access. Backups are disabled in Android. No password recovery exists in version 1.
+Passwords use 16 random salt bytes and 210,000 PBKDF2-SHA256 iterations. Android derives passwords in a background native TurboModule, using the platform PBKDF2 provider on API 26+ and a byte-compatible native HMAC implementation on API 24–25. Existing hashes remain compatible; Android does not silently fall back to JavaScript if the native module is missing. The unverified iOS scaffold retains the JavaScript provider. The hash is versioned and compared without an early exit on mismatched hash bytes. The local SQLite file is **not encrypted**; local accounts provide profile separation, not banking security or protection from rooted-device access. Backups are disabled in Android. No password recovery exists in version 1.
 
 Amounts are **INTEGER centavos** (₱10.25 = 1025), including targets and transactions. Saved balances come from SUM(savings.amount), never a manually editable goal balance. A per-user aggregate limit of ₱1,000,000,000 keeps totals safely within exact integer arithmetic. Archived balances stay in totals/history; archive affects goal counts and visibility only.
 
@@ -204,27 +204,27 @@ Profile photos: open Profile → Edit Profile → Choose Photo, select a device 
 
 Run `npm run android:release` to create `artifacts/PiggyPath-release.apk` and its SHA-256 checksum. The release APK bundles the JavaScript for offline use, supports both 32-bit and 64-bit ARM Android phones, and enables R8 code/resource optimization. It excludes Intel emulator architectures. `npm run android` remains the development/emulator build. The release APK currently uses the existing development signing key; public store distribution requires a production signing setup.
 
-### Savings Flight (release gated)
+### Savings Flight
 
-Savings Flight adds four offline practice levels with native tap-to-fly controls, an assisted mode, untimed financial decisions, checkpoints, and learning summaries. All balances are fictional; no real savings records are read or changed. The feature remains disabled until the four introductory games and its native acceptance checks pass QA. See [Savings Flight architecture, QA harness, and release gate](docs/SAVINGS_FLIGHT.md).
+Savings Flight adds four offline practice levels with native tap-to-fly controls, an assisted mode, untimed financial decisions, checkpoints, and learning summaries. All balances are fictional; no real savings records are read or changed. Open Home → Learning Games, select Manual or Assisted flight, and choose a level. The user confirmed the remaining acceptance checks passed; Savings Flight is enabled. See [Savings Flight architecture, QA harness, and release gate](docs/SAVINGS_FLIGHT.md).
 
 ### Needs or Wants
 
-Open **Home → Learning Games → Play Needs or Wants**. Each untimed round draws five situations from ten authored examples, explains every answer, and ends with a review of your choices. A basic school notebook and an extra decorated notebook illustrate why context matters. Wants can be reasonable when needs and planned savings are covered. Practice answers are session memory only and never change real goals, savings, or statistics. Savings Flight remains disabled while the remaining introductory-game QA and flight acceptance checks are completed.
+Open **Home → Learning Games → Play Needs or Wants**. Each untimed round draws five situations from ten authored examples, explains every answer, and ends with a review of your choices. A basic school notebook and an extra decorated notebook illustrate why context matters. Wants can be reasonable when needs and planned savings are covered. Practice answers are session memory only and never change real goals, savings, or statistics.
 
-For isolated native QA, build from `android/` with `./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --offline -I ../scripts/learning-games-qa.gradle`. This uses the standalone `scripts/learning-games-qa-entry.js` navigator, the separate `com.ipongoal.learningqa` package, and the normal false Savings Flight flag. Rebuild without the init script before taking a regular APK from the variant output directory.
+For isolated native QA, build from `android/` with `./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --offline -I ../scripts/learning-games-qa.gradle`. This uses the standalone `scripts/learning-games-qa-entry.js` navigator, the separate `com.ipongoal.learningqa` package, and the normal Savings Flight configuration. Rebuild without the init script before taking a regular APK from the variant output directory.
 
 ## Budget Challenge
 
 Open **Home → Learning Games → Play Budget Challenge**. Plan a fictional ₱300 school-day allowance across five untimed choices: safe transportation, lunch, required materials, optional snacks, and savings. Feedback explains remaining priorities, unfunded needs, and overbudget plans. The review separates planned spending, planned savings, affordable savings, unallocated money, and shortfalls. An affordable treat can fit; saving is not a substitute for essentials.
 
-`src/games/budgetChallenge/` contains the in-memory reducer, authored options, screen, and learning review. Amounts use integer centavos and the existing currency formatter. Nothing is persisted and no real balances are accessed. Restart or leaving the screen discards the plan. The isolated learning-games QA entry also registers this game. Savings Flight remains disabled pending remaining introductory-game QA and its own acceptance checks.
+`src/games/budgetChallenge/` contains the in-memory reducer, authored options, screen, and learning review. Amounts use integer centavos and the existing currency formatter. Nothing is persisted and no real balances are accessed. Restart or leaving the screen discards the plan. The isolated learning-games QA entry also registers this game.
 
 ## Save or Spend
 
 Open **Home → Learning Games → Play Save or Spend**. Five untimed, separate fictional examples teach saving extra allowance, splitting allowance between a need and saving, delaying optional entertainment, paying an essential repair from existing practice savings, and enjoying an affordable planned want. Both choices in the planned-treat example are reasonable.
 
-Each example labels its starting savings and new money. Feedback shows the exact savings and spending effects; results review choices and explanations without adding independent example balances together. `src/games/saveOrSpend/` separates scenarios, the in-memory session reducer, screen, and results. No real money or records are accessed, and no rewards or results are persisted. Restart or leaving discards the practice session. Remaining introductory-game QA and Savings Flight acceptance checks are still pending; Savings Flight remains disabled.
+Each example labels its starting savings and new money. Feedback shows the exact savings and spending effects; results review choices and explanations without adding independent example balances together. `src/games/saveOrSpend/` separates scenarios, the in-memory session reducer, screen, and results. No real money or records are accessed, and no rewards or results are persisted. Restart or leaving discards the practice session.
 
 ## Goal Builder
 
@@ -232,7 +232,7 @@ Open **Home → Learning Games → Play Goal Builder**. Choose a fictional book 
 
 Three untimed practice weeks explore extra required school materials, an essential repair paid from existing goal savings, and an affordable optional treat. The review separates goal savings, spending, reserves, and unallocated money, and explains the updated whole-week estimate. Estimates assume steady future contributions without additional expenses or income; they are not deadlines or guarantees. `src/games/goalBuilder/` contains the authored examples, pure in-memory reducer, screen, and review. No real goals are created and no records or rewards are persisted. Exit removes the practice route; reopening starts fresh.
 
-All four introductory games are implemented. Savings Flight remains disabled until their remaining accessibility/usability QA and the flight acceptance checks are documented and complete.
+All four introductory games and Savings Flight are available. The user confirmed the remaining accessibility, manual-play, and physical-device acceptance checks passed; see docs/QA.md for the release record.
 
 ## Profile overview and editing
 
@@ -241,3 +241,10 @@ Profile groups your identity and Edit Profile action, total recorded savings (in
 Edit Profile groups the photo preview and personal details. Name, optional grade, and photo changes remain drafts until Save Profile. Going back with unsaved edits offers Keep Editing or Discard Changes; successful saving returns without a warning, while failed saving preserves the draft. Fields and actions are disabled during photo selection or saving. Long names and enlarged text wrap; compact screens stack identity and summary content.
 
 For isolated Android profile QA, use `scripts/profile-qa-entry.js` and `scripts/profile-qa.gradle` to build `com.ipongoal.profileqa`. It creates synthetic fixtures in that package’s private database and exercises the real navigator/screens. Never run reset verification against the regular app’s data. Rebuild without the init script before distributing a normal APK.
+
+
+## Authentication performance QA
+
+Build the isolated `com.ipongoal.authqa` release using `scripts/auth-qa.gradle` and `scripts/auth-qa-entry.js`. It checks native PBKDF2 vectors against Node-generated expected results, verifies an existing hash, creates and logs into a synthetic account through the real repository/store, and reports derivation, SQLite fixture insert, authentication, and subsequent frame timings. Its database is private to that QA package; it never opens the regular app’s records. Rebuild without the init script before distributing a normal APK.
+
+Run `:app:testDebugUnitTest` for native provider and API 24–25 fallback compatibility tests. Physical-device performance remains unverified until separately measured.

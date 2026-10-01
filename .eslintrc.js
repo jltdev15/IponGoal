@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  ignorePatterns: ['android/**/build/**', 'ios/build/**'],
   extends: '@react-native',
   rules: {
     'react-native/no-inline-styles': 'off',

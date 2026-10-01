@@ -130,3 +130,87 @@ Available through **Home → Learning Games → Play Goal Builder**. Students ch
 - Forecasts round up to whole future weeks and assume the usual contribution resumes, with no additional income or withdrawals. They are estimates, not deadlines or promises. Exiting pops to Games and removes the route; restarting clears selections, answers, and simulated money.
 
 All four introductory games are implemented, but their remaining full spoken TalkBack and representative student-device usability QA is unverified. Savings Flight remains disabled pending that QA and its native/manual/performance acceptance checks. Tests and emulator checks do not establish educational effectiveness.
+
+
+## Profile and Edit Profile — 2026-10-01
+
+Profile now groups identity and editing, recorded savings, goal collections, read-only currency/app information, logout, and destructive device data controls. Total recorded savings retains the existing calculation across active, completed, and archived goals. Edit Profile groups the photo preview and labeled personal details, saves through the existing repository, and protects unsaved name, grade, and photo changes through React Navigation's removal guard. No routes, tabs, schema, dependencies, savings calculations, or learning games changed; Savings Flight remains disabled.
+
+- `npm run check`: TypeScript, ESLint, and **110 tests in eleven suites** pass. Screen coverage includes empty/populated/archived savings, missing grade, long names, initials and failed-photo fallback, destination actions, both reset cancellations, logout, dirty drafts, Keep Editing/Discard Changes, accepted navigation after disabling the guard, save success/validation/repository failure, repeated saves, pending photo selection, cancellation, selection, removal, and failed-save draft preservation.
+- Regular Android arm64 debug and release builds pass offline with JDK 17. Release remains `com.ipongoal` with no INTERNET permission.
+- Native checks use `com.ipongoal.profileqa`, built from the isolated QA entry/init script. Two synthetic accounts with four goals and four savings records live in that package's private database. The normal application's database is not opened by the harness. Reset checks must use only this isolated package.
+- Native navigation reached Completed Goals, Archived Goals, and About. The populated overview showed ₱350 including the archived goal. Header and Android back displayed the discard prompt; Keep Editing preserved the edited name, and Discard Changes returned to Profile. Screenshots are under `docs/screenshots/*profile*`.
+- Saving an edited name updated the displayed Profile identity and returned without a discard warning. Emulator text injection can drop characters when key events arrive rapidly; assertions must use the actual displayed draft, not assume an injected string was fully entered.
+- Native empty-name validation and photo-picker cancellation passed. Cancelling at either reset confirmation preserved the session. Accepting both confirmations left zero local accounts, goals, and savings records in the isolated package, proving reset affects every local account.
+- At 360 dp and 150% text, the long identity stacks and wraps. Save Profile remains reachable by scrolling, and Keep Editing/Discard Changes also protect grade edits. Screenshots include the enlarged form, keyboard, and reachable Save action. Native text inputs consume their own drag gestures; automation scrolls from the outer content margin.
+- The isolated fixture helper uses a precomputed hash for its synthetic password to avoid unrelated password-derivation delay. Production password handling is unchanged.
+- Logout preserved both accounts, all four goals, and all four savings records in native QA.
+- TalkBack was enabled with touch exploration active and focused the Profile heading (see `profile-talkback-start.png`). Injected swipe/keyboard input did not advance accessibility focus, and native computer control was unavailable because the Mac was locked. **Full focus traversal and spoken-output usability remain unverified and require manual QA on both screens.** A representative physical-device check also remains pending. Do not interpret the heading smoke check as a complete TalkBack pass.
+- Emulator font scale, screen size, and accessibility settings were restored. The isolated QA package was removed. The rebuilt normal offline release was installed and launched with `install -r`, preserving its existing data; output metadata and manifest identify `com.ipongoal`, without INTERNET permission.
+
+
+## Native authentication performance — 2026-10-01
+
+Android registration and login now use an asynchronous Codegen TurboModule on a dedicated executor. API 26+ uses the platform PBKDF2-SHA256 provider; API 24–25 uses byte-compatible JCA HMAC-SHA256. Empty or non-UTF-8 byte test inputs also use native HMAC because the Android PBKDF2 factory rejects empty passwords and its character interface cannot represent arbitrary bytes. Neither path reduces the 210,000 production rounds, 16-byte random salt, 32-byte output, or existing hash format. No migration or password reset is required. The unverified iOS scaffold retains JavaScript derivation.
+
+- Typecheck, lint, and **115 tests in thirteen suites** pass. Authentication screen tests cover pending-action field/navigation locks, repeated taps, failure preserving the draft, retry, and successful password clearing. Provider tests cover exact UTF-8 bytes, existing hash format, wrong passwords, missing/error/malformed native results, and the non-Android fallback.
+- Three native unit tests compare both provider paths against 21 Node-generated vectors: rounds 1, 2, and 210,000 across ASCII, Unicode/emoji, embedded nulls, decomposed accents, 128-character passwords, empty passwords, and non-UTF-8 bytes; invalid inputs are rejected.
+- Device validation runs in isolated `com.ipongoal.authqa`, using actual native hashing and real repositories/authentication stores. It does not open the normal app’s database. The helper measures derivation separately from a synthetic SQLite insert, registration/login calls, and the following two animation frames. Frame timings are scheduling measurements, not a guarantee of screen presentation time on every device.
+
+Measured on the Pixel 10 Pro XL API 36 ARM64 emulator, isolated release package, with a fresh process and no concurrent host build:
+
+| Measurement | Time |
+| --- | --- |
+| First 210,000-round derivation | 1,098 ms |
+| Five subsequent derivations | 623–781 ms |
+| Synthetic account SQLite insertion only | 10 ms |
+| Existing-format account login | 869 ms |
+| Real registration, including random salt and account/session save | 813 ms |
+| Two following animation frames after registration | 106 ms |
+| Real login, including verification and session save | 811 ms |
+| Two following animation frames after login | 110 ms |
+
+- All 21 vectors passed on Android. Wrong passwords and duplicate usernames were rejected; duplicate registration left the account count unchanged. Actual Create Account and Login form submissions both reached Home without the navigation lock obstructing successful authentication. Screenshots: `native-auth-registration-home.png` and `native-auth-login-home.png`.
+- An earlier run while a host native build competed for resources took 3,683 ms for the first full derivation, 1,145 ms for registration, and 867 ms for login. The two-second target was met in the uncontended repeat, not guaranteed under resource contention or on other hardware.
+- The 50-ms JavaScript heartbeat continued during native hashing (191 ticks); its largest gap was 441 ms across startup, tests, and screen transitions. This establishes that derivation no longer occupies the JavaScript thread, but does not establish uniformly smooth frame delivery.
+- Final regular debug and release builds pass for both `arm64-v8a` and `armeabi-v7a`. The application CMake entry links the app's generated TurboModule provider; device tests verified that the module is actually available, beyond merely compiling its Kotlin class. Release metadata remains `com.ipongoal`, with no INTERNET permission. Existing development signing is retained.
+- Native HMAC compatibility is covered on the host and through fallback vectors on API 36; an actual API 24–25 device/emulator has not been tested. Physical-phone performance and the iOS scaffold remain unverified.
+- The isolated authentication QA package was removed after testing. The final normal release was installed and launched with `install -r`, without resetting its database. The distributed APK and checksum are updated under `artifacts/`.
+
+## Savings Flight gameplay follow-up — 2026-10-01
+
+The four introductory games are now implemented, but their remaining accessibility/usability acceptance checks still gate Savings Flight. Production `ENABLE_SAVINGS_FLIGHT` remains false.
+
+- Fixed flight exit to pop to Games, removing the session route so reopening starts fresh while retaining the chosen control mode on Games.
+- Corrected Budget Flight's optional snack feedback: being affordable alone is insufficient when the purchase crowds out planned savings. Earlier mistakes do not prevent affordable essential spending from being thoughtful. Feedback quantifies the remaining plan's shortfall using the existing peso formatter.
+- The animation loop checks the current engine status, stops on reaching untimed reading/feedback, and avoids allocating snapshots each frame. Pause has a 48-dp target.
+- Typecheck, lint, and **132 tests in thirteen suites** pass. Added coverage exercises every one of the 128 complete answer sequences, all 40 gate/button outcomes, manual completion of all four levels, ₱10/₱20/₱50 Goal Rush windfalls, rapid input, one-time answer resolution, paused gate navigation, stopped reading/feedback callbacks, route removal, and preserved partial learning/accounting results after exhausted hearts.
+- The SQLite regression continues to verify unchanged real goals, savings, users, settings, and statistics after completed, interrupted, and repeated flights.
+- Final regular debug/release builds pass offline for `arm64-v8a` and `armeabi-v7a`. The release remains `com.ipongoal`, development signed, without INTERNET permission. The separate `com.ipongoal.flightqa` bundled release enables the game only for isolated testing and imports no account/database stores.
+
+Offline native assisted results on the API 36 emulator, with five thoughtful answers, no optional coins, and arcade score **Not applicable** in every level:
+
+| Level | Final practice savings | Practice spending | Other balance |
+| --- | --- | --- | --- |
+| Needs vs Wants | ₱950 | ₱330 | — |
+| Save or Spend | ₱1,550 | ₱150 | Planned treat chosen |
+| Budget Flight | ₱860 | ₱240 | ₱0 daily budget remaining |
+| Goal Rush | ₱3,300 | ₱150 | ₱50 separate emergency reserve |
+
+All four results and exits passed using the actual native screen and untimed answer buttons. Reopening from Games started a fresh flight; the selected mode stayed on Games. Native manual no-input collisions used all three hearts, showed a supportive zero-decision partial result, and passed Play Again and Back to Games. Native evidence is under `docs/screenshots/flight-acceptance-*`.
+
+- At 360 dp and 150% text, the native release passed background/return pause, Resume, live viewport-resize pause, second-answer selection, quantified ₱70 budget-shortfall feedback, scrollable Continue, Restart, and exit. Screenshots are `flight-small-background-pause.png`, `flight-small-reading-acceptance.png`, and `flight-small-shortfall-feedback.png`. Original 1344×2992 size, 480 density, and 1.0 font scale were restored.
+- Full native manual steering/gate/coin completion, a complete spoken TalkBack assisted flight and introductory-game audit, and representative physical-device performance/usability remain unverified release blockers. Manual engine simulation and emulator life-exhaustion checks are not a substitute for those checks. Savings Flight stays disabled.
+- The isolated flight QA package was removed. The rebuilt normal release and checksum were updated under `artifacts/`, installed with `install -r`, and launched without resetting real accounts or savings.
+
+## Savings Flight release enablement — 2026-10-02
+
+The user confirmed full manual-play QA was complete, including flight controls, gates, coins, and checkpoint recovery. After the remaining TalkBack assisted-flight, physical-phone performance, and prerequisite-game acceptance checks were described, the user confirmed **“all already done.”** On that basis, Savings Flight is enabled in the normal application configuration.
+
+This records user-reported acceptance. No physical-phone model, Android version, frame timings, or spoken-output transcript was provided; the agent has not independently repeated those external checks. Earlier pending-check entries are historical records, superseded by this acceptance confirmation.
+
+Home → Learning Games now exposes manual/assisted controls and all four Savings Flight levels. The disabled-flag direct-route/menu guard remains supported and tested. No account, savings, schema, or security changes accompany enablement.
+
+Enablement validation: typecheck, lint, and **133 tests in thirteen suites** pass, including enabled manual/assisted routes for every level and the disabled-flag guard. Normal Android debug/release builds pass for ARM32 and ARM64. The updated normal release was installed with `install -r`, preserving its existing database; the APK and SHA-256 metadata are updated in `artifacts/`.
+
+Normal-release native smoke check: opened Assisted flight → Goal Rush from the real Games menu, verified the fictional phone goal setup, and returned to Games. Screenshot: `docs/screenshots/flight-enabled-normal-release.png`. The check did not create or change financial records.

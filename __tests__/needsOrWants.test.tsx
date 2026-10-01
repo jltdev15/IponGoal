@@ -93,6 +93,7 @@ test('repeated answers and Continue taps cannot duplicate responses or skip ques
   expect(restarted).toMatchObject({ phase: 'intro', index: 0, answers: [] });
 });
 
+const defaultFlightEnabled = appConfig.ENABLE_SAVINGS_FLIGHT;
 let renderer: ReactTestRenderer | undefined;
 const navigation = { navigate: jest.fn() };
 const props = { navigation } as unknown as NativeStackScreenProps<
@@ -116,6 +117,7 @@ afterEach(async () => {
     await act(async () => renderer!.unmount());
     renderer = undefined;
   }
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: defaultFlightEnabled });
   jest.restoreAllMocks();
 });
 test('screen supports five answers, feedback, review, replay and exit with no timer', async () => {
@@ -151,7 +153,7 @@ test('screen supports five answers, feedback, review, replay and exit with no ti
   expect(navigation.navigate).toHaveBeenCalledWith('Games');
 });
 test('Games exposes Needs or Wants while Savings Flight remains disabled', async () => {
-  expect(appConfig.ENABLE_SAVINGS_FLIGHT).toBe(false);
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
   await act(async () => {
     renderer = create(
       <GamesScreen

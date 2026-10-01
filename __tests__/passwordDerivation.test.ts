@@ -1,5 +1,5 @@
 const { pbkdf2Sync } = require('node:crypto');
-import { derivePassword } from '../src/services/passwordDerivation';
+import { derivePasswordJS as derivePassword } from '../src/services/passwordDerivationJS';
 
 test.each([1, 2, 210000])(
   'matches PBKDF2 at %i rounds, including existing accounts',
