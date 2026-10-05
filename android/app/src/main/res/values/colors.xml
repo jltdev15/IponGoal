@@ -2,4 +2,5 @@
   <color name="app_primary">#C91857</color>
   <color name="app_white">#FFFFFF</color>
   <color name="app_background">#FFF5F8</color>
+  <color name="app_icon_background">#FFF9EE</color>
 </resources>

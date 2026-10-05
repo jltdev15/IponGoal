@@ -215,7 +215,11 @@ export function RootNavigator() {
           <Auth.Screen
             name="Register"
             component={RegisterScreen}
-            options={{ title: 'Create Account' }}
+            options={{
+              title: 'Create Account',
+              headerBackVisible: false,
+              headerLeft: () => null,
+            }}
           />
           <Auth.Screen
             name="Login"

@@ -1,5 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { colors } from '../theme/colors';
 type Props = {
   title: string;
@@ -7,6 +14,7 @@ type Props = {
   variant?: 'primary' | 'secondary' | 'danger';
   disabled?: boolean;
   loading?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 export function AppButton({
   title,
@@ -14,6 +22,7 @@ export function AppButton({
   variant = 'primary',
   disabled,
   loading,
+  style,
 }: Props) {
   return (
     <Pressable
@@ -33,6 +42,7 @@ export function AppButton({
           ? styles.danger
           : styles.primary,
         { opacity: disabled || loading ? 0.5 : pressed ? 0.8 : 1 },
+        style,
       ]}
     >
       {loading ? (

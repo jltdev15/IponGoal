@@ -47,7 +47,8 @@ const theme = fs.readFileSync(path.join(root, 'src/theme/colors.ts'), 'utf8');
 const primary = theme.match(/primary:\s*'([^']+)'/)[1];
 const background = theme.match(/background:\s*'([^']+)'/)[1];
 const white = theme.match(/white:\s*'([^']+)'/)[1];
+const iconBackground = theme.match(/iconBackground:\s*'([^']+)'/)[1];
 fs.writeFileSync(
   path.join(root, 'android/app/src/main/res/values/colors.xml'),
-  `<resources>\n  <color name="app_primary">${primary}</color>\n  <color name="app_white">${white}</color>\n  <color name="app_background">${background}</color>\n</resources>\n`,
+  `<resources>\n  <color name="app_primary">${primary}</color>\n  <color name="app_white">${white}</color>\n  <color name="app_background">${background}</color>\n  <color name="app_icon_background">${iconBackground}</color>\n</resources>\n`,
 );

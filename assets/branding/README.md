@@ -1,16 +1,16 @@
 # PiggyPath branding assets
 
-The user-supplied 1254 px artwork is preserved in `piggypath-original.png`.
-`piggypath-master.png` is the clean transparent 1126 px master; `piggypath-logo.png` is the 576 px in-app export; `piggypath-icon.png` is the opaque 1024 px platform export.
+The current source is the user-supplied `assets/piggpath-logo.webp`, preserved unchanged. The previous `piggypath-original.png` is historical artwork and is not used by the exporter or app.
 
-The built-in imagegen tool was used with this final cleanup prompt:
+`piggypath-master.png` is a transparent 1024 px export; `piggypath-logo.png` is the transparent 576 px in-app export consumed by `BrandLogo`; `piggypath-icon.png` is the opaque 1024 px platform export.
 
-> Background-extraction cleanup edit. The edit target still has many unwanted magenta/red/white speckles around the OUTSIDE of the rounded pink square, especially along the very top, bottom and right. Remove EVERY one of these speckles and ragged fringes outside the rounded square. Make the tile outline a clean smooth rounded square. All pixels outside that smooth outline must be fully transparent, including all pink specks at the top and red fragments right side. Preserve the main interior piggy bank, coin and white winding path unchanged. This is an edge repair, not a redesign. Center the rounded square with a small even transparent margin. Do not replicate noise from the reference.
-
-The generated candidates retained edge noise, so the final exports use native CoreGraphics clipping of the original pixels to a smooth rounded boundary. No interior illustration was regenerated. Regenerate all platform exports on macOS from the project root:
+Regenerate with Python 3 and Pillow:
 
 ```sh
-swift -module-cache-path /tmp/piggypath-swift-cache scripts/generate-brand-assets.swift
+python scripts/generate-brand-assets.py
+node scripts/sync-config.cjs
 ```
 
-Android adaptive exports keep the complete tile inside the 66 dp safe circle. iOS exports are opaque and include every size referenced by the app icon catalog.
+The exporter reads the cream `iconBackground` token from `src/theme/colors.ts`. It trims only empty transparent margins, preserves the artwork, and performs deterministic PNG resizing and centering. Android exports include all five densities and adaptive foregrounds contained inside the 66 dp safe circle. Adaptive backgrounds use the separate `app_icon_background` native color. All iOS catalog exports, including 1024 px, are opaque.
+
+The pink-led theme uses pink buttons and navigation accents, pale pink backgrounds, navy text, green savings indicators, and gold highlights. Launcher icons retain their separate cream background. See `registration/README.md` for the generated flat mascot poses and prompt set.

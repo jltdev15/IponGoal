@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,20 +8,28 @@ import {
 } from 'react-native';
 import { colors } from '../theme/colors';
 import { theme } from '../theme/theme';
+import { ScreenInputFocusContext } from './ScreenContainer';
 export function AppInput({
   label,
   helper,
   ...props
 }: TextInputProps & { label: string; helper?: string }) {
+  const revealInput = useContext(ScreenInputFocusContext);
+  const inputRef = useRef<TextInput>(null);
   return (
     <View style={styles.group}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        ref={inputRef}
         accessibilityLabel={label}
         placeholderTextColor={colors.muted}
         style={[styles.input, props.multiline && styles.multiline]}
         maxLength={props.secureTextEntry ? 128 : 240}
         {...props}
+        onFocus={event => {
+          props.onFocus?.(event);
+          revealInput?.(inputRef.current);
+        }}
       />
       {helper && <Text style={theme.muted}>{helper}</Text>}
     </View>

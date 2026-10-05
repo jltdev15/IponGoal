@@ -13,6 +13,8 @@ ios/build/
 *.keystore
 !android/app/debug.keystore
 # Local tools and private keys
+.android-sdk/
+.android-avd/
 .env*
 *.jks
 coverage/

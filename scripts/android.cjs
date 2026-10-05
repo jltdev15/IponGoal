@@ -4,6 +4,17 @@ const { spawn, spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const javaName = process.platform === 'win32' ? 'java.exe' : 'java';
+const projectSdk = path.join(root, '.android-sdk');
+if (fs.existsSync(path.join(projectSdk, 'platform-tools'))) {
+  process.env.ANDROID_HOME = projectSdk;
+  process.env.ANDROID_SDK_ROOT = projectSdk;
+  process.env.ANDROID_AVD_HOME = path.join(root, '.android-avd');
+  process.env.PATH = `${path.join(projectSdk, 'platform-tools')}${
+    path.delimiter
+  }${path.join(projectSdk, 'emulator')}${path.delimiter}${
+    process.env.PATH || ''
+  }`;
+}
 
 function isJdk17(home) {
   if (

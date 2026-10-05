@@ -35,7 +35,7 @@ The chart uses ordinary React Native views; no chart package is needed. Library 
 - macOS, Windows, or Linux with Node **22.11+**. Node 24 is recommended and required for this project's SQLite-backed Jest tests.
 - npm; dependencies are pinned in `package-lock.json`.
 - **JDK 17**. `npm run android` discovers and selects an installed JDK 17, even when your terminal defaults to a newer Java. For direct Gradle commands or Android Studio, select JDK 17 yourself.
-- Android Studio, Android SDK platform **36**, Build Tools **36.0.0**, NDK **27.1.12297006**, SDK platform-tools, and an emulator system image.
+- Android SDK platform **36**, Build Tools **36.0.0**, NDK **27.1.12297006**, CMake **3.30.5**, SDK platform-tools, and an emulator system image. Android Studio is optional.
 - Android **7.0 / API 24** or newer on the target phone.
 - Internet is needed to install/build dependencies initially, never for normal app use.
 
@@ -69,7 +69,23 @@ If an Android build fails at `androidJdkImage` / `JdkImageTransform` and the err
 
 ### Android emulator
 
-Create an Android emulator in Android Studio → Device Manager. `npm start` now lists your installed emulators and lets you launch one before starting Metro. Select `0` to start Metro only. A running emulator is reused. Then:
+On Windows, install the SDK and create an Android 36 emulator without Android Studio:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-android.ps1
+# For a different JDK 17 location, append: -JavaHome 'C:\path\to\jdk-17'
+```
+
+The script downloads Google's command-line tools, verifies their checksum, accepts SDK licenses, installs the required packages under `%LOCALAPPDATA%\Android\Sdk`, and creates `IponGoal_API_36`. It sets user environment variables and writes the ignored `android/local.properties` file. Open a new terminal after setup. Hardware virtualization and Windows Hypervisor Platform must be available for accelerated emulation.
+
+```powershell
+npm run emulators
+npm start -- --emulator=IponGoal_API_36
+# In a second terminal, after the emulator boots:
+npm run android
+```
+
+You can also create an Android emulator with avdmanager or Android Studio’s Device Manager. `npm start` now lists your installed emulators and lets you launch one before starting Metro. Select `0` to start Metro only. A running emulator is reused. Then:
 
 ```sh
 npm start
@@ -79,6 +95,8 @@ npm run android
 ```
 
 Metro keeps its normal `r`, `d`, and `j` keys. The emulator continues running when Metro stops. The picker does not install the app; `npm run android` installs/opens it. If several devices are connected, use `npm run android -- --list-devices` to select the target.
+
+`npm run android` uses `--active-arch-only` to build only the architecture of the connected device (x86_64 for `IponGoal_API_36`), reducing native compilation work. Boot the emulator before running it. Direct Gradle builds still use the configured architecture list, and `npm run android:release` still builds both ARM phone architectures.
 
 ```sh
 npm run emulators
