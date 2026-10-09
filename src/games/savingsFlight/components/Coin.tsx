@@ -8,7 +8,7 @@ export function Coin({ value }: { value: number }) {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      <Text accessible={false} style={styles.text}>
+      <Text accessible={false} allowFontScaling={false} style={styles.text}>
         {value / 100}
       </Text>
     </View>
@@ -19,9 +19,9 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: colors.goldSoft,
+    backgroundColor: colors.gold,
     borderWidth: 2,
-    borderColor: colors.gold,
+    borderColor: '#A56A00',
     alignItems: 'center',
     justifyContent: 'center',
   },

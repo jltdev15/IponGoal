@@ -409,6 +409,31 @@ test('profile photos persist per account, survive text edits, and can be removed
   updateProfile(userId, 'John', '', null);
   expect(getUserById(userId).profilePhoto).toBeNull();
 });
+test('goal cover photos persist, remain account-isolated, survive legacy edits, and clear explicitly', () => {
+  const photo = 'data:image/png;base64,aGVsbG8=';
+  const id = createGoal(userId, { ...input, coverPhoto: photo }, 100);
+  expect(getGoalById(userId, id)?.coverPhoto).toBe(photo);
+  expect(getGoalById(otherId, id)).toBeUndefined();
+  updateGoal(userId, id, { ...input, name: 'Updated' });
+  expect(getGoalById(userId, id)?.coverPhoto).toBe(photo);
+  expect(() => updateGoal(otherId, id, { ...input, coverPhoto: null })).toThrow(
+    'not found',
+  );
+  expect(() =>
+    createGoal(
+      userId,
+      { ...input, coverPhoto: 'https://example.com/photo.png' },
+      100,
+    ),
+  ).toThrow('Please choose');
+  updateGoal(userId, id, { ...input, coverPhoto: null });
+  expect(getGoalById(userId, id)?.coverPhoto).toBeNull();
+  updateGoal(userId, id, { ...input, coverPhoto: photo });
+  deleteGoal(userId, id);
+  expect(getGoalById(userId, id)).toBeUndefined();
+  expect(rows('SELECT * FROM savings WHERE goalId=?', [id])).toHaveLength(0);
+});
+
 test('completed, repeated, and interrupted learning games never change real savings data', () => {
   const snapshot = () => ({
     goals: rows('SELECT * FROM goals ORDER BY id'),

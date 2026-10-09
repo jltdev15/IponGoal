@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   Animated,
@@ -25,6 +25,20 @@ import { Obstacle } from './components/Obstacle';
 import { Coin } from './components/Coin';
 import { DecisionGate } from './components/DecisionGate';
 import { HUD } from './components/HUD';
+import {
+  CoinBurst,
+  CollisionNotice,
+  FlightClouds,
+  FlightHero,
+  MotionEntrance,
+} from './components/FlightPresentation';
+import { useFlightMotion } from './useFlightMotion';
+import { GameReview } from '../GameReview';
+import { Pause } from 'lucide-react-native';
+import { flightSound } from '../../services/flightSound';
+import { useFlightAudio } from './useFlightAudio';
+import { SoundControl } from './components/SoundControl';
+import { FlightGuide } from './components/FlightGuide';
 
 type Props = NativeStackScreenProps<MainStackParams, 'SavingsFlight'>;
 export function SavingsFlightScreen(props: Props) {
@@ -39,10 +53,6 @@ export function SavingsFlightScreen(props: Props) {
       <ScreenContainer>
         <Text style={theme.title}>Savings Flight is getting ready</Text>
         <Text style={theme.body}>This practice game is not available yet.</Text>
-        <AppButton
-          title="Back to Games"
-          onPress={() => props.navigation.popTo('Games')}
-        />
       </ScreenContainer>
     );
   }
@@ -50,11 +60,19 @@ export function SavingsFlightScreen(props: Props) {
 }
 function FlightSession({ navigation, route }: Props) {
   const { levelId, mode } = route.params;
+  const motion = useFlightMotion(navigation);
+  const motionRef = useRef(motion);
+  useEffect(() => {
+    motionRef.current = motion;
+  }, [motion]);
   const [engine, setEngine] = useState(
     () => new SavingsFlightEngine(levelId, mode),
   );
   const [state, setState] = useState(() => engine.getSnapshot());
   const [scale, setScale] = useState(1);
+  const [playHeight, setPlayHeight] = useState(480);
+  const [hudHeight, setHudHeight] = useState(140);
+  const [collection, setCollection] = useState({ event: 0, amount: 0, y: 182 });
   const layout = useRef<{ width: number; height: number } | null>(null);
   const values = useRef({
     playerY: new Animated.Value(182),
@@ -63,24 +81,53 @@ function FlightSession({ navigation, route }: Props) {
     gateX: new Animated.Value(260),
     coinOpacity: new Animated.Value(1),
     playerOpacity: new Animated.Value(1),
+    playerTilt: new Animated.Value(0),
   }).current;
   const frame = engine.getFrame();
-  const sync = () => setState(engine.getSnapshot());
+  const consumeEvents = useCallback(() => {
+    for (const event of engine.drainEvents()) {
+      flightSound.effect(event.type === 'collision' ? 'bump' : 'coin');
+      if (event.type === 'coin')
+        setCollection(current => ({
+          event: current.event + 1,
+          amount: event.amount,
+          y: event.y,
+        }));
+    }
+  }, [engine]);
+  const sync = () => {
+    consumeEvents();
+    setState(engine.getSnapshot());
+  };
+  const sound = useFlightAudio(engine, state, () => {
+    engine.pause();
+    engine.drainEvents();
+    setState(engine.getSnapshot());
+  });
   const restart = () => {
+    flightSound.stop();
+    engine.drainEvents();
     const fresh = new SavingsFlightEngine(levelId, mode);
     setEngine(fresh);
     setState(fresh.getSnapshot());
+    setCollection({ event: 0, amount: 0, y: 182 });
   };
-  const exit = () => navigation.popTo('Games');
+  const exit = () => {
+    flightSound.stop();
+    engine.drainEvents();
+    navigation.popTo('Games');
+  };
   useEffect(() => {
     let animationFrame = 0;
     let last: number | null = null;
     let revision = -1;
     let disposed = false;
+    let previousY = engine.getFrame().playerY;
     const draw = (time: number) => {
       if (disposed) {
         return;
       }
+      const elapsed = last === null ? 0 : (time - last) / 1000;
       if (last !== null) {
         engine.advance((time - last) / 1000);
       }
@@ -92,9 +139,17 @@ function FlightSession({ navigation, route }: Props) {
       values.gateX.setValue(next.gateX);
       values.coinOpacity.setValue(next.coinVisible ? 1 : 0);
       values.playerOpacity.setValue(next.invulnerable ? 0.55 : 1);
+      values.playerTilt.setValue(
+        motionRef.current && elapsed > 0
+          ? Math.max(-8, Math.min(8, (next.playerY - previousY) / elapsed / 24))
+          : 0,
+      );
+      previousY = next.playerY;
       if (revision !== engine.revision) {
         revision = engine.revision;
-        setState(engine.getSnapshot());
+        const snapshot = engine.getSnapshot();
+        consumeEvents();
+        setState(snapshot);
       }
       if (engine.isAdvancing()) {
         animationFrame = requestAnimationFrame(draw);
@@ -108,6 +163,8 @@ function FlightSession({ navigation, route }: Props) {
       }
     });
     const unsubscribe = navigation.addListener('blur', () => {
+      flightSound.stop();
+      engine.drainEvents();
       engine.pause();
       setState(engine.getSnapshot());
     });
@@ -117,7 +174,17 @@ function FlightSession({ navigation, route }: Props) {
       subscription.remove();
       unsubscribe();
     };
-  }, [engine, navigation, values, state.gameStatus, state.decisionPhase]);
+  }, [
+    engine,
+    navigation,
+    values,
+    state.gameStatus,
+    state.decisionPhase,
+    consumeEvents,
+  ]);
+  useEffect(() => {
+    if (!motion || !engine.isAdvancing()) values.playerTilt.setValue(0);
+  }, [motion, engine, state.gameStatus, state.decisionPhase, values]);
   useEffect(() => {
     if (
       state.gameStatus === 'decision' &&
@@ -139,6 +206,12 @@ function FlightSession({ navigation, route }: Props) {
           state.feedback.explanation
         }`,
       );
+    } else if (state.gameStatus === 'hit') {
+      AccessibilityInfo.announceForAccessibility(
+        `1 heart lost. ${state.lives} ${
+          state.lives === 1 ? 'heart' : 'hearts'
+        } remaining. Continue from your checkpoint.`,
+      );
     }
   }, [
     state.gameStatus,
@@ -146,6 +219,7 @@ function FlightSession({ navigation, route }: Props) {
     state.currentScenario,
     state.feedback,
     state.decisionCount,
+    state.lives,
   ]);
   const viewportChanged = ({
     nativeEvent: { layout: next },
@@ -175,38 +249,37 @@ function FlightSession({ navigation, route }: Props) {
         result={engine.getResult()}
         onAgain={restart}
         onExit={exit}
+        motion={motion}
       />
     );
   }
   if (state.gameStatus === 'idle') {
     return (
-      <ScreenContainer>
-        <Text style={theme.title}>{engine.level.title}</Text>
-        <Text style={theme.heading}>
-          Your Practice Goal: {engine.level.goalName}
+      <ScreenContainer responsive>
+        <FlightHero enabled={motion} />
+        <Text
+          accessibilityRole="header"
+          style={[theme.title, { fontSize: 24, textAlign: 'center' }]}
+        >
+          {engine.level.title}
         </Text>
         <HUD state={state} level={engine.level} mode={mode} />
-        <Text style={theme.body}>
-          {mode === 'manual'
-            ? 'Tap the sky to rise. Glide through the gap between expense cards. Small gold coins are fictional windfalls, not real earnings. You have three hearts and checkpoints after each choice.'
-            : 'Your piggy bank navigates automatically. Choose with untimed answer buttons. You do not need to tap or steer.'}
-        </Text>
-        <Text style={theme.body}>
-          Five money situations await. Read at your own pace. Use answer buttons
-          {mode === 'manual' ? ' or choose to fly through a labeled gate' : ''},
-          then see the consequence.
-        </Text>
+        <SoundControl enabled={sound.enabled} onPress={sound.toggle} />
+        <FlightGuide
+          mode={mode}
+          hasCoins={mode === 'manual' && levelId !== 'budget'}
+        />
         <Text style={theme.muted}>
           Practice money only. Nothing changes your real goals or savings.
         </Text>
         <AppButton
           title="Start Flight"
           onPress={() => {
+            flightSound.activate();
             engine.start();
             sync();
           }}
         />
-        <AppButton title="Back to Games" variant="secondary" onPress={exit} />
       </ScreenContainer>
     );
   }
@@ -232,228 +305,329 @@ function FlightSession({ navigation, route }: Props) {
     ));
   return (
     <ScreenContainer scroll={false}>
-      <View
-        testID="flight-viewport"
-        style={{ flex: 1 }}
-        onLayout={viewportChanged}
-      >
-        <View style={styles.hud}>
-          <ScrollView style={{ maxHeight: 142 }}>
-            <HUD state={state} level={engine.level} mode={mode} />
-          </ScrollView>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Pause flight"
-            onPress={() => {
-              engine.pause();
-              sync();
-            }}
-            style={styles.pause}
-          >
-            <Text style={theme.body}>Pause</Text>
-          </Pressable>
-        </View>
-        <View testID="flight-scene" style={styles.scene} onLayout={measure}>
-          {!overlay && (
+      <View style={{ flex: 1 }}>
+        <View
+          testID="flight-viewport"
+          style={{ flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' }}
+          onLayout={viewportChanged}
+        >
+          <View style={styles.toolbar}>
+            <Text style={styles.mode}>
+              {mode === 'assisted' ? 'Automatic flight' : 'Tap to fly'}
+            </Text>
+            <SoundControl
+              compact
+              enabled={sound.enabled}
+              onPress={sound.toggle}
+            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Pause flight"
+              accessibilityState={{ disabled: state.gameStatus === 'paused' }}
+              disabled={state.gameStatus === 'paused'}
+              onPress={() => {
+                engine.pause();
+                sync();
+              }}
+              style={styles.pause}
+            >
+              <Pause size={22} color={colors.text} accessible={false} />
+            </Pressable>
+          </View>
+          <View style={{ flex: 1 }}>
             <View
+              testID="flight-underlay"
               collapsable={false}
-              style={[styles.stage, { transform: [{ scale }] }]}
+              style={{ flex: 1, display: overlay ? 'none' : 'flex' }}
               accessibilityElementsHidden={overlay}
               importantForAccessibility={
-                mode === 'assisted' ? 'no-hide-descendants' : 'auto'
+                overlay ? 'no-hide-descendants' : 'auto'
               }
             >
-              <Pressable
-                style={StyleSheet.absoluteFill}
-                disabled={mode === 'assisted' || overlay}
-                accessible={mode === 'manual' && !overlay}
+              <ScrollView
+                style={{ flex: 1 }}
+                onLayout={event =>
+                  setPlayHeight(event.nativeEvent.layout.height)
+                }
+                contentContainerStyle={styles.playContent}
+                accessibilityElementsHidden={overlay}
                 importantForAccessibility={
-                  mode === 'manual' && !overlay ? 'yes' : 'no-hide-descendants'
+                  overlay ? 'no-hide-descendants' : 'auto'
                 }
-                accessibilityRole={
-                  mode === 'manual' && !overlay ? 'button' : undefined
-                }
-                accessibilityLabel={
-                  mode === 'manual' && !overlay
-                    ? 'Flight area. Tap to fly upward.'
-                    : undefined
-                }
-                onPress={() => engine.tap()}
+                scrollEnabled={!overlay}
+                onScrollBeginDrag={() => {
+                  engine.pause();
+                  sync();
+                }}
               >
-                <View style={styles.cloudOne} />
-                <View style={styles.cloudTwo} />
-                {!choosing && (
-                  <>
-                    <Animated.View
-                      style={[
-                        styles.object,
-                        { transform: [{ translateX: values.obstacleX }] },
-                      ]}
-                    >
-                      <Obstacle
-                        gapTop={frame.gapTop}
-                        gapBottom={frame.gapBottom}
-                      />
-                    </Animated.View>
-                    <Animated.View
-                      style={[
-                        styles.object,
-                        {
-                          top: frame.coinY - 12,
-                          opacity: values.coinOpacity,
-                          transform: [{ translateX: values.coinX }],
-                        },
-                      ]}
-                    >
-                      <Coin value={frame.coinValue} />
-                    </Animated.View>
-                  </>
-                )}
-                {choosing && scenario && (
-                  <Animated.View
-                    style={[
-                      styles.object,
-                      { transform: [{ translateX: values.gateX }] },
-                    ]}
-                  >
-                    <DecisionGate scenario={scenario} />
-                  </Animated.View>
-                )}
-                <Animated.View
-                  style={[
-                    styles.object,
-                    {
-                      left: FLIGHT.playerX,
-                      opacity: values.playerOpacity,
-                      transform: [{ translateY: values.playerY }],
-                    },
-                  ]}
+                <View
+                  onLayout={event =>
+                    setHudHeight(event.nativeEvent.layout.height)
+                  }
                 >
-                  <Player />
-                </Animated.View>
-              </Pressable>
+                  <HUD state={state} level={engine.level} mode={mode} />
+                </View>
+                <View
+                  testID="flight-scene"
+                  style={[
+                    styles.scene,
+                    { height: Math.max(180, playHeight - hudHeight - 24) },
+                  ]}
+                  onLayout={measure}
+                >
+                  <View
+                    testID="flight-stage"
+                    collapsable={false}
+                    pointerEvents={overlay ? 'none' : 'auto'}
+                    style={[
+                      styles.stage,
+                      { opacity: overlay ? 0.25 : 1, transform: [{ scale }] },
+                    ]}
+                    accessibilityElementsHidden={overlay}
+                    importantForAccessibility={
+                      overlay || mode === 'assisted'
+                        ? 'no-hide-descendants'
+                        : 'auto'
+                    }
+                  >
+                    <Pressable
+                      style={StyleSheet.absoluteFill}
+                      disabled={mode === 'assisted' || overlay}
+                      accessible={mode === 'manual' && !overlay}
+                      importantForAccessibility={
+                        mode === 'manual' && !overlay
+                          ? 'yes'
+                          : 'no-hide-descendants'
+                      }
+                      accessibilityRole={
+                        mode === 'manual' && !overlay ? 'button' : undefined
+                      }
+                      accessibilityLabel={
+                        mode === 'manual' && !overlay
+                          ? 'Flight area. Tap to fly upward.'
+                          : ''
+                      }
+                      onPress={() => engine.tap()}
+                    >
+                      <FlightClouds moving={motion && engine.isAdvancing()} />
+                      {!choosing && (
+                        <>
+                          <Animated.View
+                            style={[
+                              styles.object,
+                              { transform: [{ translateX: values.obstacleX }] },
+                            ]}
+                          >
+                            <Obstacle
+                              gapTop={frame.gapTop}
+                              gapBottom={frame.gapBottom}
+                            />
+                          </Animated.View>
+                          <Animated.View
+                            style={[
+                              styles.object,
+                              {
+                                top: frame.coinY - 12,
+                                opacity: values.coinOpacity,
+                                transform: [{ translateX: values.coinX }],
+                              },
+                            ]}
+                          >
+                            <Coin value={frame.coinValue} />
+                          </Animated.View>
+                        </>
+                      )}
+                      {choosing && scenario && (
+                        <Animated.View
+                          style={[
+                            styles.object,
+                            { transform: [{ translateX: values.gateX }] },
+                          ]}
+                        >
+                          <DecisionGate scenario={scenario} />
+                        </Animated.View>
+                      )}
+                      <Animated.View
+                        style={[
+                          styles.object,
+                          {
+                            left: FLIGHT.playerX,
+                            opacity: values.playerOpacity,
+                            transform: [{ translateY: values.playerY }],
+                          },
+                        ]}
+                      >
+                        <Player tilt={values.playerTilt} />
+                      </Animated.View>
+                      <CoinBurst
+                        {...collection}
+                        enabled={motion && engine.isAdvancing()}
+                      />
+                    </Pressable>
+                  </View>
+                </View>
+              </ScrollView>
             </View>
-          )}
-          {overlay && (
+            {overlay && (
+              <ScrollView
+                key={
+                  state.gameStatus === 'decision'
+                    ? state.decisionPhase
+                    : state.gameStatus
+                }
+                testID="flight-reading-panel"
+                accessibilityViewIsModal
+                style={styles.overlay}
+                contentContainerStyle={styles.panel}
+              >
+                <MotionEntrance enabled={motion} style={{ gap: 14 }}>
+                  {state.gameStatus === 'paused' ? (
+                    <>
+                      <Text accessibilityRole="header" style={styles.heading}>
+                        Flight paused
+                      </Text>
+                      <SoundControl
+                        enabled={sound.enabled}
+                        onPress={sound.toggle}
+                      />
+                      <AppButton
+                        title="Resume"
+                        onPress={() => {
+                          flightSound.activate();
+                          engine.resume();
+                          sync();
+                        }}
+                      />
+                      <AppButton
+                        title="Restart"
+                        variant="secondary"
+                        onPress={restart}
+                      />
+                      <AppButton
+                        title="Exit Game"
+                        variant="secondary"
+                        onPress={exit}
+                      />
+                    </>
+                  ) : state.gameStatus === 'hit' ? (
+                    <>
+                      <CollisionNotice enabled={motion} />
+                      <Text accessibilityRole="header" style={styles.heading}>
+                        Ready to try again?
+                      </Text>
+                      <Text style={theme.body}>
+                        Your answers are saved. Continue from your checkpoint
+                        with {state.lives}{' '}
+                        {state.lives === 1 ? 'heart' : 'hearts'}.
+                      </Text>
+                      <AppButton
+                        title="Continue Flight"
+                        onPress={() => {
+                          flightSound.activate();
+                          engine.continueFlight();
+                          sync();
+                        }}
+                      />
+                    </>
+                  ) : state.decisionPhase === 'feedback' ? (
+                    <>
+                      <Text
+                        accessibilityRole="header"
+                        style={styles.heading}
+                        accessibilityLiveRegion="polite"
+                      >
+                        {state.feedback?.thoughtful
+                          ? 'Smart Choice'
+                          : 'Think About It'}
+                      </Text>
+                      <Text style={theme.body}>
+                        {state.feedback?.explanation}
+                      </Text>
+                      <Text style={theme.muted}>Practice money only</Text>
+                      <AppButton
+                        title="Continue"
+                        onPress={() => {
+                          flightSound.activate();
+                          engine.continueFlight();
+                          sync();
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Text accessibilityRole="header" style={styles.heading}>
+                        Money Situation {state.decisionCount + 1} / 5
+                      </Text>
+                      <Text style={theme.body}>{scenario?.prompt}</Text>
+                      {answers}
+                      {mode === 'manual' && (
+                        <GameReview
+                          key={state.decisionCount}
+                          title="More controls"
+                        >
+                          <Text style={theme.body}>
+                            Optional: steer through the upper gate for the first
+                            answer or the lower gate for the second. Answer
+                            buttons stay available.
+                          </Text>
+                          <AppButton
+                            title="Fly to choose"
+                            variant="secondary"
+                            onPress={() => {
+                              engine.flyToChoose();
+                              sync();
+                            }}
+                          />
+                        </GameReview>
+                      )}
+                      <Text style={theme.muted}>
+                        {mode === 'manual'
+                          ? 'Flight is paused. Take your time and choose an answer.'
+                          : 'Take your time. There is no answer timer.'}
+                      </Text>
+                    </>
+                  )}
+                </MotionEntrance>
+              </ScrollView>
+            )}
+          </View>
+          {choosing && (
             <ScrollView
-              key={
-                state.gameStatus === 'decision'
-                  ? state.decisionPhase
-                  : state.gameStatus
-              }
-              style={styles.overlay}
+              style={{ maxHeight: 220 }}
               contentContainerStyle={styles.panel}
             >
-              {state.gameStatus === 'paused' ? (
-                <>
-                  <Text style={theme.title}>Flight Paused</Text>
-                  <AppButton
-                    title="Resume"
-                    onPress={() => {
-                      engine.resume();
-                      sync();
-                    }}
-                  />
-                  <AppButton
-                    title="Restart"
-                    variant="secondary"
-                    onPress={restart}
-                  />
-                  <AppButton
-                    title="Exit Game"
-                    variant="secondary"
-                    onPress={exit}
-                  />
-                </>
-              ) : state.gameStatus === 'hit' ? (
-                <>
-                  <Text style={theme.heading}>
-                    Let’s try that stretch again
-                  </Text>
-                  <Text style={theme.body}>
-                    Your answered decisions are safe. Resume from your latest
-                    checkpoint with {state.lives} hearts.
-                  </Text>
-                  <AppButton
-                    title="Continue Flight"
-                    onPress={() => {
-                      engine.continueFlight();
-                      sync();
-                    }}
-                  />
-                </>
-              ) : state.decisionPhase === 'feedback' ? (
-                <>
-                  <Text style={theme.heading} accessibilityLiveRegion="polite">
-                    {state.feedback?.thoughtful
-                      ? 'Smart Choice'
-                      : 'Think About It'}
-                  </Text>
-                  <Text style={theme.body}>{state.feedback?.explanation}</Text>
-                  <Text style={theme.muted}>Practice money only</Text>
-                  <AppButton
-                    title="Continue"
-                    onPress={() => {
-                      engine.continueFlight();
-                      sync();
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <Text style={theme.heading}>
-                    Money Situation {state.decisionCount + 1} / 5
-                  </Text>
-                  <Text style={theme.body}>{scenario?.prompt}</Text>
-                  {answers}
-                  {mode === 'manual' && (
-                    <AppButton
-                      title="Fly to choose"
-                      onPress={() => {
-                        engine.flyToChoose();
-                        sync();
-                      }}
-                    />
-                  )}
-                  <Text style={theme.muted}>
-                    {mode === 'manual'
-                      ? 'Take your time. Both buttons and gates make the same choice.'
-                      : 'Take your time. There is no answer timer.'}
-                  </Text>
-                </>
-              )}
+              <Text style={theme.body}>{scenario?.prompt}</Text>
+              <Text style={theme.muted}>
+                Upper gate: first choice · Lower gate: second choice. Buttons
+                are available too.
+              </Text>
+              {answers}
             </ScrollView>
           )}
         </View>
-        {choosing && (
-          <ScrollView
-            style={{ maxHeight: 220 }}
-            contentContainerStyle={styles.panel}
-          >
-            <Text style={theme.body}>{scenario?.prompt}</Text>
-            <Text style={theme.muted}>
-              Upper gate: first choice · Lower gate: second choice. Buttons are
-              available too.
-            </Text>
-            {answers}
-          </ScrollView>
-        )}
-        <Text style={styles.footer}>
-          {mode === 'assisted'
-            ? 'Assisted flight'
-            : choosing
-            ? 'Fly into a gate'
-            : 'Tap to fly'}{' '}
-          · Practice money only
-        </Text>
       </View>
     </ScreenContainer>
   );
 }
 const styles = StyleSheet.create({
-  hud: { padding: 12, gap: 8 },
+  toolbar: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mode: { flex: 1, fontSize: 14, fontWeight: '600', color: colors.text },
+  heading: { fontSize: 22, fontWeight: '700', color: colors.text },
+  playContent: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    gap: 12,
+    paddingBottom: 12,
+  },
   pause: {
     minHeight: 48,
+    minWidth: 48,
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -461,48 +635,33 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   scene: {
-    flex: 1,
-    minHeight: 120,
+    minHeight: 180,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.goldSoft,
+    backgroundColor: colors.primarySoft,
+
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   stage: {
     width: FLIGHT.width,
     height: FLIGHT.height,
     flexShrink: 0,
     overflow: 'hidden',
-    backgroundColor: colors.goldSoft,
+    backgroundColor: colors.primarySoft,
   },
   object: { position: 'absolute', left: 0, top: 0 },
-  cloudOne: {
-    position: 'absolute',
-    top: 40,
-    left: 35,
-    width: 110,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: colors.white,
-  },
-  cloudTwo: {
-    position: 'absolute',
-    top: 270,
-    left: 180,
-    width: 135,
-    height: 55,
-    borderRadius: 30,
-    backgroundColor: colors.white,
-  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: colors.background,
   },
-  panel: { padding: 20, gap: 14 },
-  footer: {
-    padding: 10,
-    fontSize: 12,
-    color: colors.muted,
-    textAlign: 'center',
+  panel: {
+    padding: 20,
+    flexGrow: 1,
+    gap: 14,
+    backgroundColor: colors.surface,
+    borderRadius: 20,
   },
 });

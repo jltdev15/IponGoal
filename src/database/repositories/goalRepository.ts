@@ -36,7 +36,7 @@ export function createGoal(
       now = new Date().toISOString(),
       completed = startingAmount >= input.targetAmount;
     execute(
-      'INSERT INTO goals(id,userId,name,targetAmount,targetDate,category,icon,note,status,createdAt,updatedAt,completedAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO goals(id,userId,name,targetAmount,targetDate,category,icon,note,status,createdAt,updatedAt,completedAt,coverPhoto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
       [
         id,
         userId,
@@ -50,6 +50,7 @@ export function createGoal(
         now,
         now,
         completed ? now : null,
+        input.coverPhoto ?? null,
       ],
     );
     if (startingAmount > 0) {
@@ -71,10 +72,10 @@ export function createGoal(
   });
 }
 export function updateGoal(userId: string, id: string, input: GoalInput) {
-  requireGoal(userId, id);
+  const existing = requireGoal(userId, id);
   validateGoal(input);
   execute(
-    'UPDATE goals SET name=?,targetAmount=?,targetDate=?,category=?,icon=?,note=?,updatedAt=? WHERE id=? AND userId=?',
+    'UPDATE goals SET name=?,targetAmount=?,targetDate=?,category=?,icon=?,note=?,updatedAt=?,coverPhoto=? WHERE id=? AND userId=?',
     [
       input.name.trim(),
       input.targetAmount,
@@ -83,6 +84,7 @@ export function updateGoal(userId: string, id: string, input: GoalInput) {
       input.icon,
       input.note.trim(),
       new Date().toISOString(),
+      input.coverPhoto === undefined ? existing.coverPhoto : input.coverPhoto,
       id,
       userId,
     ],

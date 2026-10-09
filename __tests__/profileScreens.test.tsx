@@ -16,6 +16,7 @@ jest.mock(
   () => require('react-native-safe-area-context/jest/mock').default,
 );
 jest.mock('lucide-react-native', () => ({
+  PiggyBank: () => null,
   ChevronRight: () => null,
   Archive: () => null,
   BadgeCheck: () => null,
@@ -175,6 +176,17 @@ test('empty summary and missing grade work; failed photos fall back to initials'
   expect(renderer!.root.findAllByType(Image)).toHaveLength(0);
   expect(textContent()).toContain('AM');
 });
+test('large recorded totals retain their exact value and optional grade', async () => {
+  mockAuth.user.gradeLevel = 'Grade 11';
+  mockSavings = mockSavings.map(entry => ({ ...entry, amount: 99999999999 }));
+  await render();
+  expect(textContent()).toContain('₱2,999,999,999.97');
+  expect(textContent()).toContain('Grade 11');
+  expect(textContent()).toContain(
+    'Includes active, completed, and archived goals.',
+  );
+});
+
 test('reset never executes before two accepted confirmations; cancellation at either stage is safe; logout remains independent', async () => {
   await render();
   await press('Reset all device data');
@@ -192,6 +204,76 @@ test('reset never executes before two accepted confirmations; cancellation at ei
   await press('Log out');
   expect(mockAuth.logout).toHaveBeenCalledTimes(1);
 });
+async function startProfileAction(action: 'logout' | 'reset') {
+  if (action === 'logout') {
+    await press('Log out');
+  } else {
+    await press('Reset all device data');
+    await act(async () => alertButtons()[1].onPress!());
+    await act(async () => alertButtons()[1].onPress!());
+  }
+}
+
+test.each(['logout', 'reset'] as const)(
+  '%s shows pending feedback, locks controls, and rejects duplicate execution',
+  async action => {
+    let finish!: () => void;
+    mockAuth[action].mockImplementation(
+      () => new Promise<void>(resolve => (finish = resolve)),
+    );
+    await render();
+    await startProfileAction(action);
+    expect(buttons().every(b => b.props.disabled)).toBe(true);
+    expect(
+      renderer!.root.findAllByType(ProfileRow).every(r => r.props.disabled),
+    ).toBe(true);
+    expect(
+      buttons()
+        .filter(b => b.props.loading)
+        .map(b => b.props.title),
+    ).toEqual([action === 'logout' ? 'Log out' : 'Reset all device data']);
+    if (action === 'logout') {
+      await press('Log out');
+    } else {
+      await act(async () => alertButtons()[1].onPress!());
+    }
+    expect(mockAuth[action]).toHaveBeenCalledTimes(1);
+    await act(async () => finish());
+    expect(buttons().some(b => b.props.loading || b.props.disabled)).toBe(
+      false,
+    );
+  },
+);
+
+test('action errors stay beside their own button, switch with the action, and clear on retry', async () => {
+  mockAuth.logout.mockImplementation(() => {
+    throw new Error('SQLITE_ERROR');
+  });
+  mockAuth.reset.mockRejectedValue(new Error('SQLITE_ERROR'));
+  await render();
+  for (const action of ['logout', 'reset'] as const) {
+    await startProfileAction(action);
+    const message =
+      action === 'logout'
+        ? 'Unable to log out. Please try again.'
+        : 'Unable to reset your data. Please try again.';
+    const errors = renderer!.root
+      .findAllByType(Text)
+      .filter(node => node.props.accessibilityRole === 'alert');
+    expect(errors).toHaveLength(1);
+    expect(errors[0].props.children).toBe(message);
+    expect(errors[0].props.accessibilityLiveRegion).toBe('polite');
+    expect(
+      errors[0].parent!.findAllByType(AppButton).map(b => b.props.title),
+    ).toEqual([action === 'logout' ? 'Log out' : 'Reset all device data']);
+    expect(buttons().every(b => !b.props.disabled)).toBe(true);
+  }
+  mockAuth.reset.mockResolvedValue(undefined);
+  await startProfileAction('reset');
+  expect(textContent()).not.toContain('Unable to');
+  expect(mockAuth.reset).toHaveBeenCalledTimes(2);
+});
+
 test('editing, Keep Editing, and Discard Changes disable the guard before replaying the navigation action', async () => {
   await render(true);
   expect(mockGuard.enabled).toBe(false);

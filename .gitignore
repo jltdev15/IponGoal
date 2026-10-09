@@ -4,6 +4,8 @@ android/.gradle/
 android/build/
 android/app/build/
 android/app/.cxx/
+android/app/build-primary-screens-qa/
+android/app/.cxx-primary-screens-qa/
 android/local.properties
 ios/Pods/
 ios/build/

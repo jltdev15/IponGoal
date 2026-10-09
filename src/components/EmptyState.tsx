@@ -11,6 +11,7 @@ export function EmptyState({
   onPress,
   icon = 'piggy',
   compact = false,
+  hideAction = false,
 }: {
   title: string;
   body: string;
@@ -18,6 +19,7 @@ export function EmptyState({
   onPress: () => void;
   icon?: string;
   compact?: boolean;
+  hideAction?: boolean;
 }) {
   return (
     <View style={[styles.container, compact && styles.compactContainer]}>
@@ -26,7 +28,7 @@ export function EmptyState({
       </View>
       <Text style={[theme.heading, styles.center]}>{title}</Text>
       <Text style={[theme.muted, styles.center]}>{body}</Text>
-      <AppButton title={action} onPress={onPress} />
+      {!hideAction && <AppButton title={action} onPress={onPress} />}
     </View>
   );
 }

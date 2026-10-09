@@ -1,9 +1,15 @@
-import React from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { Archive, BadgeCheck, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParams } from '../navigation/types';
+import {
+  PrimaryScreenHeader,
+  primaryStyles,
+  usePrimaryScreenLayout,
+} from '../components/PrimaryScreen';
+import { SavingsSummary, summaryStyles } from '../components/SavingsSummary';
 import { useAuthStore } from '../stores/authStore';
 import { useGoalStore } from '../stores/goalStore';
 import { useSavingsStore } from '../stores/savingsStore';
@@ -18,6 +24,7 @@ import { formatCurrency } from '../utils/currency';
 import { appConfig } from '../config/appConfig';
 import { useFormAction } from '../services/useFormAction';
 export function ProfileScreen() {
+  const { contentStyle, stacked } = usePrimaryScreenLayout();
   const navigation =
     useNavigation<NativeStackNavigationProp<MainStackParams>>();
   const user = useAuthStore(s => s.user)!;
@@ -26,22 +33,36 @@ export function ProfileScreen() {
   const goals = useGoalStore(s => s.goals);
   const entries = useSavingsStore(s => s.savings);
   const { busy, error, run } = useFormAction();
-  const { width, fontScale } = useWindowDimensions();
-  const stacked = width < 380 || fontScale > 1.2;
+  const [operation, setOperation] = useState<'logout' | 'reset' | null>(null);
   const active = goals.filter(g => g.status === 'active').length;
   const completed = goals.filter(g => g.status === 'completed').length;
   const archived = goals.filter(g => g.status === 'archived').length;
+  const performAction = (action: 'logout' | 'reset') => {
+    void run(
+      () => {
+        setOperation(action);
+        return action === 'logout' ? logout() : reset();
+      },
+      action === 'logout'
+        ? 'Unable to log out. Please try again.'
+        : 'Unable to reset your data. Please try again.',
+    );
+  };
   return (
-    <ScreenContainer>
-      <View style={theme.card}>
+    <ScreenContainer
+      bottomSafeArea={false}
+      contentContainerStyle={contentStyle}
+    >
+      <PrimaryScreenHeader title="Profile" subtitle="Your account" />
+      <View style={primaryStyles.card}>
         <View style={[styles.identity, stacked && styles.stacked]}>
           <ProfileAvatar
             fullName={user.fullName}
             photo={user.profilePhoto}
-            size={72}
+            size={64}
           />
           <View style={[styles.identityText, stacked && styles.unflex]}>
-            <Text accessibilityRole="header" style={theme.title}>
+            <Text accessibilityRole="header" style={styles.name}>
               {user.fullName}
             </Text>
             <Text style={theme.muted}>@{user.username}</Text>
@@ -57,30 +78,34 @@ export function ProfileScreen() {
           onPress={() => navigation.navigate('EditProfile')}
         />
       </View>
-      <View style={theme.card}>
-        <Text accessibilityRole="header" style={theme.heading}>
-          Total recorded savings
-        </Text>
-        <Text style={theme.amount}>
-          {formatCurrency(
-            entries.reduce((sum, entry) => sum + entry.amount, 0),
-            true,
-          )}
-        </Text>
-        <Text style={theme.muted}>
-          Includes savings recorded for active, completed, and archived goals.
-        </Text>
-        <View style={[styles.counts, stacked && styles.stacked]}>
-          <View style={[styles.count, stacked && styles.unflex]}>
-            <Text style={styles.number}>{active}</Text>
-            <Text style={theme.muted}>Active goals</Text>
+      <SavingsSummary
+        label="Total recorded savings"
+        amount={formatCurrency(
+          entries.reduce((sum, entry) => sum + entry.amount, 0),
+          true,
+        )}
+        note="Includes active, completed, and archived goals."
+        stacked={stacked}
+      >
+        <View style={[summaryStyles.counts, stacked && summaryStyles.stacked]}>
+          <View
+            style={[summaryStyles.countChip, stacked && summaryStyles.unflex]}
+          >
+            <Text style={summaryStyles.countText}>
+              <Text style={summaryStyles.countNumber}>{active}</Text> Active
+              goals
+            </Text>
           </View>
-          <View style={[styles.count, stacked && styles.unflex]}>
-            <Text style={styles.number}>{completed}</Text>
-            <Text style={theme.muted}>Completed goals</Text>
+          <View
+            style={[summaryStyles.countChip, stacked && summaryStyles.unflex]}
+          >
+            <Text style={summaryStyles.countText}>
+              <Text style={summaryStyles.countNumber}>{completed}</Text>{' '}
+              Completed goals
+            </Text>
           </View>
         </View>
-      </View>
+      </SavingsSummary>
       <View style={styles.section}>
         <Text accessibilityRole="header" style={theme.heading}>
           Your goals
@@ -123,20 +148,28 @@ export function ProfileScreen() {
           />
         </View>
       </View>
-      <View style={styles.section}>
+      <View style={primaryStyles.card}>
+        {operation === 'logout' && !!error && (
+          <Text
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+            style={theme.error}
+          >
+            {error}
+          </Text>
+        )}
         <AppButton
           title="Log out"
           variant="secondary"
           disabled={busy}
-          onPress={() => {
-            void run(logout, 'Unable to log out. Please try again.');
-          }}
+          loading={busy && operation === 'logout'}
+          onPress={() => performAction('logout')}
         />
         <Text style={theme.muted}>
           Logging out keeps your recorded goals and savings on this device.
         </Text>
       </View>
-      <View style={theme.card}>
+      <View style={[primaryStyles.card, styles.deviceData]}>
         <Text accessibilityRole="header" style={theme.heading}>
           Device data
         </Text>
@@ -148,10 +181,20 @@ export function ProfileScreen() {
           Reset permanently erases every local account, goal, and savings record
           on this device. This cannot be undone.
         </Text>
+        {operation === 'reset' && !!error && (
+          <Text
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+            style={theme.error}
+          >
+            {error}
+          </Text>
+        )}
         <AppButton
           title="Reset all device data"
           variant="danger"
           disabled={busy}
+          loading={busy && operation === 'reset'}
           onPress={() =>
             confirmAction(
               'Reset all app data?',
@@ -162,51 +205,36 @@ export function ProfileScreen() {
                   'Permanently reset this device?',
                   'All local accounts and their records will be erased.',
                   'Reset Data',
-                  () => {
-                    void run(
-                      reset,
-                      'Unable to reset your data. Please try again.',
-                    );
-                  },
+                  () => performAction('reset'),
                 ),
             )
           }
         />
       </View>
-      {!!error && (
-        <Text
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-          style={theme.error}
-        >
-          {error}
-        </Text>
-      )}
     </ScreenContainer>
   );
 }
 const styles = StyleSheet.create({
-  identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   identityText: {
     flex: 1,
+    minWidth: 0,
     alignSelf: 'stretch',
     justifyContent: 'center',
     gap: 4,
   },
+  name: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: -0.4,
+  },
   stacked: { flexDirection: 'column', alignItems: 'stretch' },
   unflex: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
-  counts: { flexDirection: 'row', gap: 12 },
-  count: {
-    flex: 1,
-    padding: 12,
-    gap: 4,
-    borderRadius: 12,
-    backgroundColor: colors.primarySoft,
-  },
-  number: { fontSize: 22, fontWeight: '700', color: colors.text },
   section: { gap: 12 },
+  deviceData: { borderColor: colors.danger },
   group: {
-    borderRadius: 16,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,

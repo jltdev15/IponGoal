@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ScrollView, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParams, TabParams } from '../navigation/types';
+import {
+  PrimaryScreenHeader,
+  primaryStyles,
+  usePrimaryScreenLayout,
+} from '../components/PrimaryScreen';
+import { SavingsSummary } from '../components/SavingsSummary';
 import { useGoalStore } from '../stores/goalStore';
 import { useSavingsStore } from '../stores/savingsStore';
 import { ScreenContainer } from '../components/ScreenContainer';
@@ -15,6 +21,7 @@ import { theme } from '../theme/theme';
 import { formatCurrency } from '../utils/currency';
 import { formatDate, isValidDate, periodBounds } from '../utils/dates';
 export function HistoryScreen() {
+  const { contentStyle, stacked } = usePrimaryScreenLayout();
   const navigation =
       useNavigation<NativeStackNavigationProp<MainStackParams>>(),
     route = useRoute<RouteProp<TabParams, 'History'>>();
@@ -46,125 +53,140 @@ export function HistoryScreen() {
         (s.transactionDate >= bounds.from && s.transactionDate <= bounds.to)),
   );
   return (
-    <ScreenContainer scroll={false}>
+    <ScreenContainer scroll={false} bottomSafeArea={false}>
       <FlatList
-        contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
+        style={primaryStyles.list}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={[contentStyle, { gap: 12 }]}
         data={filtered}
         keyExtractor={s => s.id}
         ListHeaderComponent={
-          <View style={{ gap: 20, marginBottom: 12 }}>
-            <Text style={theme.title}>Every saving has a story</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 8 }}
-            >
-              {['All', 'This Week', 'This Month', 'Date Range'].map(p => (
-                <FilterChip
-                  key={p}
-                  label={p}
-                  selected={period === p}
-                  onPress={() => {
-                    setPeriod(p);
-                    setError('');
-                  }}
-                />
-              ))}
-              <FilterChip
-                label="By Goal"
-                selected={goalPicker}
-                onPress={() => setGoalPicker(!goalPicker)}
-              />
-            </ScrollView>
-            {goalPicker && (
+          <View style={{ gap: 16, marginBottom: 4 }}>
+            <PrimaryScreenHeader
+              title="History"
+              subtitle="Every saving has a story"
+              profileShortcut
+            />
+            <SavingsSummary
+              label="Saved in this view"
+              amount={formatCurrency(
+                filtered.reduce((n, saving) => n + saving.amount, 0),
+                true,
+              )}
+              stacked={stacked}
+              note={[
+                goalId
+                  ? goals.find(g => g.id === goalId)?.name || 'Selected goal'
+                  : 'All goals',
+                filtered.length + ' savings entries',
+                bounds
+                  ? formatDate(bounds.from, true) +
+                    ' – ' +
+                    formatDate(bounds.to, true)
+                  : 'All dates',
+              ].join(' · ')}
+            />
+            <View style={primaryStyles.card}>
+              <Text accessibilityRole="header" style={theme.heading}>
+                Filter savings
+              </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ gap: 8 }}
               >
-                <FilterChip
-                  label="All Goals"
-                  selected={!goalId}
-                  onPress={() => setGoalId(undefined)}
-                />
-                {goals.map(g => (
+                {['All', 'This Week', 'This Month', 'Date Range'].map(p => (
                   <FilterChip
-                    key={g.id}
-                    label={g.name}
-                    selected={g.id === goalId}
-                    onPress={() => setGoalId(g.id)}
+                    key={p}
+                    style={styles.filter}
+                    label={p}
+                    selected={period === p}
+                    onPress={() => {
+                      setPeriod(p);
+                      setError('');
+                    }}
                   />
                 ))}
+                <FilterChip
+                  style={styles.filter}
+                  label="By Goal"
+                  selected={goalPicker}
+                  onPress={() => setGoalPicker(!goalPicker)}
+                />
               </ScrollView>
-            )}
-            {period === 'Date Range' && (
-              <View style={{ gap: 14 }}>
-                <AppInput
-                  label="From"
-                  value={from}
-                  onChangeText={setFrom}
-                  placeholder="YYYY-MM-DD"
-                  maxLength={10}
-                />
-                <AppInput
-                  label="To"
-                  value={to}
-                  onChangeText={setTo}
-                  placeholder="YYYY-MM-DD"
-                  maxLength={10}
-                />
-                <AppButton
-                  title="Apply Date Range"
-                  variant="secondary"
-                  onPress={() => {
-                    if (!isValidDate(from) || !isValidDate(to) || from > to) {
-                      setError('Enter valid dates, with From on or before To.');
-                      return;
-                    }
-                    setError('');
-                    setRange({ from, to });
-                  }}
-                />
-                {!!error && (
-                  <Text accessibilityRole="alert" style={theme.error}>
-                    {error}
-                  </Text>
-                )}
-              </View>
-            )}
-            <View style={{ gap: 6 }}>
-              <Text style={theme.muted}>
-                SAVED IN THIS VIEW
-                {goalId
-                  ? ` · ${
-                      goals.find(g => g.id === goalId)?.name || 'Selected goal'
-                    }`
-                  : ''}
-              </Text>
-              <Text style={theme.amount}>
-                {formatCurrency(
-                  filtered.reduce((n, s) => n + s.amount, 0),
-                  true,
-                )}
-              </Text>
-              <Text style={theme.muted}>
-                {filtered.length} savings entries
-                {bounds
-                  ? ` · ${formatDate(bounds.from, true)} – ${formatDate(
-                      bounds.to,
-                      true,
-                    )}`
-                  : ''}
-              </Text>
+              {goalPicker && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8 }}
+                >
+                  <FilterChip
+                    style={styles.filter}
+                    label="All Goals"
+                    selected={!goalId}
+                    onPress={() => setGoalId(undefined)}
+                  />
+                  {goals.map(g => (
+                    <FilterChip
+                      key={g.id}
+                      style={styles.filter}
+                      label={g.name}
+                      selected={g.id === goalId}
+                      onPress={() => setGoalId(g.id)}
+                    />
+                  ))}
+                </ScrollView>
+              )}
+              {period === 'Date Range' && (
+                <View style={{ gap: 14 }}>
+                  <AppInput
+                    label="From"
+                    value={from}
+                    onChangeText={setFrom}
+                    placeholder="YYYY-MM-DD"
+                    maxLength={10}
+                  />
+                  <AppInput
+                    label="To"
+                    value={to}
+                    onChangeText={setTo}
+                    placeholder="YYYY-MM-DD"
+                    maxLength={10}
+                  />
+                  <AppButton
+                    title="Apply Date Range"
+                    variant="secondary"
+                    onPress={() => {
+                      if (!isValidDate(from) || !isValidDate(to) || from > to) {
+                        setError(
+                          'Enter valid dates, with From on or before To.',
+                        );
+                        return;
+                      }
+                      setError('');
+                      setRange({ from, to });
+                    }}
+                  />
+                  {!!error && (
+                    <Text accessibilityRole="alert" style={theme.error}>
+                      {error}
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
           </View>
         }
         renderItem={({ item, index }) => (
-          <View>
+          <View style={{ gap: 12 }}>
             {(index === 0 ||
               filtered[index - 1].transactionDate.slice(0, 7) !==
                 item.transactionDate.slice(0, 7)) && (
-              <Text style={[theme.heading, { paddingTop: 20 }]}>
+              <Text
+                accessibilityRole="header"
+                style={[theme.heading, { paddingTop: 4 }]}
+              >
                 {new Date(
                   `${item.transactionDate}T12:00:00`,
                 ).toLocaleDateString('en-PH', {
@@ -175,6 +197,7 @@ export function HistoryScreen() {
             )}
             <SavingsListItem
               saving={item}
+              variant="card"
               onPress={() =>
                 navigation.navigate('SavingsDetails', { savingId: item.id })
               }
@@ -182,17 +205,22 @@ export function HistoryScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState
-            icon="history"
-            title="No savings entries here yet."
-            body="Try another filter or record savings toward your goals."
-            action="Go to Goals"
-            onPress={() =>
-              navigation.navigate('BottomTabs', { screen: 'Home' })
-            }
-          />
+          <View style={primaryStyles.card}>
+            <EmptyState
+              compact
+              icon="history"
+              title="No savings entries here yet."
+              body="Try another filter or record savings toward your goals."
+              action="Go to Goals"
+              onPress={() =>
+                navigation.navigate('BottomTabs', { screen: 'Home' })
+              }
+            />
+          </View>
         }
       />
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({ filter: { minHeight: 48 } });

@@ -1,0 +1,6 @@
+Error: Isolated QA app is not foreground
+    at nodes (C:\Users\JLT\Desktop\IponGoal\scripts\primary-screens-qa.cjs:29:11)
+    at tap (C:\Users\JLT\Desktop\IponGoal\scripts\primary-screens-qa.cjs:40:13)
+    at launch (C:\Users\JLT\Desktop\IponGoal\scripts\primary-screens-qa.cjs:92:7)
+    at async inspect (C:\Users\JLT\Desktop\IponGoal\scripts\primary-screens-qa.cjs:107:3)
+    at async C:\Users\JLT\Desktop\IponGoal\scripts\primary-screens-qa.cjs:185:9

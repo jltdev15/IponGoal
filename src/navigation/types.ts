@@ -22,11 +22,13 @@ export type MainStackParams = {
   AddSavings: { goalId: string };
   EditSavings: { savingId: string };
   SavingsDetails: { savingId: string };
+  AllGoals: undefined;
   CompletedGoals: undefined;
   ArchivedGoals: undefined;
   EditProfile: undefined;
   About: undefined;
   Games: undefined;
+  SavingsFlightSetup: undefined;
   NeedsOrWants: undefined;
   BudgetChallenge: undefined;
   SaveOrSpend: undefined;

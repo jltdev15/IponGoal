@@ -35,7 +35,9 @@
 		<true/>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Choose a profile photo to save privately on this device.</string>
+	<string>Choose a profile or goal photo to save privately on this device.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a goal photo to save privately on this device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>

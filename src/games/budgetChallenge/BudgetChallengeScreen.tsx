@@ -15,6 +15,7 @@ import {
   newBudgetSession,
 } from './BudgetChallengeSession';
 import { BudgetChallengeResult } from './BudgetChallengeResult';
+import { GameTextAction } from '../GameReview';
 
 export function BudgetChallengeScreen({
   navigation,
@@ -27,14 +28,8 @@ export function BudgetChallengeScreen({
   const category = BUDGET_CATEGORIES[session.index];
   const summary = budgetSummary(session.answers);
   const answer = session.answers[session.index];
-  const feedback =
-    session.phase === 'feedback'
-      ? `${category.options[answer.optionIndex].explanation} ${budgetFeedback(
-          session,
-        )}`
-      : '';
+  const feedback = session.phase === 'feedback' ? budgetFeedback(session) : '';
   const restart = () => dispatch({ type: 'restart' });
-  const exit = () => navigation.navigate('Games');
   useEffect(() => {
     if (session.phase === 'question') {
       AccessibilityInfo.announceForAccessibility(
@@ -51,26 +46,22 @@ export function BudgetChallengeScreen({
     }
   }, [session.phase, session.index, category, feedback]);
   return (
-    <ScreenContainer key={`${session.phase}-${session.index}`}>
+    <ScreenContainer responsive key={`${session.phase}-${session.index}`}>
       {session.phase === 'intro' ? (
         <>
           <Text accessibilityRole="header" style={theme.title}>
             Budget Challenge
           </Text>
           <Text style={theme.body}>
-            Plan one school day using a fictional {formatCurrency(DAILY_BUDGET)}{' '}
-            allowance from your family. This is all the money available for the
-            day.
+            Make a school-day plan with {formatCurrency(DAILY_BUDGET, true)}.
+            Cover your needs and aim to save ₱60.
           </Text>
           <Text style={theme.body}>
-            Cover transportation ₱50, lunch ₱100, and school materials ₱40. Then
-            decide on optional snacks and aim to save ₱60. There is more than
-            one responsible plan.
+            Choose transport, lunch, materials, a snack, and savings. Watch how
+            each choice changes the money left to plan.
           </Text>
           <Text style={theme.body}>
-            Make five untimed choices. You can explore an unaffordable plan and
-            see its shortfall, then replay to improve it. Unallocated money is
-            not automatically savings.
+            5 choices. No timer. Try a plan, then review what fits.
           </Text>
           <Text style={theme.muted}>
             Practice only. Your real goals, transactions, and savings stay
@@ -80,13 +71,12 @@ export function BudgetChallengeScreen({
             title="Start Budget Challenge"
             onPress={() => dispatch({ type: 'start' })}
           />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
         </>
       ) : session.phase === 'completed' ? (
         <BudgetChallengeResult
           answers={session.answers}
           onAgain={restart}
-          onExit={exit}
+          onExit={() => navigation.popTo('Games')}
         />
       ) : (
         <>
@@ -96,30 +86,48 @@ export function BudgetChallengeScreen({
           <Text accessibilityRole="header" style={theme.title}>
             {category.title}
           </Text>
-          <View style={theme.card}>
+          {session.phase === 'question' && (
+            <Text style={theme.body}>{category.context}</Text>
+          )}
+          <View style={[theme.card, { padding: 16, gap: 8 }]}>
             <Text style={theme.heading}>
-              Daily allowance: {formatCurrency(DAILY_BUDGET)}
-            </Text>
-            <Text style={theme.body}>
-              Planned spending: {formatCurrency(summary.spending)}
-            </Text>
-            <Text style={theme.body}>
-              Planned savings: {formatCurrency(summary.plannedSavings)}
-            </Text>
-            <Text style={theme.body}>
               {summary.shortfall
-                ? `Plan shortfall: ${formatCurrency(summary.shortfall)}`
-                : `Unallocated: ${formatCurrency(summary.remaining)}`}
+                ? `Over budget by ${formatCurrency(summary.shortfall, true)}`
+                : `Money left to plan: ${formatCurrency(
+                    summary.remaining,
+                    true,
+                  )}`}
             </Text>
+            <Text style={theme.body}>
+              Spending: {formatCurrency(summary.spending, true)} · Planned
+              savings: {formatCurrency(summary.plannedSavings, true)}
+            </Text>
+            <Text style={theme.muted}>
+              From a ₱300 allowance · Savings target ₱60
+            </Text>
+            {BUDGET_CATEGORIES.filter(item => item.essential > 0).map(item => {
+              const allocation = session.answers.find(
+                a => a.categoryId === item.id,
+              );
+              const status = !allocation
+                ? 'Pending'
+                : allocation.amount >= item.essential
+                ? 'Covered'
+                : 'Unfunded';
+              return (
+                <Text key={item.id} style={theme.muted}>
+                  {item.title}: {status}
+                </Text>
+              );
+            })}
           </View>
           {session.phase === 'question' ? (
             <>
-              <Text style={theme.body}>{category.context}</Text>
               {category.options.map((option, index) => (
                 <AppButton
                   key={option.label}
                   title={option.label}
-                  variant={index === 0 ? 'primary' : 'secondary'}
+                  variant="secondary"
                   onPress={() =>
                     dispatch({ type: 'answer', optionIndex: index })
                   }
@@ -134,9 +142,6 @@ export function BudgetChallengeScreen({
               <Text style={theme.body}>
                 You chose: {category.options[answer.optionIndex].label}
               </Text>
-              <Text style={theme.body}>
-                Allocated: {formatCurrency(answer.amount)}
-              </Text>
               <Text style={theme.body}>{feedback}</Text>
               <AppButton
                 title={
@@ -146,12 +151,7 @@ export function BudgetChallengeScreen({
               />
             </>
           )}
-          <AppButton
-            title="Restart Budget"
-            variant="secondary"
-            onPress={restart}
-          />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
+          <GameTextAction title="Restart Budget" onPress={restart} />
         </>
       )}
     </ScreenContainer>

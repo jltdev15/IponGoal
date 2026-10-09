@@ -1,0 +1,34 @@
+
+> PiggyPath@1.0.0 test
+> jest --runInBand --testTimeout=60000
+
+PASS __tests__/domain.test.ts (20.242 s)
+PASS __tests__/savingsFlightScreen.test.tsx
+PASS __tests__/passwordDerivation.test.ts
+PASS __tests__/authScreens.test.tsx
+PASS __tests__/savingsFlight.test.ts
+PASS __tests__/welcomeOnboarding.test.tsx
+PASS __tests__/goalWizard.test.tsx
+PASS __tests__/profileScreens.test.tsx
+PASS __tests__/goalCalendar.test.tsx
+PASS __tests__/goalBuilder.test.tsx
+PASS __tests__/budgetChallenge.test.tsx
+PASS __tests__/homeScreen.test.tsx
+PASS __tests__/gameGrid.test.tsx
+PASS __tests__/needsOrWants.test.tsx
+PASS __tests__/flightPresentation.test.tsx
+PASS __tests__/nativePassword.test.ts
+PASS __tests__/responsiveAuthLayout.test.tsx
+PASS __tests__/savingsFormScreen.test.tsx
+PASS __tests__/saveOrSpend.test.tsx
+PASS __tests__/profilePhoto.test.ts
+PASS __tests__/piggyTabBar.test.tsx
+PASS __tests__/goalPhoto.test.tsx
+PASS __tests__/formAction.test.tsx
+PASS __tests__/flightAudio.test.tsx
+
+Test Suites: 24 passed, 24 total
+Tests:       240 passed, 240 total
+Snapshots:   0 total
+Time:        39.934 s
+Ran all test suites.

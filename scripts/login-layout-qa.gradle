@@ -1,0 +1,16 @@
+// Isolated bundled login preview; never distribute this as the regular app.
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.pluginManager.withPlugin('com.android.application') {
+            p.extensions.getByName('androidComponents').finalizeDsl { android ->
+                android.defaultConfig.applicationId = 'com.ipongoal.loginqa'
+                android.buildTypes.debug.debuggable = false
+                android.sourceSets.main.java.srcDir(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native'))
+                android.sourceSets.debug.manifest.srcFile(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native/AndroidManifest.xml'))
+            }
+        }
+        p.pluginManager.withPlugin('com.facebook.react') {
+            p.extensions.getByName('react').entryFile.set(new File(p.rootDir.parentFile, 'scripts/login-layout-qa-entry.js'))
+        }
+    }
+}

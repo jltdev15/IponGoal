@@ -15,6 +15,8 @@ import {
   View,
   useWindowDimensions,
   TextInput,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import {
   SafeAreaView,
@@ -32,6 +34,9 @@ export function ScreenContainer({
   secondaryFooter,
   actionColumns = true,
   keepActionsInFooter = false,
+  backgroundColor = colors.background,
+  contentContainerStyle,
+  bottomSafeArea = true,
 }: {
   children: ReactNode | ((layout: { compact: boolean }) => ReactNode);
   scroll?: boolean;
@@ -40,6 +45,9 @@ export function ScreenContainer({
   secondaryFooter?: ReactNode | ((layout: { columns: boolean }) => ReactNode);
   actionColumns?: boolean;
   keepActionsInFooter?: boolean;
+  backgroundColor?: string;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  bottomSafeArea?: boolean;
 }) {
   const { width, height, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -127,8 +135,8 @@ export function ScreenContainer({
   return (
     <SafeAreaView
       ref={viewportRef}
-      edges={['left', 'right', 'bottom']}
-      style={styles.safe}
+      edges={bottomSafeArea ? ['left', 'right', 'bottom'] : ['left', 'right']}
+      style={[styles.safe, { backgroundColor }]}
     >
       <KeyboardAvoidingView
         style={styles.fill}
@@ -161,6 +169,7 @@ export function ScreenContainer({
                 styles.content,
                 responsive && styles.responsiveContent,
                 responsive && compact && styles.compactContent,
+                contentContainerStyle,
               ]}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"

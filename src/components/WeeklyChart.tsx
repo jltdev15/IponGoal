@@ -3,11 +3,14 @@ import { Text, View } from 'react-native';
 import { colors } from '../theme/colors';
 import { theme } from '../theme/theme';
 import { formatCurrency } from '../utils/currency';
+import { primaryStyles } from './PrimaryScreen';
 export function WeeklyChart({ buckets }: { buckets: number[] }) {
   const maximum = Math.max(...buckets, 1);
   return (
-    <View style={theme.card}>
-      <Text style={theme.heading}>Savings this month</Text>
+    <View style={primaryStyles.card}>
+      <Text accessibilityRole="header" style={theme.heading}>
+        Savings this month
+      </Text>
       <Text style={theme.muted}>
         Amount saved (PHP) · 7-day groups, starting day 1
       </Text>
@@ -16,7 +19,6 @@ export function WeeklyChart({ buckets }: { buckets: number[] }) {
           flexDirection: 'row',
           gap: 10,
           alignItems: 'flex-end',
-          height: 180,
         }}
       >
         {buckets.map((value, i) => (

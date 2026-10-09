@@ -1,0 +1,25 @@
+
+> PiggyPath@1.0.0 test
+> jest --runInBand __tests__/primaryScreens.test.tsx --testTimeout=60000
+
+PASS __tests__/primaryScreens.test.tsx (11.933 s)
+  √ History filters preserve entry order, totals, monthly headings, and detail navigation (2851 ms)
+  √ History responds to route-supplied goal changes and clearing the goal (298 ms)
+  √ History keeps large histories virtualized and cards opt in without changing secondary rows (156 ms)
+  √ History validates dates, includes both boundaries, and handles empty results (1458 ms)
+  √ Statistics retains all metrics, archived totals, chart buckets, and habits (66 ms)
+  √ empty Statistics keeps its heading, zero summary, and navigation (39 ms)
+  √ [Function HistoryScreen] exposes the profile shortcut (64 ms)
+  √ [Function StatisticsScreen] exposes the profile shortcut (102 ms)
+  √ all primary screens share safe spacing and readable long content at 320 / 1 (323 ms)
+  √ all primary screens share safe spacing and readable long content at 390 / 1 (484 ms)
+  √ all primary screens share safe spacing and readable long content at 412 / 1 (409 ms)
+  √ all primary screens share safe spacing and readable long content at 320 / 1.8 (327 ms)
+  √ all primary screens share safe spacing and readable long content at 390 / 1.8 (277 ms)
+  √ all primary screens share safe spacing and readable long content at 412 / 1.8 (354 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        12.472 s
+Ran all test suites matching /__tests__\\primaryScreens.test.tsx/i.

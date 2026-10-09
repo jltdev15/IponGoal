@@ -4,84 +4,105 @@ import { ScreenContainer } from '../../components/ScreenContainer';
 import { AppButton } from '../../components/AppButton';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../utils/currency';
+import { GameReview } from '../GameReview';
 import { FlightResult } from './SavingsFlightEngine';
+import { FlightHero, MotionEntrance } from './components/FlightPresentation';
+
 export function SavingsFlightResult({
   result,
   onAgain,
   onExit,
+  motion = false,
 }: {
   result: FlightResult;
   onAgain: () => void;
   onExit: () => void;
+  motion?: boolean;
 }) {
   const complete = result.gameStatus === 'completed';
   return (
-    <ScreenContainer>
-      <Text style={theme.title}>
-        {complete ? 'Savings Flight Complete' : 'Try Another Flight'}
-      </Text>
-      {!complete && (
-        <Text style={theme.body}>
-          You reached {result.decisionCount} of 5 financial decisions. Each
-          flight is another chance to practice.
+    <ScreenContainer responsive>
+      <MotionEntrance
+        enabled={motion}
+        duration={250}
+        rise={0}
+        style={{ gap: 20 }}
+      >
+        <FlightHero enabled={motion} celebration={complete} />
+        <Text
+          accessibilityRole="header"
+          style={[theme.title, { fontSize: 24, textAlign: 'center' }]}
+        >
+          {complete ? 'Savings Flight Complete' : 'Try Another Flight'}
         </Text>
-      )}
-      <View style={theme.card}>
-        <Text style={theme.heading}>
-          Arcade Score:{' '}
-          {result.mode === 'assisted' ? 'Not applicable' : result.score}
-        </Text>
-        <Text style={theme.body}>
-          Thoughtful Financial Decisions: {result.correctDecisionCount} / 5
-        </Text>
-        <Text style={theme.body}>
-          Practice Savings: {formatCurrency(result.level.startingSavings, true)}{' '}
-          → {formatCurrency(result.practiceSavings, true)}
-        </Text>
-        <Text style={theme.body}>
-          Goal Progress:{' '}
-          {((result.level.startingSavings / result.level.target) * 100).toFixed(
-            1,
+        <View style={[theme.card, { padding: 16, gap: 10 }]}>
+          <Text style={theme.heading}>
+            {complete
+              ? '5 questions completed'
+              : result.decisionCount + ' of 5 questions completed'}
+          </Text>
+          {result.decisionCount > 0 && (
+            <Text style={theme.body}>
+              Thoughtful choices: {result.correctDecisionCount} /{' '}
+              {result.decisionCount}
+            </Text>
           )}
-          % →{' '}
-          {((result.practiceSavings / result.level.target) * 100).toFixed(1)}%
-        </Text>
-        <Text style={theme.muted}>
-          Practice Spending: {formatCurrency(result.practiceSpent, true)} ·
-          Coins collected: {result.coinsCollected}
-        </Text>
-        {result.practiceReserved > 0 && (
           <Text style={theme.body}>
-            Practice emergency reserve:{' '}
-            {formatCurrency(result.practiceReserved, true)} (separate from your
-            goal)
+            Practice savings:{' '}
+            {formatCurrency(result.level.startingSavings, true)} →{' '}
+            {formatCurrency(result.practiceSavings, true)}
           </Text>
-        )}
-        {result.budgetRemaining !== null && (
-          <Text style={theme.body}>
-            Daily Practice Budget remaining:{' '}
-            {formatCurrency(result.budgetRemaining, true)}
-          </Text>
-        )}
-      </View>
-      <Text style={theme.heading}>What You Practiced</Text>
-      <Text style={theme.body}>
-        {[...new Set(result.decisions.map(d => d.concept))].join(' · ') ||
-          'Navigating toward a practice goal'}
-      </Text>
-      <Text style={theme.body}>{result.level.takeaway}</Text>
-      {result.decisions.map(decision => (
-        <View key={decision.scenarioId} style={theme.card}>
-          <Text style={theme.body}>{decision.prompt}</Text>
-          <Text style={theme.heading}>{decision.answer}</Text>
-          <Text style={theme.body}>{decision.explanation}</Text>
+          {result.mode === 'manual' && (
+            <Text style={theme.muted}>Arcade score: {result.score}</Text>
+          )}
         </View>
-      ))}
-      <Text style={theme.muted}>
-        Simulation only. Your real savings records have not changed.
-      </Text>
-      <AppButton title="Play Again" onPress={onAgain} />
-      <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
+        <Text style={theme.body}>{result.level.takeaway}</Text>
+        <AppButton title="Play Again" onPress={onAgain} />
+        <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
+        <GameReview>
+          <View style={theme.card}>
+            <Text style={theme.heading}>Your practice money</Text>
+            <Text style={theme.body}>
+              Goal: {result.level.goalName} ·{' '}
+              {formatCurrency(result.level.target, true)}
+            </Text>
+            <Text style={theme.body}>
+              Practice spending: {formatCurrency(result.practiceSpent, true)}
+            </Text>
+            <Text style={theme.body}>
+              Coins collected: {result.coinsCollected}
+            </Text>
+            {result.practiceReserved > 0 && (
+              <Text style={theme.body}>
+                Separate emergency reserve:{' '}
+                {formatCurrency(result.practiceReserved, true)}
+              </Text>
+            )}
+            {result.budgetRemaining !== null && (
+              <Text style={theme.body}>
+                Daily budget remaining:{' '}
+                {formatCurrency(result.budgetRemaining, true)}
+              </Text>
+            )}
+          </View>
+          {result.decisions.length === 0 && (
+            <Text style={theme.body}>
+              No questions answered yet. Try another flight to reach your first
+              question.
+            </Text>
+          )}
+          {result.decisions.map(decision => (
+            <View key={decision.scenarioId} style={theme.card}>
+              <Text style={theme.body}>{decision.prompt}</Text>
+              <Text style={theme.heading}>You chose: {decision.answer}</Text>
+              <Text style={theme.body}>{decision.explanation}</Text>
+            </View>
+          ))}
+        </GameReview>
+        <Text style={theme.muted}>
+          Practice only. Your real savings stay unchanged.
+        </Text>
+      </MotionEntrance>
     </ScreenContainer>
   );
 }

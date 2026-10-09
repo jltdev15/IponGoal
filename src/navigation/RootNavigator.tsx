@@ -4,11 +4,13 @@ import { BudgetChallengeScreen } from '../games/budgetChallenge/BudgetChallengeS
 import { NeedsOrWantsScreen } from '../games/needsOrWants/NeedsOrWantsScreen';
 import { GamesScreen } from '../screens/GamesScreen';
 import { SavingsFlightScreen } from '../games/savingsFlight/SavingsFlightScreen';
+import { SavingsFlightSetupScreen } from '../games/savingsFlight/SavingsFlightSetupScreen';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { PiggyTabBar } from './PiggyTabBar';
 import { AuthStackParams, MainStackParams, TabParams } from './types';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
@@ -18,7 +20,6 @@ import { useAuthStore } from '../stores/authStore';
 import { refreshData } from '../services/refresh';
 import { colors } from '../theme/colors';
 import { theme } from '../theme/theme';
-import { Icon } from '../components/Icon';
 import { AppButton } from '../components/AppButton';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { StatisticsScreen } from '../screens/StatisticsScreen';
@@ -36,19 +37,27 @@ const Tab = createBottomTabNavigator<TabParams>();
 function BottomTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      tabBar={props => <PiggyTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTitleAlign: 'center',
         headerShadowVisible: false,
         headerStyle: { backgroundColor: colors.background },
         headerTitleStyle: { fontWeight: '700' },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { backgroundColor: colors.surface },
-        tabBarIcon: ({ color, size }) => (
-          <Icon name={route.name.toLowerCase()} color={color} size={size} />
-        ),
-      })}
+      }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
       <Tab.Screen
         name="History"
         component={HistoryScreen}
@@ -106,6 +115,7 @@ export function RootNavigator() {
         <Main.Navigator
           key="main"
           screenOptions={{
+            headerTitleAlign: 'center',
             headerShadowVisible: false,
             headerStyle: { backgroundColor: colors.background },
             headerTintColor: colors.text,
@@ -145,6 +155,11 @@ export function RootNavigator() {
             name="SavingsDetails"
             component={SavingsDetailsScreen}
             options={{ title: 'Savings Entry' }}
+          />
+          <Main.Screen
+            name="AllGoals"
+            component={GoalCollectionScreen}
+            options={{ title: 'All Goals' }}
           />
           <Main.Screen
             name="CompletedGoals"
@@ -192,6 +207,11 @@ export function RootNavigator() {
             options={{ title: 'Savings Flight' }}
           />
           <Main.Screen
+            name="SavingsFlightSetup"
+            component={SavingsFlightSetupScreen}
+            options={{ title: 'Choose your flight' }}
+          />
+          <Main.Screen
             name="About"
             component={AboutScreen}
             options={{ title: 'About the App' }}
@@ -202,6 +222,7 @@ export function RootNavigator() {
           key={hasAccounts ? 'accounts' : 'welcome'}
           initialRouteName={hasAccounts ? 'Login' : 'Welcome'}
           screenOptions={{
+            headerTitleAlign: 'center',
             headerShadowVisible: false,
             headerStyle: { backgroundColor: colors.background },
             headerTintColor: colors.text,
@@ -224,7 +245,11 @@ export function RootNavigator() {
           <Auth.Screen
             name="Login"
             component={LoginScreen}
-            options={{ title: 'Login' }}
+            options={{
+              title: '',
+              headerTransparent: true,
+              headerStyle: { backgroundColor: 'transparent' },
+            }}
           />
         </Auth.Navigator>
       )}

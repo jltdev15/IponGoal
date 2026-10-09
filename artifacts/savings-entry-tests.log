@@ -1,0 +1,476 @@
+FAIL __tests__/domain.test.ts (36.848 s)
+  ● registration hashes passwords and strips them from public profiles
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● duplicate usernames are rejected case-insensitively
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● registration validates mismatched and short passwords and usernames
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● offline login works and rejects wrong credentials
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● remembered sessions persist, logout clears only session, and login still works
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● malformed session preferences do not crash
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● goal creation stores starting savings as a transaction
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● starting savings reaching the target complete the goal
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● goal edits and deletion of empty goals
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● goal deletion cascades savings
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● archive retains history, excludes active/completed counts, and restores
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● add, edit, and delete savings recalculate totals exactly
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● exceeding target caps progress but retains real savings
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● editing savings below target reopens a completed goal
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● deleting savings below target reopens a completed goal
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● increasing target above balance reopens completed goals
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● a goal cannot be completed below target
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● multiple goals and users are isolated including mutations
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● history filters combine goals with inclusive date bounds
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● deterministic statistics use saving dates and include archived balances
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● profile updates preserve username
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● amount input rejects negatives, zero targets, extra decimals, nonnumeric and huge values
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● large balances enforce aggregate limit and rollback failed starting savings
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● date helpers handle leap years, local calendar dates, and Monday weeks
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● SQLite foreign keys reject cross-user goal references
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● missing records fail safely
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● migration is transactional and constraints reject bad status and zero savings
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● profile photos persist per account, survive text edits, and can be removed
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● goal cover photos persist, remain account-isolated, survive legacy edits, and clear explicitly
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● completed, repeated, and interrupted learning games never change real savings data
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+  ● empty database has sensible statistics and reset removes all device accounts
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+      91 | };
+      92 | let userId: string, otherId: string;
+    > 93 | beforeAll(async () => {
+         | ^
+      94 |   initializeDatabase();
+      95 |   userId = (
+      96 |     await createUser('John Student', 'john', 'test123', 'test123', 'Grade 10')
+
+      at Object.beforeAll (__tests__/domain.test.ts:93:1)
+
+PASS __tests__/savingsDetailsScreen.test.tsx (7.539 s)
+PASS __tests__/savingsFormScreen.test.tsx
+
+Test Suites: 1 failed, 2 passed, 3 total
+Tests:       31 failed, 11 passed, 42 total
+Snapshots:   0 total
+Time:        48.041 s
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

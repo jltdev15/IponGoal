@@ -1,0 +1,19 @@
+// Isolated preview using the existing synthetic fixtures. Never distribute.
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.layout.buildDirectory.set(new File(p.rootDir, 'app/build-primary-screens-qa'))
+        p.pluginManager.withPlugin('com.android.application') {
+            p.extensions.getByName('androidComponents').finalizeDsl { android ->
+                android.defaultConfig.applicationId = 'com.ipongoal.primaryqa'
+                android.buildTypes.debug.debuggable = false
+                android.externalNativeBuild.cmake.buildStagingDirectory = new File(p.rootDir, 'app/.cxx-primary-screens-qa')
+                android.sourceSets.main.java.srcDir(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native'))
+                android.sourceSets.debug.manifest.srcFile(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native/AndroidManifest.xml'))
+            }
+        }
+        p.pluginManager.withPlugin('com.facebook.react') {
+            p.extensions.getByName('react').entryFile.set(new File(p.rootDir.parentFile, 'scripts/home-refresh-qa-entry.js'))
+            p.extensions.getByName('react').extraPackagerArgs.addAll(['--max-workers', '2'])
+        }
+    }
+}

@@ -24,5 +24,5 @@ export function useFormAction() {
       setBusy(false);
     }
   }
-  return { busy, error, run };
+  return { busy, error, run, clearError: () => setError('') };
 }

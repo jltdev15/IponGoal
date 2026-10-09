@@ -1,6 +1,7 @@
 import { GoalInput, SavingInput } from '../types/models';
 import { validAmount } from './currency';
 import { validateDate } from './dates';
+import { validateProfilePhoto as validateGoalPhoto } from './profilePhoto';
 export function validateRegistration(
   fullName: string,
   username: string,
@@ -20,11 +21,17 @@ export function validateRegistration(
     throw new Error('Your passwords do not match.');
   }
 }
-export function validateGoal(input: GoalInput) {
-  if (!input.name.trim() || input.name.trim().length > 80) {
+export function validateGoalName(name: string) {
+  if (!name.trim() || name.trim().length > 80) {
     throw new Error('Enter a goal name with 1–80 characters.');
   }
+}
+export function validateGoal(input: GoalInput) {
+  validateGoalName(input.name);
   validAmount(input.targetAmount);
+  if (input.coverPhoto !== undefined) {
+    validateGoalPhoto(input.coverPhoto);
+  }
   if (input.targetDate) {
     validateDate(input.targetDate);
   }

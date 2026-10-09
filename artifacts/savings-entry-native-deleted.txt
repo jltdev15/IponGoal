@@ -1,0 +1,58 @@
+[
+  {
+    label: 'Savings preview',
+    bounds: '[348,101][732,172]',
+    clickable: 'false'
+  },
+  {
+    label: 'Savings Entry · synthetic data',
+    bounds: '[63,273][1017,344]',
+    clickable: 'false'
+  },
+  {
+    label: 'Populated',
+    bounds: '[63,407][1017,544]',
+    clickable: 'true'
+  },
+  {
+    label: 'Populated',
+    bounds: '[443,446][636,503]',
+    clickable: 'false'
+  },
+  { label: 'No note', bounds: '[63,607][1017,743]', clickable: 'true' },
+  {
+    label: 'No note',
+    bounds: '[466,646][614,703]',
+    clickable: 'false'
+  },
+  {
+    label: 'Long content',
+    bounds: '[63,806][1017,943]',
+    clickable: 'true'
+  },
+  {
+    label: 'Long content',
+    bounds: '[416,845][663,902]',
+    clickable: 'false'
+  },
+  {
+    label: 'Completed goal',
+    bounds: '[63,1006][1017,1142]',
+    clickable: 'true'
+  },
+  {
+    label: 'Completed goal',
+    bounds: '[391,1045][689,1102]',
+    clickable: 'false'
+  },
+  {
+    label: 'Missing entry',
+    bounds: '[63,1205][1017,1342]',
+    clickable: 'true'
+  },
+  {
+    label: 'Missing entry',
+    bounds: '[411,1244][668,1301]',
+    clickable: 'false'
+  }
+]

@@ -87,16 +87,23 @@ if (!javaHome) {
   console.log(`Using JDK 17: ${javaHome}`);
   const flags = process.argv.slice(2);
   const buildRelease = flags.includes('--build-release');
+  const windowsRelease = buildRelease && process.platform === 'win32';
   if (!flags.includes('--jdk-check')) {
+    // Windows batch files must be launched through cmd.exe.
     const child = spawn(
-      buildRelease
-        ? path.join(
-            root,
-            'android',
-            process.platform === 'win32' ? 'gradlew.bat' : 'gradlew',
-          )
+      windowsRelease
+        ? process.env.ComSpec || 'cmd.exe'
+        : buildRelease
+        ? path.join(root, 'android', 'gradlew')
         : process.execPath,
-      buildRelease
+      windowsRelease
+        ? [
+            '/d',
+            '/s',
+            '/c',
+            'gradlew.bat assembleRelease -PreactNativeArchitectures=armeabi-v7a,arm64-v8a',
+          ]
+        : buildRelease
         ? [
             'assembleRelease',
             '-PreactNativeArchitectures=armeabi-v7a,arm64-v8a',

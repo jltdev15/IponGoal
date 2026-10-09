@@ -1,0 +1,18 @@
+// Isolated visual QA app with explicit launcher branding; no real account data.
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.layout.buildDirectory.set(new File(p.rootDir, 'build/learning-games-app'))
+        p.pluginManager.withPlugin('com.android.application') {
+            p.extensions.getByName('androidComponents').finalizeDsl { android ->
+                android.defaultConfig.applicationId = 'com.ipongoal.flightpolishqa'
+                android.buildTypes.debug.debuggable = false
+                android.sourceSets.main.java.srcDir(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native'))
+                android.sourceSets.debug.manifest.srcFile(new File(p.rootDir.parentFile, 'scripts/flight-polish-qa-native/AndroidManifest.xml'))
+            }
+        }
+        p.pluginManager.withPlugin('com.facebook.react') {
+            p.extensions.getByName('react').debuggableVariants.set([])
+            p.extensions.getByName('react').entryFile.set(new File(p.rootDir.parentFile, 'scripts/flight-polish-qa-entry.js'))
+        }
+    }
+}

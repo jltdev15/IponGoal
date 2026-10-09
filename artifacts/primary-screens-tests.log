@@ -1,0 +1,15 @@
+
+> PiggyPath@1.0.0 test
+> jest --runInBand __tests__/primaryScreens.test.tsx __tests__/homeScreen.test.tsx __tests__/profileScreens.test.tsx __tests__/piggyTabBar.test.tsx __tests__/domain.test.ts --testTimeout=60000
+
+PASS __tests__/domain.test.ts (62.133 s)
+PASS __tests__/primaryScreens.test.tsx (32.931 s)
+PASS __tests__/profileScreens.test.tsx
+PASS __tests__/homeScreen.test.tsx (5.122 s)
+PASS __tests__/piggyTabBar.test.tsx
+
+Test Suites: 5 passed, 5 total
+Tests:       79 passed, 79 total
+Snapshots:   0 total
+Time:        108.669 s
+Ran all test suites matching /__tests__\\primaryScreens.test.tsx|__tests__\\homeScreen.test.tsx|__tests__\\profileScreens.test.tsx|__tests__\\piggyTabBar.test.tsx|__tests__\\domain.test.ts/i.

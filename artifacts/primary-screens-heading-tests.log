@@ -1,0 +1,12 @@
+
+> PiggyPath@1.0.0 test
+> jest --runInBand __tests__/primaryScreens.test.tsx __tests__/homeScreen.test.tsx --testTimeout=60000
+
+PASS __tests__/primaryScreens.test.tsx
+PASS __tests__/homeScreen.test.tsx
+
+Test Suites: 2 passed, 2 total
+Tests:       34 passed, 34 total
+Snapshots:   0 total
+Time:        4.641 s, estimated 14 s
+Ran all test suites matching /__tests__\\primaryScreens.test.tsx|__tests__\\homeScreen.test.tsx/i.

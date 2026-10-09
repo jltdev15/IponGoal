@@ -12,11 +12,9 @@ import {
 export function GoalBuilderResult({
   session,
   onAgain,
-  onExit,
 }: {
   session: GoalBuilderSession;
   onAgain: () => void;
-  onExit: () => void;
 }) {
   const goal = PRACTICE_GOALS.find(g => g.id === session.goalId)!;
   const initialWeeks = weeksToGoal(
@@ -91,7 +89,6 @@ export function GoalBuilderResult({
         weeks. Unallocated money and reserves are not counted toward the goal.
       </Text>
       <AppButton title="Build Another Goal" onPress={onAgain} />
-      <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
       <Text accessibilityRole="header" style={theme.heading}>
         Review the three practice weeks
       </Text>

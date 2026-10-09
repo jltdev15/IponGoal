@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { colors } from '../../../theme/colors';
 import { theme } from '../../../theme/theme';
 import { formatCurrency } from '../../../utils/currency';
 import { EngineSnapshot } from '../SavingsFlightEngine';
@@ -15,28 +16,51 @@ export function HUD({
   mode: FlightMode;
 }) {
   return (
-    <View style={{ gap: 6 }}>
-      <Text style={theme.heading}>Goal: {level.goalName}</Text>
+    <View style={styles.panel}>
+      <Text style={styles.title}>Goal: {level.goalName}</Text>
       <GoalProgress savings={state.practiceSavings} target={level.target} />
-      <Text style={theme.muted}>
-        Arcade Score: {mode === 'assisted' ? 'Not applicable' : state.score} ·
-        Decisions: {state.decisionCount}/5
-      </Text>
-      {mode === 'manual' && (
+      <View style={styles.stats}>
         <Text
-          style={theme.muted}
-          accessibilityLabel={`${state.lives} of 3 hearts remaining`}
+          style={styles.stat}
+          accessibilityLabel={`Questions completed: ${state.decisionCount} of 5`}
         >
-          Hearts: {'♥'.repeat(state.lives)}
-          {'♡'.repeat(3 - state.lives)}
+          Questions {state.decisionCount}/5
         </Text>
-      )}
+        {mode === 'manual' && (
+          <Text
+            style={styles.hearts}
+            accessibilityLabel={`${state.lives} of 3 hearts remaining`}
+          >
+            {'♥'.repeat(state.lives)}
+            {'♡'.repeat(3 - state.lives)}
+          </Text>
+        )}
+      </View>
       {state.budgetRemaining !== null && (
-        <Text style={theme.body}>
-          Daily Practice Budget: {formatCurrency(state.budgetRemaining, true)}{' '}
-          remaining / ₱300
+        <Text style={styles.stat}>
+          Budget left: {formatCurrency(state.budgetRemaining, true)}
         </Text>
       )}
     </View>
   );
 }
+const styles = StyleSheet.create({
+  stats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 20,
+    rowGap: 4,
+    justifyContent: 'space-between',
+  },
+  stat: { ...theme.muted, fontSize: 14 },
+  hearts: { color: colors.primary, fontSize: 16 },
+  panel: {
+    gap: 6,
+    padding: 12,
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  title: { color: colors.text, fontSize: 17, fontWeight: '700' },
+});

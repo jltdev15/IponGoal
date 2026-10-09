@@ -1,0 +1,64 @@
+[
+  {
+    label: 'Navigate up',
+    bounds: '[0,63][147,210]',
+    clickable: 'true'
+  },
+  {
+    label: 'Edit Savings',
+    bounds: '[394,101][687,172]',
+    clickable: 'false'
+  },
+  {
+    label: 'School supplies',
+    bounds: '[63,273][1017,373]',
+    clickable: 'false'
+  },
+  {
+    label: 'Current: ₱1,250.50 · 25% complete',
+    bounds: '[63,436][1017,494]',
+    clickable: 'false'
+  },
+  {
+    label: 'Update your record so your progress stays accurate.',
+    bounds: '[63,557][1017,683]',
+    clickable: 'false'
+  },
+  {
+    label: 'Amount (₱)',
+    bounds: '[63,746][1017,800]',
+    clickable: 'false'
+  },
+  {
+    label: 'Amount (₱)',
+    bounds: '[63,821][1017,963]',
+    clickable: 'true'
+  },
+  { label: 'Date', bounds: '[63,1026][1017,1080]', clickable: 'false' },
+  { label: 'Date', bounds: '[63,1101][1017,1244]', clickable: 'true' },
+  {
+    label: 'The day you saved this amount.',
+    bounds: '[63,1263][1017,1321]',
+    clickable: 'false'
+  },
+  {
+    label: 'Note (optional)',
+    bounds: '[63,1385][1017,1439]',
+    clickable: 'false'
+  },
+  {
+    label: 'Note (optional)',
+    bounds: '[63,1460][1017,1723]',
+    clickable: 'true'
+  },
+  {
+    label: 'Save Changes',
+    bounds: '[63,1785][1017,1794]',
+    clickable: 'true'
+  },
+  {
+    label: 'Save Changes',
+    bounds: '[406,1824][674,1794]',
+    clickable: 'false'
+  }
+]

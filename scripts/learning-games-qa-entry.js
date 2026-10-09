@@ -12,6 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GamesScreen } from '../src/screens/GamesScreen';
+import { SavingsFlightSetupScreen } from '../src/games/savingsFlight/SavingsFlightSetupScreen';
 import { SavingsFlightScreen } from '../src/games/savingsFlight/SavingsFlightScreen';
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +51,11 @@ function LearningGamesQA() {
             name="NeedsOrWants"
             component={NeedsOrWantsScreen}
             options={{ title: 'Needs or Wants · QA only' }}
+          />
+          <Stack.Screen
+            name="SavingsFlightSetup"
+            component={SavingsFlightSetupScreen}
+            options={{ title: 'Choose your flight' }}
           />
           <Stack.Screen
             name="SavingsFlight"

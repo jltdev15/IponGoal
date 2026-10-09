@@ -12,8 +12,8 @@ export function Obstacle({
   return (
     <View accessible={false} importantForAccessibility="no-hide-descendants">
       <View style={[styles.card, { height: gapTop }]}>
-        <Text accessible={false} style={styles.symbol}>
-          ₱
+        <Text accessible={false} allowFontScaling={false} style={styles.symbol}>
+          ×
         </Text>
       </View>
       <View
@@ -22,8 +22,8 @@ export function Obstacle({
           { top: gapBottom, height: FLIGHT.height - gapBottom },
         ]}
       >
-        <Text accessible={false} style={styles.symbol}>
-          ₱
+        <Text accessible={false} allowFontScaling={false} style={styles.symbol}>
+          ×
         </Text>
       </View>
     </View>
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   card: {
     position: 'absolute',
     width: FLIGHT.obstacleWidth,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: '#F7ACC5',
     borderWidth: 2,
     borderColor: colors.primary,
     borderRadius: 12,

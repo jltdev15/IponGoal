@@ -5,11 +5,13 @@ export function AmountInput({
   value,
   onChangeText,
   helper,
+  editable = true,
 }: {
   label: string;
   value: string;
   onChangeText: (s: string) => void;
   helper?: string;
+  editable?: boolean;
 }) {
   return (
     <AppInput
@@ -20,6 +22,7 @@ export function AmountInput({
       placeholder="0.00"
       helper={helper}
       maxLength={16}
+      editable={editable}
     />
   );
 }

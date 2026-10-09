@@ -135,7 +135,7 @@ export const BUDGET_CATEGORIES: readonly BudgetCategory[] = [
           'Setting aside ₱60 meets today’s practice target if the full plan fits the allowance and covers essentials.',
       },
       {
-        label: 'Save all unallocated money',
+        label: 'Save all money left to plan',
         amount: 'remaining',
         explanation:
           'This allocates what is left after your planned spending. Check any unfunded essentials before treating it as available savings.',
@@ -239,7 +239,7 @@ export function budgetFeedback(state: BudgetSession): string {
   if (summary.shortfall > 0) {
     return `Your plan exceeds the allowance by ${formatCurrency(
       summary.shortfall,
-    )}. This is a planning shortfall, not money you can spend. Try less costly choices when you replay.`;
+    )}. This planning shortfall means the money is not available. Try a lower-cost choice next time.`;
   }
   if (unmetAnswered.length) {
     return `Still unfunded: ${unmetAnswered
@@ -252,7 +252,7 @@ export function budgetFeedback(state: BudgetSession): string {
   if (summary.remaining < priorities) {
     return `You have ${formatCurrency(
       summary.remaining,
-    )} unallocated, but still need ${formatCurrency(
+    )} not assigned yet, but still need ${formatCurrency(
       priorities,
     )} for remaining essentials and the savings target. Review an earlier upgrade or optional expense.`;
   }

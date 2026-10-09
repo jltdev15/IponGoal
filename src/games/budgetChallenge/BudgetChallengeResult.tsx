@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { AppButton } from '../../components/AppButton';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../utils/currency';
+import { GameReview } from '../GameReview';
 import {
   BUDGET_CATEGORIES,
   BudgetAnswer,
@@ -10,6 +11,7 @@ import {
   SAVINGS_TARGET,
   budgetSummary,
 } from './BudgetChallengeSession';
+
 export function BudgetChallengeResult({
   answers,
   onAgain,
@@ -26,82 +28,86 @@ export function BudgetChallengeResult({
       <Text accessibilityRole="header" style={theme.title}>
         Budget Challenge Complete
       </Text>
-      <Text style={theme.body}>
-        {complete
-          ? 'Your plan covers essential needs within the allowance.'
-          : 'Every plan is a chance to learn. Review the gaps, then try another combination.'}
-      </Text>
       <View style={theme.card}>
         <Text style={theme.heading}>
-          Fictional daily allowance: {formatCurrency(DAILY_BUDGET)}
+          {complete
+            ? 'Your plan fits your allowance'
+            : 'Your plan needs an adjustment'}
         </Text>
         <Text style={theme.body}>
-          Planned spending: {formatCurrency(summary.spending)}
+          {complete
+            ? 'All three essential needs are covered.'
+            : summary.shortfall
+            ? 'Over budget by ' + formatCurrency(summary.shortfall, true) + '.'
+            : 'Unfunded needs: ' +
+              summary.unmetNeeds.map(c => c.title).join(', ') +
+              '.'}
         </Text>
         <Text style={theme.body}>
-          Planned savings: {formatCurrency(summary.plannedSavings)}
+          Planned savings: {formatCurrency(summary.plannedSavings, true)}
         </Text>
         <Text style={theme.body}>
           Savings affordable after spending:{' '}
-          {formatCurrency(summary.affordableSavings)}
+          {formatCurrency(summary.affordableSavings, true)}
         </Text>
-        <Text style={theme.body}>
-          {summary.shortfall
-            ? `Plan shortfall: ${formatCurrency(summary.shortfall)}`
-            : `Unallocated: ${formatCurrency(summary.remaining)}`}
-        </Text>
-        <Text style={theme.body}>
-          Essential needs covered: {3 - summary.unmetNeeds.length} / 3
-        </Text>
-        <Text style={theme.body}>
-          {summary.unmetNeeds.length
-            ? `Unfunded needs: ${summary.unmetNeeds
-                .map(c => c.title)
-                .join(', ')}`
-            : 'Transportation, lunch, and required materials are funded.'}
-        </Text>
-        <Text style={theme.body}>
+        <Text style={theme.muted}>
           {complete && summary.affordableSavings >= SAVINGS_TARGET
-            ? 'The ₱60 savings target fits your complete plan.'
-            : 'The ₱60 savings target needs a plan that also covers essentials and fits the allowance.'}
+            ? 'Your ₱60 savings target fits too.'
+            : 'Cover essentials and stay within ₱300 before setting savings aside.'}
         </Text>
       </View>
-      <Text accessibilityRole="header" style={theme.heading}>
-        Learning takeaways
-      </Text>
       <Text style={theme.body}>
-        Fund essentials first. Check how upgrades affect later priorities. A
-        budgeted want can fit: ₱50 transport + ₱100 lunch + ₱40 materials + ₱50
-        snack + ₱60 savings = ₱300.
-      </Text>
-      <Text style={theme.body}>
-        Skipping the snack could allow ₱110 savings. Savings are not always the
-        first priority: an unfunded essential still needs attention. Unallocated
-        money needs a purpose.
+        Cover needs first, then balance treats and savings. More than one plan
+        can work.
       </Text>
       <AppButton title="Play Again" onPress={onAgain} />
       <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
-      <Text accessibilityRole="header" style={theme.heading}>
-        Review your choices
-      </Text>
-      {answers.map(answer => {
-        const category = BUDGET_CATEGORIES.find(
-          c => c.id === answer.categoryId,
-        )!;
-        const option = category.options[answer.optionIndex];
-        return (
-          <View key={category.id} style={theme.card}>
-            <Text style={theme.heading}>{category.title}</Text>
+      <GameReview>
+        <View style={theme.card}>
+          <Text style={theme.heading}>Your ₱300 plan</Text>
+          <Text style={theme.body}>
+            Allowance: {formatCurrency(DAILY_BUDGET, true)}
+          </Text>
+          <Text style={theme.body}>
+            Spending: {formatCurrency(summary.spending, true)}
+          </Text>
+          <Text style={theme.body}>
+            {summary.shortfall
+              ? 'Over budget by ' + formatCurrency(summary.shortfall, true)
+              : 'Not assigned yet: ' + formatCurrency(summary.remaining, true)}
+          </Text>
+          <Text style={theme.body}>
+            Essential needs covered: {3 - summary.unmetNeeds.length} / 3
+          </Text>
+          {summary.unmetNeeds.length > 0 && (
             <Text style={theme.body}>
-              {option.label}: {formatCurrency(answer.amount)}
+              Unfunded: {summary.unmetNeeds.map(c => c.title).join(', ')}
             </Text>
-            <Text style={theme.body}>{option.explanation}</Text>
-          </View>
-        );
-      })}
-      <Text style={theme.muted}>
-        These are planned practice allocations. No real money was moved.
-      </Text>
+          )}
+        </View>
+        {answers.map(answer => {
+          const category = BUDGET_CATEGORIES.find(
+            c => c.id === answer.categoryId,
+          )!;
+          const option = category.options[answer.optionIndex];
+          return (
+            <View key={category.id} style={theme.card}>
+              <Text style={theme.heading}>{category.title}</Text>
+              <Text style={theme.body}>You chose: {option.label}</Text>
+              <Text style={theme.body}>
+                Set aside: {formatCurrency(answer.amount, true)}
+              </Text>
+              <Text style={theme.body}>{option.explanation}</Text>
+            </View>
+          );
+        })}
+        <Text style={theme.body}>
+          One balanced plan: ₱50 transport + ₱100 lunch + ₱40 materials + ₱50
+          snack + ₱60 savings = ₱300. Skipping the snack could leave ₱110 for
+          savings.
+        </Text>
+      </GameReview>
+      <Text style={theme.muted}>Practice only. No real money was moved.</Text>
     </>
   );
 }

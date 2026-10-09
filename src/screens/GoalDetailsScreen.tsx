@@ -16,6 +16,7 @@ import { EmptyState } from '../components/EmptyState';
 import { AppButton } from '../components/AppButton';
 import { ProgressBar } from '../components/ProgressBar';
 import { Icon } from '../components/Icon';
+import { GoalPhoto } from '../components/GoalPhoto';
 import { SectionHeader } from '../components/SectionHeader';
 import { SavingsListItem } from '../components/SavingsListItem';
 import { confirmAction } from '../components/ConfirmationModal';
@@ -93,7 +94,15 @@ export function GoalDetailsScreen({
   return (
     <ScreenContainer>
       <SectionHeader title={goal.name} action="••• Options" onPress={options} />
-      <Icon name={goal.icon} size={48} />
+      {!!goal.coverPhoto && (
+        <GoalPhoto
+          photo={goal.coverPhoto}
+          icon={goal.icon}
+          name={goal.name}
+          large
+        />
+      )}
+      {!goal.coverPhoto && <Icon name={goal.icon} size={48} />}
       <Text style={theme.muted}>
         {goal.status.toUpperCase()} · {goal.category}
       </Text>

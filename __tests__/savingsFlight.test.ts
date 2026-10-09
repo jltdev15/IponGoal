@@ -35,6 +35,54 @@ function finish(
   }
 }
 
+test('coin and collision events are consumed once and are not restored with checkpoint money', () => {
+  const e = new SavingsFlightEngine('needs', 'manual');
+  e.start();
+  for (let i = 0; i < 900 && e.getSnapshot().coinsCollected === 0; i++) {
+    if (e.getFrame().playerY > 185) e.tap();
+    e.advance(1 / 60);
+  }
+  expect(e.drainEvents()).toEqual([
+    expect.objectContaining({ type: 'coin', amount: 1000 }),
+  ]);
+  expect(e.drainEvents()).toEqual([]);
+  for (let lives = 2; lives >= 0; lives--) {
+    for (let i = 0; i < 300 && e.getSnapshot().gameStatus === 'playing'; i++)
+      e.advance(1 / 60);
+    expect(e.getSnapshot().lives).toBe(lives);
+    expect(e.getSnapshot().coinsCollected).toBe(0);
+    expect(e.drainEvents()).toEqual([{ type: 'collision' }]);
+    e.pause();
+    e.resume();
+    expect(e.drainEvents()).toEqual([]);
+    e.continueFlight();
+  }
+  expect(e.getSnapshot().gameStatus).toBe('gameOver');
+});
+
+test.each(LEVELS)(
+  '$title emits a savings reward only for an applied positive outcome',
+  level => {
+    for (const choice of [0, 1]) {
+      const e = new SavingsFlightEngine(level.id, 'assisted');
+      e.start();
+      for (let i = 0; i < 5; i++) {
+        reachDecision(e);
+        expect(e.drainEvents()).toEqual([]);
+        const before = e.getSnapshot().practiceSavings;
+        e.resolveDecision(choice);
+        const increase = e.getSnapshot().practiceSavings - before;
+        expect(e.drainEvents()).toEqual(
+          increase > 0 ? [{ type: 'savings', amount: increase }] : [],
+        );
+        e.resolveDecision(choice);
+        e.continueFlight();
+        expect(e.drainEvents()).toEqual([]);
+      }
+    }
+  },
+);
+
 test('physics uses forgiving inset rectangles and finite gravity', () => {
   const bounds = playerBounds(100);
   expect(bounds.width).toBeLessThan(FLIGHT.playerSize);

@@ -1,0 +1,8 @@
+--------- beginning of main
+10-09 00:01:51.946  2249  2309 I ReactNativeJS: Running "PiggyPath"
+10-09 00:03:41.357  2249  2249 I FlightSound: Music requested=false enabled=true active=true interrupted=true
+10-09 00:03:41.358  2249  2249 I FlightSound: Music requested=false enabled=true active=true interrupted=true
+10-09 00:04:06.220  2249  2249 I FlightSound: Activated: enabled=true active=true
+10-09 00:04:06.411  2249  2249 I FlightSound: Music requested=true enabled=true active=true interrupted=false
+10-09 00:04:06.481  2249  2249 I FlightSound: Music started: mediaVolume=5
+10-09 00:04:10.299  2249  2249 I FlightSound: Music requested=false enabled=true active=true interrupted=false

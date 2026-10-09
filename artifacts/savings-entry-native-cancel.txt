@@ -1,0 +1,88 @@
+[
+  {
+    label: 'Navigate up',
+    bounds: '[0,63][147,210]',
+    clickable: 'true'
+  },
+  {
+    label: 'Savings Entry',
+    bounds: '[378,101][703,172]',
+    clickable: 'false'
+  },
+  {
+    label: 'Amount saved',
+    bounds: '[86,296][994,354]',
+    clickable: 'false'
+  },
+  {
+    label: '₱1,250.50',
+    bounds: '[86,375][994,496]',
+    clickable: 'false'
+  },
+  {
+    label: 'Savings goal',
+    bounds: '[87,649][995,707]',
+    clickable: 'false'
+  },
+  {
+    label: 'School supplies',
+    bounds: '[87,722][995,793]',
+    clickable: 'false'
+  },
+  {
+    label: 'View Goal',
+    bounds: '[87,810][276,936]',
+    clickable: 'true'
+  },
+  {
+    label: 'View Goal',
+    bounds: '[87,841][276,904]',
+    clickable: 'false'
+  },
+  {
+    label: 'Date saved',
+    bounds: '[87,1043][995,1101]',
+    clickable: 'false'
+  },
+  {
+    label: 'October 1, 2026',
+    bounds: '[87,1116][995,1179]',
+    clickable: 'false'
+  },
+  { label: 'Note', bounds: '[87,1287][995,1345]', clickable: 'false' },
+  {
+    label: 'Saved from my allowance this week.',
+    bounds: '[87,1360][995,1423]',
+    clickable: 'false'
+  },
+  {
+    label: 'Recorded on October 7, 2026 at 4:30 AM',
+    bounds: '[42,1532][1038,1458]',
+    clickable: 'false'
+  },
+  {
+    label: 'When this entry was added to the app.',
+    bounds: '[42,1605][1038,1458]',
+    clickable: 'false'
+  },
+  {
+    label: 'Edit Entry',
+    bounds: '[42,1479][1038,1616]',
+    clickable: 'true'
+  },
+  {
+    label: 'Edit Entry',
+    bounds: '[450,1518][630,1575]',
+    clickable: 'false'
+  },
+  {
+    label: 'Delete Entry',
+    bounds: '[42,1637][1038,1763]',
+    clickable: 'true'
+  },
+  {
+    label: 'Delete Entry',
+    bounds: '[425,1668][654,1731]',
+    clickable: 'false'
+  }
+]

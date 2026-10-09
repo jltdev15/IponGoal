@@ -101,7 +101,7 @@ test('invalid or repeated answers cannot allocate twice; Continue cannot skip an
   expect(budgetReducer(state, { type: 'restart' })).toEqual(newBudgetSession());
 });
 let renderer: ReactTestRenderer;
-const navigation = { navigate: jest.fn() };
+const navigation = { navigate: jest.fn(), popTo: jest.fn() };
 const props = { navigation } as unknown as NativeStackScreenProps<
   MainStackParams,
   'BudgetChallenge'
@@ -109,8 +109,12 @@ const props = { navigation } as unknown as NativeStackScreenProps<
 async function press(title: string) {
   await act(async () =>
     renderer.root
-      .findAllByType(AppButton)
-      .find(b => b.props.title === title)!
+      .findAll(
+        node =>
+          node.props.accessibilityRole === 'button' &&
+          typeof node.props.onPress === 'function',
+      )
+      .find(b => b.props.accessibilityLabel === title)!
       .props.onPress(),
   );
 }
@@ -138,6 +142,15 @@ test('untimed screen completes five choices with feedback, review, replay, resta
     budgetSummary(renderer.root.findByType(BudgetChallengeResult).props.answers)
       .shortfall,
   ).toBe(0);
+  expect(JSON.stringify(renderer.toJSON())).not.toContain(
+    BUDGET_CATEGORIES[0].options[0].explanation,
+  );
+  await press('Review my choices');
+  expect(JSON.stringify(renderer.toJSON())).toContain(
+    BUDGET_CATEGORIES[0].options[0].explanation,
+  );
+  await press('Back to Games');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await press('Play Again');
   await press('Start Budget Challenge');
   await press('Restart Budget');
@@ -146,6 +159,30 @@ test('untimed screen completes five choices with feedback, review, replay, resta
       .findAllByType(AppButton)
       .some(b => b.props.title === 'Start Budget Challenge'),
   ).toBe(true);
-  await press('Back to Games');
-  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
+});
+
+test('budget shows pending essentials before answers and distinguishes covered from unfunded', async () => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  await act(async () => {
+    renderer = create(<BudgetChallengeScreen {...props} />);
+  });
+  const text = () => JSON.stringify(renderer.toJSON());
+  await press('Start Budget Challenge');
+  expect(text()).toContain('Pending');
+  expect(text()).not.toContain('Unfunded');
+  const choices = renderer.root.findAllByType(AppButton);
+  expect(choices.every(button => button.props.variant === 'secondary')).toBe(
+    true,
+  );
+  await press(BUDGET_CATEGORIES[0].options[2].label);
+  expect(text()).toContain('Unfunded');
+  expect(text()).toContain('Pending');
+  await press('Next Choice');
+  await press(BUDGET_CATEGORIES[1].options[0].label);
+  expect(text()).toContain('Covered');
+  expect(text()).toContain('Unfunded');
+  expect(text()).toContain('Pending');
 });

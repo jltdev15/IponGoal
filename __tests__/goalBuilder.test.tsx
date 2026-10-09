@@ -180,6 +180,7 @@ test('screen builds a plan, flags an unaffordable contribution, completes weeks,
       .findAllByType(AppButton)
       .some(b => b.props.title === 'Start Goal Builder'),
   ).toBe(true);
-  await press('Back to Games');
-  expect(navigation.popTo).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
 });

@@ -17,9 +17,9 @@ import {
   weeksToGoal,
 } from './GoalBuilderSession';
 import { GoalBuilderResult } from './GoalBuilderResult';
-export function GoalBuilderScreen({
-  navigation,
-}: NativeStackScreenProps<MainStackParams, 'GoalBuilder'>) {
+export function GoalBuilderScreen(
+  _props: NativeStackScreenProps<MainStackParams, 'GoalBuilder'>,
+) {
   const [session, dispatch] = useReducer(
     goalBuilderReducer,
     undefined,
@@ -30,7 +30,6 @@ export function GoalBuilderScreen({
   const answer = session.answers[session.index];
   const affordable = session.weekly <= WEEKLY_AVAILABLE;
   const restart = () => dispatch({ type: 'restart' });
-  const exit = () => navigation.popTo('Games');
   useEffect(() => {
     const message =
       session.phase === 'question'
@@ -186,7 +185,7 @@ export function GoalBuilderScreen({
           />
         </>
       ) : session.phase === 'completed' ? (
-        <GoalBuilderResult session={session} onAgain={restart} onExit={exit} />
+        <GoalBuilderResult session={session} onAgain={restart} />
       ) : (
         <>
           <Text style={theme.muted}>
@@ -267,9 +266,6 @@ export function GoalBuilderScreen({
           variant="secondary"
           onPress={restart}
         />
-      )}
-      {session.phase !== 'completed' && (
-        <AppButton title="Back to Games" variant="secondary" onPress={exit} />
       )}
     </ScreenContainer>
   );

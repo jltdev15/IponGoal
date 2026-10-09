@@ -1,0 +1,6 @@
+PASS __tests__/domain.test.ts (25.466 s)
+
+Test Suites: 1 passed, 1 total
+Tests:       31 passed, 31 total
+Snapshots:   0 total
+Time:        25.777 s, estimated 37 s

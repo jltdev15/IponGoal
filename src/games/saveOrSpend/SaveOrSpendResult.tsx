@@ -7,11 +7,9 @@ import { SaveOrSpendAnswer } from './SaveOrSpendSession';
 export function SaveOrSpendResult({
   answers,
   onAgain,
-  onExit,
 }: {
   answers: readonly SaveOrSpendAnswer[];
   onAgain: () => void;
-  onExit: () => void;
 }) {
   return (
     <>
@@ -36,7 +34,6 @@ export function SaveOrSpendResult({
         a wallet, and no real money was moved.
       </Text>
       <AppButton title="Play Again" onPress={onAgain} />
-      <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
       <Text accessibilityRole="header" style={theme.heading}>
         Review your choices
       </Text>

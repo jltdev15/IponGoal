@@ -1,0 +1,2 @@
+--------- beginning of main
+10-07 08:05:00.487 10851 10851 D AndroidRuntime: Shutting down VM

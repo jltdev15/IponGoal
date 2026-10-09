@@ -148,6 +148,7 @@ test('untimed screen supports supportive feedback, five answers, review, replay,
       .findAllByType(AppButton)
       .some(b => b.props.title === 'Start Save or Spend'),
   ).toBe(true);
-  await press('Back to Games');
-  expect(navigation.popTo).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
 });

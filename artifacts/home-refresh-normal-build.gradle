@@ -1,0 +1,8 @@
+// Local build resource limit; no changes to application ID or entry point.
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.pluginManager.withPlugin('com.facebook.react') {
+            p.extensions.getByName('react').extraPackagerArgs.addAll(['--max-workers', '2'])
+        }
+    }
+}

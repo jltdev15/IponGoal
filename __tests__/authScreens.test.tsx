@@ -1,21 +1,46 @@
 import React from 'react';
-import { AccessibilityInfo, Text } from 'react-native';
+import {
+  AccessibilityInfo,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+} from 'react-native';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParams } from '../src/navigation/types';
 import { LoginScreen } from '../src/screens/LoginScreen';
+import { LoginGradient } from '../src/screens/LoginDecor';
+import { Rect } from 'react-native-svg';
 import { RegisterScreen } from '../src/screens/RegisterScreen';
 import { WelcomeScreen } from '../src/screens/WelcomeScreen';
 import { ScreenContainer } from '../src/components/ScreenContainer';
 import { AppInput } from '../src/components/AppInput';
-import { AppButton } from '../src/components/AppButton';
+import { colors } from '../src/theme/colors';
 jest.mock(
   'react-native-safe-area-context',
   () => require('react-native-safe-area-context/jest/mock').default,
 );
 jest.mock('../src/components/BrandLogo', () => ({ BrandLogo: () => null }));
 jest.mock('../src/components/Icon', () => ({ Icon: () => null }));
-jest.mock('lucide-react-native', () => ({ ArrowRight: () => null }));
+jest.mock('lucide-react-native', () => ({
+  ArrowRight: () => null,
+  Check: () => null,
+  ChevronRight: () => null,
+  Eye: () => null,
+  EyeOff: () => null,
+  Heart: () => null,
+  LockKeyhole: () => null,
+  UserRound: () => null,
+}));
+jest.mock('react-native/Libraries/AppState/AppState', () => ({
+  __esModule: true,
+  default: {
+    currentState: 'active',
+    addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+  },
+}));
 let mockGuard: { enabled: boolean; callback: () => void };
 jest.mock('@react-navigation/native', () => ({
   useFocusEffect: (callback: () => (() => void) | undefined) => {
@@ -53,9 +78,17 @@ async function mountRegistration() {
   });
 }
 const input = (label: string) =>
-  renderer.root.findAllByType(AppInput).find(i => i.props.label === label)!;
+  renderer.root
+    .findAllByType(TextInput)
+    .find(i => i.props.accessibilityLabel === label)!;
 const button = (title: string) =>
-  renderer.root.findAllByType(AppButton).find(b => b.props.title === title)!;
+  renderer.root
+    .findAll(
+      node =>
+        node.props.accessibilityRole === 'button' &&
+        typeof node.props.onPress === 'function',
+    )
+    .find(b => b.props.accessibilityLabel === title)!;
 async function fill(label: string, value: string) {
   await act(async () => input(label).props.onChangeText(value));
 }
@@ -281,6 +314,16 @@ test('login locks editing/navigation and repeated actions; failure retains the d
   });
   expect(mockAuth.login).toHaveBeenCalledTimes(1);
   expect(input('Password').props.editable).toBe(false);
+  expect(
+    renderer.root.findAll(
+      node => node.props.accessibilityLabel === 'Create a local account',
+    )[0].props.disabled,
+  ).toBe(true);
+  expect(
+    renderer.root.findAll(
+      node => node.props.accessibilityRole === 'checkbox',
+    )[0].props.disabled,
+  ).toBe(true);
   expect(mockGuard.enabled).toBe(true);
   const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
   mockGuard.callback();
@@ -293,7 +336,223 @@ test('login locks editing/navigation and repeated actions; failure retains the d
   expect(input('Password').props.value).toBe('');
 });
 
+test('login keeps its actions in form order when the keyboard opens and closes', async () => {
+  const listeners = new Map<string, Array<() => void>>();
+  const keyboardListener = jest
+    .spyOn(Keyboard, 'addListener')
+    .mockImplementation((event, listener) => {
+      listeners.set(event, [
+        ...(listeners.get(event) || []),
+        () => listener({} as Parameters<typeof listener>[0]),
+      ]);
+      return { remove: jest.fn() } as unknown as ReturnType<
+        typeof Keyboard.addListener
+      >;
+    });
+  const navigate = jest.fn();
+  await act(async () => {
+    renderer = create(
+      <LoginScreen
+        {...({ navigation: { navigate } } as unknown as NativeStackScreenProps<
+          AuthStackParams,
+          'Login'
+        >)}
+      />,
+    );
+  });
+  const actionLabels = () =>
+    Array.from(
+      new Set(
+        renderer.root
+          .findAll(
+            node =>
+              node.props.accessibilityRole === 'button' &&
+              typeof node.props.onPress === 'function',
+          )
+          .map(node => node.props.accessibilityLabel),
+      ),
+    );
+  for (const event of [null, 'keyboardDidShow', 'keyboardDidHide']) {
+    if (event) {
+      await act(async () =>
+        listeners.get(event)!.forEach(listener => listener()),
+      );
+    }
+    expect(actionLabels()).toEqual([
+      'Show password',
+      'Login',
+      'Create a local account',
+    ]);
+    expect(
+      renderer.root.findAllByProps({ testID: 'login-hero' }, { deep: false }),
+    ).toHaveLength(event === 'keyboardDidShow' ? 0 : 1);
+    expect(
+      renderer.root.findAllByProps({ testID: 'screen-footer' }),
+    ).toHaveLength(0);
+    expect(
+      renderer.root
+        .findByType(ScrollView)
+        .findAllByProps({ testID: 'login-actions' }, { deep: false }),
+    ).toHaveLength(1);
+  }
+  await act(async () =>
+    renderer.root
+      .findAll(
+        node =>
+          node.props.accessibilityLabel === 'Create a local account' &&
+          typeof node.props.onPress === 'function',
+      )[0]
+      .props.onPress(),
+  );
+  expect(navigate).toHaveBeenCalledWith('Register');
+  keyboardListener.mockRestore();
+});
+
+test('login preserves Remember Me, focused input styling, credential limits, and accessible errors', async () => {
+  const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+  mockAuth.login.mockRejectedValue(
+    new Error('Incorrect username or password.'),
+  );
+  await act(async () => {
+    renderer = create(
+      <LoginScreen
+        {...({
+          navigation: { navigate: jest.fn() },
+        } as unknown as NativeStackScreenProps<AuthStackParams, 'Login'>)}
+      />,
+    );
+  });
+  const checkbox = () =>
+    renderer.root.findAll(
+      node => node.props.accessibilityRole === 'checkbox',
+    )[0];
+  expect(checkbox().props.accessibilityState.checked).toBe(false);
+  expect(checkbox().props.accessibilityHint).toContain('device you trust');
+  await act(async () => checkbox().props.onPress());
+  await fill('Username', 'alex');
+  await fill('Password', 'secret123');
+  const fields = renderer.root.findAllByType(TextInput);
+  expect(fields[0].props.maxLength).toBe(32);
+  expect(fields[1].props.maxLength).toBe(128);
+  expect(fields[1].props.secureTextEntry).toBe(true);
+  expect(fields[1].props.autoComplete).toBe('current-password');
+  await act(async () => fields[0].props.onFocus({ nativeEvent: {} }));
+  expect(
+    StyleSheet.flatten(
+      renderer.root.findByProps({ testID: 'login-field-username' }).props.style,
+    ).borderColor,
+  ).toBe(colors.primary);
+  await press('Login');
+  expect(mockAuth.login).toHaveBeenLastCalledWith('alex', 'secret123', true);
+  expect(input('Password').props.value).toBe('secret123');
+  expect(announce).toHaveBeenCalledWith('Incorrect username or password.');
+  const actions = renderer.root.findByProps({ testID: 'login-actions' });
+  expect(actions.findAllByType(Text)[0].props.children).toBe(
+    'Incorrect username or password.',
+  );
+  expect(texts()).not.toContain('Your next goal is one small saving away.');
+  mockAuth.login.mockResolvedValue(undefined);
+  await press('Login');
+  expect(input('Password').props.value).toBe('');
+  announce.mockRestore();
+});
+
+test('password visibility preserves the draft and limit in both states and is locked during login', async () => {
+  let finish!: () => void;
+  mockAuth.login.mockImplementation(
+    () =>
+      new Promise<void>(resolve => {
+        finish = resolve;
+      }),
+  );
+  await act(async () => {
+    renderer = create(
+      <LoginScreen
+        {...({
+          navigation: { navigate: jest.fn() },
+        } as unknown as NativeStackScreenProps<AuthStackParams, 'Login'>)}
+      />,
+    );
+  });
+  await fill('Password', 'a'.repeat(128));
+  expect(input('Password').props.secureTextEntry).toBe(true);
+  await press('Show password');
+  expect(input('Password').props.secureTextEntry).toBe(false);
+  expect(input('Password').props.maxLength).toBe(128);
+  expect(input('Password').props.value).toBe('a'.repeat(128));
+  await press('Hide password');
+  expect(input('Password').props.secureTextEntry).toBe(true);
+  expect(input('Password').props.value).toBe('a'.repeat(128));
+  await press('Show password');
+  await press('Login');
+  expect(button('Hide password').props.disabled).toBe(true);
+  expect(button('Login').props.accessibilityState.busy).toBe(true);
+  await act(async () => finish());
+  expect(input('Password').props.value).toBe('');
+  expect(input('Password').props.secureTextEntry).toBe(true);
+});
+
+test('Login gradient follows actual button size when responsive padding or text height changes', async () => {
+  let finish!: () => void;
+  mockAuth.login.mockImplementation(
+    () =>
+      new Promise<void>(resolve => {
+        finish = resolve;
+      }),
+  );
+  await act(async () => {
+    renderer = create(
+      <LoginScreen
+        {...({
+          navigation: { navigate: jest.fn() },
+        } as unknown as NativeStackScreenProps<AuthStackParams, 'Login'>)}
+      />,
+    );
+  });
+  for (const layout of [
+    { width: 379, height: 56 },
+    { width: 364, height: 56 },
+    { width: 288, height: 68 },
+  ]) {
+    await act(async () =>
+      button('Login').props.onLayout({ nativeEvent: { layout } }),
+    );
+    const gradient = renderer.root.findByType(LoginGradient);
+    expect(gradient.props).toMatchObject(layout);
+    expect(gradient.findByType(Rect).props).toMatchObject({
+      ...layout,
+      rx: 20,
+      ry: 20,
+    });
+  }
+  const buttonStyle = button('Login').props.style;
+  expect(
+    StyleSheet.flatten(
+      typeof buttonStyle === 'function'
+        ? buttonStyle({ pressed: false })
+        : buttonStyle,
+    ),
+  ).toMatchObject({
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: colors.primary,
+  });
+  await press('Login');
+  const loadingStyle = button('Login').props.style;
+  expect(
+    StyleSheet.flatten(
+      typeof loadingStyle === 'function'
+        ? loadingStyle({ pressed: false })
+        : loadingStyle,
+    ).minHeight,
+  ).toBe(68);
+  await act(async () => finish());
+});
+
 test('welcome footer preserves both authentication destinations', async () => {
+  const reducedMotion = jest
+    .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+    .mockResolvedValue(true);
   const navigate = jest.fn();
   await act(async () => {
     renderer = create(
@@ -305,6 +564,17 @@ test('welcome footer preserves both authentication destinations', async () => {
       />,
     );
   });
+  for (let tap = 0; tap < 3; tap++) {
+    await act(async () => {
+      renderer.root
+        .findAll(
+          node =>
+            node.props.accessibilityLabel === 'PiggyPath logo' &&
+            typeof node.props.onPress === 'function',
+        )[0]
+        .props.onPress();
+    });
+  }
   await act(async () => {
     renderer.root
       .findAll(
@@ -318,4 +588,5 @@ test('welcome footer preserves both authentication destinations', async () => {
   expect(navigate).toHaveBeenLastCalledWith('Register');
   await press('Login');
   expect(navigate).toHaveBeenLastCalledWith('Login');
+  reducedMotion.mockRestore();
 });

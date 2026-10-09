@@ -13,8 +13,19 @@ export function DecisionGate({ scenario }: { scenario: FlightScenario }) {
             { top: index === 0 ? FLIGHT.upperGateTop : FLIGHT.lowerGateTop },
           ]}
         >
-          <Text accessible={false} style={styles.label}>
-            {option.label}
+          <Text
+            accessible={false}
+            allowFontScaling={false}
+            style={styles.number}
+          >
+            {index + 1}
+          </Text>
+          <Text
+            accessible={false}
+            allowFontScaling={false}
+            style={styles.label}
+          >
+            {index === 0 ? 'First choice' : 'Second choice'}
           </Text>
         </View>
       ))}
@@ -22,6 +33,7 @@ export function DecisionGate({ scenario }: { scenario: FlightScenario }) {
   );
 }
 const styles = StyleSheet.create({
+  number: { fontSize: 32, color: colors.primary, fontWeight: '700' },
   gate: {
     position: 'absolute',
     width: FLIGHT.gateWidth,

@@ -1,0 +1,107 @@
+[
+  {
+    label: 'Navigate up',
+    bounds: '[0,63][147,210]',
+    clickable: 'true'
+  },
+  {
+    label: 'Your Goal',
+    bounds: '[425,101][656,172]',
+    clickable: 'false'
+  },
+  {
+    label: 'School supplies',
+    bounds: '[63,300][808,371]',
+    clickable: 'false'
+  },
+  {
+    label: '••• Options',
+    bounds: '[839,273][1017,399]',
+    clickable: 'true'
+  },
+  {
+    label: '••• Options',
+    bounds: '[839,310][1017,361]',
+    clickable: 'false'
+  },
+  {
+    label: 'ACTIVE · Education',
+    bounds: '[63,651][1017,709]',
+    clickable: 'false'
+  },
+  {
+    label: '₱1,250.50',
+    bounds: '[63,772][1017,893]',
+    clickable: 'false'
+  },
+  {
+    label: 'of ₱5,000',
+    bounds: '[63,924][1017,987]',
+    clickable: 'false'
+  },
+  {
+    label: 'Savings progress',
+    bounds: '[63,1019][1017,1040]',
+    clickable: 'false'
+  },
+  {
+    label: '25% complete',
+    bounds: '[63,1071][1017,1134]',
+    clickable: 'false'
+  },
+  {
+    label: '₱3,749.50 remaining',
+    bounds: '[63,1166][1017,1224]',
+    clickable: 'false'
+  },
+  {
+    label: '+ Add Savings',
+    bounds: '[63,1287][1017,1424]',
+    clickable: 'true'
+  },
+  {
+    label: '+ Add Savings',
+    bounds: '[405,1326][674,1383]',
+    clickable: 'false'
+  },
+  {
+    label: 'Recent Savings',
+    bounds: '[63,1514][851,1585]',
+    clickable: 'false'
+  },
+  {
+    label: 'View All',
+    bounds: '[882,1487][1017,1613]',
+    clickable: 'true'
+  },
+  {
+    label: 'View All',
+    bounds: '[882,1524][1017,1575]',
+    clickable: 'false'
+  },
+  {
+    label: 'School supplies, ₱1,250.50, October 1, 2026',
+    bounds: '[63,1676][1017,1794]',
+    clickable: 'true'
+  },
+  {
+    label: 'School supplies',
+    bounds: '[63,1724][718,1787]',
+    clickable: 'false'
+  },
+  {
+    label: '+ ₱1,250.50',
+    bounds: '[749,1723][1017,1788]',
+    clickable: 'false'
+  },
+  {
+    label: 'October 1, 2026 · Recorded 4:30 AM',
+    bounds: '[63,1809][1017,1794]',
+    clickable: 'false'
+  },
+  {
+    label: 'Saved from my allowance this week.',
+    bounds: '[63,1888][1017,1794]',
+    clickable: 'false'
+  }
+]

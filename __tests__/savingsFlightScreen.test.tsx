@@ -1,16 +1,30 @@
 import { Obstacle } from '../src/games/savingsFlight/components/Obstacle';
 import React from 'react';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
-import { AppState } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  AppState,
+  DeviceEventEmitter,
+  NativeModules,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainStackParams } from '../src/navigation/types';
 import { appConfig } from '../src/config/appConfig';
 import { SavingsFlightScreen } from '../src/games/savingsFlight/SavingsFlightScreen';
+import { SavingsFlightSetupScreen } from '../src/games/savingsFlight/SavingsFlightSetupScreen';
 import { GamesScreen } from '../src/screens/GamesScreen';
+import { GameGridCard } from '../src/components/GameGridCard';
 import { AppButton } from '../src/components/AppButton';
 import { HUD } from '../src/games/savingsFlight/components/HUD';
 import { SavingsFlightResult } from '../src/games/savingsFlight/SavingsFlightResult';
 import { SavingsFlightEngine } from '../src/games/savingsFlight/SavingsFlightEngine';
+
+jest.mock('lucide-react-native', () => ({
+  Pause: 'PauseIcon',
+  Volume2: 'VolumeIcon',
+  VolumeX: 'MutedIcon',
+}));
 
 jest.mock(
   'react-native-safe-area-context',
@@ -38,8 +52,13 @@ async function mount(component = <SavingsFlightScreen {...props} />) {
 async function press(title: string) {
   await act(async () => {
     renderer!.root
-      .findAllByType(AppButton)
-      .find(button => button.props.title === title)!
+      .findAll(
+        node =>
+          (node.props.accessibilityRole === 'button' ||
+            node.props.accessibilityRole === 'radio') &&
+          typeof node.props.onPress === 'function',
+      )
+      .find(button => button.props.accessibilityLabel === title)!
       .props.onPress();
   });
 }
@@ -88,8 +107,9 @@ test('disabled flag still guards flight routes and hides Games controls', async 
   await mount();
   expect(renderer!.root.findAllByType(HUD)).toHaveLength(0);
   expect(callbacks.size).toBe(0);
-  await press('Back to Games');
-  expect(navigation.popTo).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
   await act(async () => {
     renderer!.update(
       <GamesScreen
@@ -100,15 +120,49 @@ test('disabled flag still guards flight routes and hides Games controls', async 
       />,
     );
   });
-  expect(
-    renderer!.root.findAllByType(AppButton).map(b => b.props.title),
-  ).toEqual([
-    'Play Needs or Wants',
-    'Play Budget Challenge',
-    'Play Save or Spend',
-    'Play Goal Builder',
-    'Back to Home',
-  ]);
+  expect([
+    ...renderer!.root.findAllByType(GameGridCard).map(card => card.props.label),
+    ...renderer!.root
+      .findAllByType(AppButton)
+      .map(button => button.props.title),
+  ]).toEqual(['Play Needs or Wants', 'Play Budget Challenge']);
+});
+
+test('native interruption pauses flight until Resume and restart stops audio', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  const native = {
+    prepare: jest.fn(),
+    activate: jest.fn(),
+    setMusic: jest.fn(),
+    stop: jest.fn(),
+    dispose: jest.fn(),
+  };
+  NativeModules.FlightSound = native;
+  try {
+    await mount();
+    await press('Start Flight');
+    expect(native.activate).toHaveBeenCalledTimes(1);
+    await act(async () => DeviceEventEmitter.emit('FlightSoundInterrupted'));
+    expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe(
+      'paused',
+    );
+    expect(
+      renderer!.root.findByProps({ testID: 'flight-underlay' }).props.style
+        .display,
+    ).toBe('none');
+    await tick(120);
+    expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe(
+      'paused',
+    );
+    await press('Resume');
+    expect(native.activate).toHaveBeenCalledTimes(2);
+    await press('Pause flight');
+    await press('Restart');
+    expect(native.stop).toHaveBeenCalled();
+    expect(native.dispose).toHaveBeenCalled();
+  } finally {
+    delete NativeModules.FlightSound;
+  }
 });
 
 test('backgrounding and navigation blur pause, restart clears state, exit returns to Games, and unmount cancels callbacks', async () => {
@@ -150,8 +204,9 @@ test('backgrounding and navigation blur pause, restart clears state, exit return
   renderer = undefined;
   expect(callbacks.size).toBe(0);
   await mount();
-  await press('Back to Games');
-  expect(navigation.popTo).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
 });
 
 test('viewport changes pause, but resizing the scene for answer buttons does not', async () => {
@@ -187,7 +242,15 @@ test('assisted screen completes with untimed buttons, shows separate result, and
     await tick(1300);
     const state = renderer!.root.findByType(HUD).props.state;
     expect(state.gameStatus).toBe('decision');
-    expect(renderer!.root.findAllByType(Obstacle)).toHaveLength(0);
+    expect(renderer!.root.findAllByType(Obstacle)).toHaveLength(1);
+    expect(
+      renderer!.root.findByProps({ testID: 'flight-stage' }).props
+        .pointerEvents,
+    ).toBe('none');
+    expect(
+      renderer!.root.findByProps({ testID: 'flight-stage' }).props
+        .importantForAccessibility,
+    ).toBe('no-hide-descendants');
     const button = state.currentScenario.options.find(
       (o: { recommended: boolean }) => o.recommended,
     ).label;
@@ -201,6 +264,16 @@ test('assisted screen completes with untimed buttons, shows separate result, and
     score: 0,
     correctDecisionCount: 5,
   });
+  expect(JSON.stringify(renderer!.toJSON())).not.toContain('Arcade score');
+  expect(JSON.stringify(renderer!.toJSON())).not.toContain(
+    result.decisions[0].prompt,
+  );
+  await press('Review my choices');
+  expect(JSON.stringify(renderer!.toJSON())).toContain(
+    result.decisions[0].prompt,
+  );
+  await press('Back to Games');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await press('Play Again');
   expect(renderer!.root.findByType(HUD).props.state).toMatchObject({
     gameStatus: 'idle',
@@ -245,13 +318,13 @@ test('exiting a paused flight removes its route and cannot resume stale progress
   expect(navigation.navigate).not.toHaveBeenCalled();
 });
 
-test('release configuration exposes every level with typed manual and assisted routes', async () => {
+test('flight setup starts every topic with manual controls without a selection', async () => {
   expect(defaultFlightEnabled).toBe(true);
   await mount(
-    <GamesScreen
+    <SavingsFlightSetupScreen
       {...(props as unknown as NativeStackScreenProps<
         MainStackParams,
-        'Games'
+        'SavingsFlightSetup'
       >)}
     />,
   );
@@ -268,16 +341,85 @@ test('release configuration exposes every level with typed manual and assisted r
       mode: 'manual',
     });
   }
-  await press('Assisted flight');
-  for (const [title, levelId] of levels) {
-    await press(`Practice ${title}`);
-    expect(navigation.navigate).toHaveBeenLastCalledWith('SavingsFlight', {
-      levelId,
-      mode: 'assisted',
-    });
-  }
+  expect(
+    renderer!.root.findAllByProps({ accessibilityRole: 'radio' }),
+  ).toHaveLength(0);
   await act(async () => renderer!.update(<SavingsFlightScreen {...props} />));
   expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('idle');
   await press('Start Flight');
   expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('playing');
+});
+
+test('changing decorative motion preferences never restarts the flight clock', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  jest
+    .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+    .mockResolvedValue(false);
+  jest
+    .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
+    .mockResolvedValue(false);
+  const preferences = jest.spyOn(AccessibilityInfo, 'addEventListener');
+  const app = jest.spyOn(AppState, 'addEventListener');
+  const animation = { start: jest.fn(), stop: jest.fn(), reset: jest.fn() };
+  jest.spyOn(Animated, 'timing').mockReturnValue(animation);
+  jest.spyOn(Animated, 'loop').mockReturnValue(animation);
+  const advance = jest.spyOn(SavingsFlightEngine.prototype, 'advance');
+  await mount();
+  await act(async () => app.mock.calls[0][1]('active'));
+  await press('Start Flight');
+  await tick(2);
+  const calls = advance.mock.calls.length;
+  expect(calls).toBeGreaterThan(0);
+  const preferenceCalls = preferences.mock.calls as unknown as [
+    string,
+    (value: boolean) => void,
+  ][];
+  const reduce = preferenceCalls.find(
+    ([event]) => event === 'reduceMotionChanged',
+  )![1];
+  await act(async () => reduce(true));
+  await tick(1);
+  expect(advance).toHaveBeenCalledTimes(calls + 1);
+  expect(advance.mock.calls[calls][0]).toBeCloseTo(1 / 60);
+});
+
+test('manual gates are optional, HUD omits score, and disclosure leaves the question paused', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  const advance = SavingsFlightEngine.prototype.advance;
+  jest
+    .spyOn(SavingsFlightEngine.prototype, 'advance')
+    .mockImplementation(function (this: SavingsFlightEngine, seconds: number) {
+      if (this.getFrame().playerY > 185) this.tap();
+      advance.call(this, seconds);
+    });
+  await mount(
+    <SavingsFlightScreen
+      {...props}
+      route={{ ...props.route, params: { levelId: 'needs', mode: 'manual' } }}
+    />,
+  );
+  await press('Start Flight');
+  await tick(1300);
+  expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe(
+    'decision',
+  );
+  expect(JSON.stringify(renderer!.root.findByType(HUD).props)).not.toContain(
+    'Arcade',
+  );
+  expect(
+    renderer!.root
+      .findAllByType(AppButton)
+      .some(b => b.props.title === 'Fly to choose'),
+  ).toBe(false);
+  await press('More controls');
+  expect(renderer!.root.findByType(HUD).props.state.decisionPhase).toBe(
+    'reading',
+  );
+  await press('Fly to choose');
+  expect(renderer!.root.findByType(HUD).props.state.decisionPhase).toBe(
+    'choosing',
+  );
+  const state = renderer!.root.findByType(HUD).props.state;
+  await press(state.currentScenario.options[0].label);
+  expect(renderer!.root.findByType(HUD).props.state.decisionCount).toBe(1);
 });

@@ -18,6 +18,7 @@ export type Goal = {
   category: string;
   icon: string;
   note: string;
+  coverPhoto: string | null;
   status: GoalStatus;
   createdAt: string;
   updatedAt: string;
@@ -39,6 +40,6 @@ export type Saving = {
 export type GoalInput = Pick<
   Goal,
   'name' | 'targetAmount' | 'targetDate' | 'category' | 'icon' | 'note'
->;
+> & { coverPhoto?: string | null };
 export type SavingInput = Pick<Saving, 'amount' | 'transactionDate' | 'note'>;
 export type HistoryFilter = { goalId?: string; from?: string; to?: string };

@@ -12,9 +12,9 @@ import {
   saveOrSpendReducer,
 } from './SaveOrSpendSession';
 import { SaveOrSpendResult } from './SaveOrSpendResult';
-export function SaveOrSpendScreen({
-  navigation,
-}: NativeStackScreenProps<MainStackParams, 'SaveOrSpend'>) {
+export function SaveOrSpendScreen(
+  _props: NativeStackScreenProps<MainStackParams, 'SaveOrSpend'>,
+) {
   const [session, dispatch] = useReducer(
     saveOrSpendReducer,
     undefined,
@@ -23,7 +23,6 @@ export function SaveOrSpendScreen({
   const scenario = SAVE_OR_SPEND_SCENARIOS[session.index];
   const answer = session.answers[session.index];
   const restart = () => dispatch({ type: 'restart' });
-  const exit = () => navigation.popTo('Games');
   useEffect(() => {
     if (session.phase === 'question') {
       AccessibilityInfo.announceForAccessibility(
@@ -77,14 +76,9 @@ export function SaveOrSpendScreen({
             title="Start Save or Spend"
             onPress={() => dispatch({ type: 'start' })}
           />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
         </>
       ) : session.phase === 'completed' ? (
-        <SaveOrSpendResult
-          answers={session.answers}
-          onAgain={restart}
-          onExit={exit}
-        />
+        <SaveOrSpendResult answers={session.answers} onAgain={restart} />
       ) : (
         <>
           <Text style={theme.muted}>
@@ -150,7 +144,6 @@ export function SaveOrSpendScreen({
             variant="secondary"
             onPress={restart}
           />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
         </>
       )}
     </ScreenContainer>

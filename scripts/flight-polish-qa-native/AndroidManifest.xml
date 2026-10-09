@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application android:name="com.ipongoal.WelcomeQaApplication"
+        android:label="PiggyPath Flight QA" tools:replace="android:name,android:label" />
+</manifest>

@@ -97,7 +97,7 @@ export function SavingsFormScreen({
           </>
         ) : (
           <AppButton title="Done" onPress={done} />
-        )}{' '}
+        )}
         {!!error && <Text style={theme.error}>{error}</Text>}
       </ScreenContainer>
     );

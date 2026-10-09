@@ -14,6 +14,7 @@ import { NeedsOrWantsScreen } from '../src/games/needsOrWants/NeedsOrWantsScreen
 import { NeedsOrWantsResult } from '../src/games/needsOrWants/NeedsOrWantsResult';
 import { AppButton } from '../src/components/AppButton';
 import { GamesScreen } from '../src/screens/GamesScreen';
+import { GameGridCard } from '../src/components/GameGridCard';
 import { appConfig } from '../src/config/appConfig';
 jest.mock(
   'react-native-safe-area-context',
@@ -95,7 +96,7 @@ test('repeated answers and Continue taps cannot duplicate responses or skip ques
 
 const defaultFlightEnabled = appConfig.ENABLE_SAVINGS_FLIGHT;
 let renderer: ReactTestRenderer | undefined;
-const navigation = { navigate: jest.fn() };
+const navigation = { navigate: jest.fn(), popTo: jest.fn() };
 const props = { navigation } as unknown as NativeStackScreenProps<
   MainStackParams,
   'NeedsOrWants'
@@ -103,8 +104,12 @@ const props = { navigation } as unknown as NativeStackScreenProps<
 async function press(title: string) {
   await act(async () => {
     renderer!.root
-      .findAllByType(AppButton)
-      .find(b => b.props.title === title)!
+      .findAll(
+        node =>
+          node.props.accessibilityRole === 'button' &&
+          typeof node.props.onPress === 'function',
+      )
+      .find(b => b.props.accessibilityLabel === title)!
       .props.onPress();
   });
 }
@@ -141,6 +146,11 @@ test('screen supports five answers, feedback, review, replay and exit with no ti
   expect(
     result.props.answers.every((a: { correct: boolean }) => a.correct),
   ).toBe(true);
+  expect(JSON.stringify(renderer!.toJSON())).not.toContain(rounds[0].context);
+  await press('Review my choices');
+  expect(JSON.stringify(renderer!.toJSON())).toContain(rounds[0].context);
+  await press('Back to Games');
+  expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await press('Play Again');
   await press('Start Practice');
   await press('Restart Practice');
@@ -149,8 +159,9 @@ test('screen supports five answers, feedback, review, replay and exit with no ti
       .findAllByType(AppButton)
       .some(b => b.props.title === 'Start Practice'),
   ).toBe(true);
-  await press('Back to Games');
-  expect(navigation.navigate).toHaveBeenCalledWith('Games');
+  expect(
+    renderer!.root.findAllByType(AppButton).map(button => button.props.title),
+  ).not.toContain('Back to Games');
 });
 test('Games exposes Needs or Wants while Savings Flight remains disabled', async () => {
   Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
@@ -164,20 +175,13 @@ test('Games exposes Needs or Wants while Savings Flight remains disabled', async
       />,
     );
   });
-  const titles = renderer!.root
-    .findAllByType(AppButton)
-    .map(b => b.props.title);
-  expect(titles).toEqual([
-    'Play Needs or Wants',
-    'Play Budget Challenge',
-    'Play Save or Spend',
-    'Play Goal Builder',
-    'Back to Home',
-  ]);
+  const titles = [
+    ...renderer!.root.findAllByType(GameGridCard).map(card => card.props.label),
+    ...renderer!.root
+      .findAllByType(AppButton)
+      .map(button => button.props.title),
+  ];
+  expect(titles).toEqual(['Play Needs or Wants', 'Play Budget Challenge']);
   await press('Play Needs or Wants');
   expect(navigation.navigate).toHaveBeenCalledWith('NeedsOrWants');
-  await press('Play Save or Spend');
-  expect(navigation.navigate).toHaveBeenCalledWith('SaveOrSpend');
-  await press('Play Goal Builder');
-  expect(navigation.navigate).toHaveBeenCalledWith('GoalBuilder');
 });

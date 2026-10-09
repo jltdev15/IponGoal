@@ -11,12 +11,13 @@ export function GoalCollectionScreen({
   navigation,
 }: NativeStackScreenProps<
   MainStackParams,
-  'CompletedGoals' | 'ArchivedGoals'
+  'AllGoals' | 'CompletedGoals' | 'ArchivedGoals'
 >) {
-  const archived = route.name === 'ArchivedGoals',
-    goals = useGoalStore(s => s.goals).filter(
-      g => g.status === (archived ? 'archived' : 'completed'),
-    );
+  const all = route.name === 'AllGoals';
+  const archived = route.name === 'ArchivedGoals';
+  const goals = useGoalStore(s => s.goals).filter(
+    g => all || g.status === (archived ? 'archived' : 'completed'),
+  );
   return (
     <ScreenContainer scroll={false}>
       <FlatList
@@ -33,14 +34,18 @@ export function GoalCollectionScreen({
         )}
         ListEmptyComponent={
           <EmptyState
-            icon={archived ? 'archive' : 'check'}
+            icon={all ? 'flag' : archived ? 'archive' : 'check'}
             title={
-              archived
+              all
+                ? 'No goals yet.'
+                : archived
                 ? 'No archived goals.'
                 : 'Your first completed goal is ahead.'
             }
             body={
-              archived
+              all
+                ? 'Create your first savings goal to get started.'
+                : archived
                 ? 'Archived goals keep their savings history. You can restore them from their details.'
                 : 'Keep saving little by little. Your accomplishments will appear here.'
             }

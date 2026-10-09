@@ -7,13 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B7125A000000000000000001 /* WelcomeSound.m in Sources */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000002 /* WelcomeSound.m */; };
+		B7125A000000000000000003 /* welcome-oink.wav in Resources */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000004 /* welcome-oink.wav */; };
+		B7125A000000000000000005 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000006 /* AVFoundation.framework */; };
 		0C80B921A6F3F58F76C31292 /* libPods-PiggyPath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-PiggyPath.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		F119A0000000000000000001 /* FlightSound.m in Sources */ = {isa = PBXBuildFile; fileRef = F119A0000000000000000002 /* FlightSound.m */; };
+		F119A0000000000000000003 /* flight_music.wav in Resources */ = {isa = PBXBuildFile; fileRef = F119A0000000000000000004 /* flight_music.wav */; };
+		F119A0000000000000000005 /* flight_coin.wav in Resources */ = {isa = PBXBuildFile; fileRef = F119A0000000000000000006 /* flight_coin.wav */; };
+		F119A0000000000000000007 /* flight_bump.wav in Resources */ = {isa = PBXBuildFile; fileRef = F119A0000000000000000008 /* flight_bump.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B7125A000000000000000002 /* WelcomeSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WelcomeSound.m; path = PiggyPath/WelcomeSound.m; sourceTree = "<group>"; };
+		B7125A000000000000000004 /* welcome-oink.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "welcome-oink.wav"; path = "../assets/audio/welcome-oink.wav"; sourceTree = "<group>"; };
+		B7125A000000000000000006 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		13B07F961A680F5B00A75B9A /* PiggyPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PiggyPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PiggyPath/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PiggyPath/Info.plist; sourceTree = "<group>"; };
@@ -24,6 +34,10 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = PiggyPath/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = PiggyPath/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F119A0000000000000000002 /* FlightSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "FlightSound.m"; path = "PiggyPath/FlightSound.m"; sourceTree = "<group>"; };
+		F119A0000000000000000004 /* flight_music.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "flight_music.wav"; path = "../assets/audio/flight/flight_music.wav"; sourceTree = "<group>"; };
+		F119A0000000000000000006 /* flight_coin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "flight_coin.wav"; path = "../assets/audio/flight/flight_coin.wav"; sourceTree = "<group>"; };
+		F119A0000000000000000008 /* flight_bump.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "flight_bump.wav"; path = "../assets/audio/flight/flight_bump.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-PiggyPath.a in Frameworks */,
+				B7125A000000000000000005 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +58,12 @@
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
+				B7125A000000000000000002 /* WelcomeSound.m */,
+				F119A0000000000000000008 /* flight_bump.wav */,
+				F119A0000000000000000006 /* flight_coin.wav */,
+				F119A0000000000000000004 /* flight_music.wav */,
+				F119A0000000000000000002 /* FlightSound.m */,
+				B7125A000000000000000004 /* welcome-oink.wav */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
@@ -54,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				B7125A000000000000000006 /* AVFoundation.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-PiggyPath.a */,
 			);
 			name = Frameworks;
@@ -159,6 +181,10 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				B7125A000000000000000003 /* welcome-oink.wav in Resources */,
+				F119A0000000000000000007 /* flight_bump.wav in Resources */,
+				F119A0000000000000000005 /* flight_coin.wav in Resources */,
+				F119A0000000000000000003 /* flight_music.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +271,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				B7125A000000000000000001 /* WelcomeSound.m in Sources */,
+				F119A0000000000000000001 /* FlightSound.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

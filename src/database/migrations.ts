@@ -35,4 +35,5 @@ export const migrations = [
     WHERE id=NEW.id AND status='completed' AND targetAmount > COALESCE((SELECT SUM(amount) FROM savings WHERE goalId=NEW.id),0);
   END;`,
   `ALTER TABLE users ADD COLUMN profilePhoto TEXT;`,
+  `ALTER TABLE goals ADD COLUMN coverPhoto TEXT;`,
 ];

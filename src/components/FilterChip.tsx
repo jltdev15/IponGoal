@@ -1,23 +1,35 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { colors } from '../theme/colors';
 export function FilterChip({
   label,
   selected,
   onPress,
+  disabled = false,
+  style,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={[
         styles.chip,
         { backgroundColor: selected ? colors.primary : colors.surface },
+        style,
       ]}
     >
       <Text

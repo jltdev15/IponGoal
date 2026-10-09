@@ -11,6 +11,7 @@ import {
   newNeedsOrWantsSession,
 } from './NeedsOrWantsSession';
 import { NeedsOrWantsResult } from './NeedsOrWantsResult';
+import { GameTextAction } from '../GameReview';
 export function NeedsOrWantsScreen({
   navigation,
 }: NativeStackScreenProps<MainStackParams, 'NeedsOrWants'>) {
@@ -21,7 +22,6 @@ export function NeedsOrWantsScreen({
   const answer = session.answers[session.answers.length - 1];
   const restart = () =>
     dispatch({ type: 'restart', scenarios: createNeedsOrWantsRound() });
-  const exit = () => navigation.navigate('Games');
   useEffect(() => {
     if (session.phase === 'question') {
       AccessibilityInfo.announceForAccessibility(
@@ -42,23 +42,22 @@ export function NeedsOrWantsScreen({
     }
   }, [session.phase, session.index, scenario, answer]);
   return (
-    <ScreenContainer key={`${session.phase}-${session.index}`}>
+    <ScreenContainer responsive key={`${session.phase}-${session.index}`}>
       {session.phase === 'intro' ? (
         <>
           <Text accessibilityRole="header" style={theme.title}>
             Needs or Wants
           </Text>
           <Text style={theme.body}>
-            A need supports essentials such as food, safety, health, or required
-            schoolwork. A want adds enjoyment or something extra.
+            Need: something essential for daily life. Want: something extra for
+            enjoyment.
           </Text>
           <Text style={theme.body}>
-            Read five short situations, choose Need or Want, and see why. The
-            same item can have a different role in a different situation.
+            A notebook for class is a need. An extra notebook just for its cover
+            is a want.
           </Text>
           <Text style={theme.body}>
-            There is no timer. Wants are not automatically bad, and spending on
-            an important need can be responsible.
+            Read 5 situations. Tap Need or Want, then see why. No timer.
           </Text>
           <Text style={theme.muted}>
             Practice only. This activity never changes your real savings.
@@ -67,13 +66,12 @@ export function NeedsOrWantsScreen({
             title="Start Practice"
             onPress={() => dispatch({ type: 'start' })}
           />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
         </>
       ) : session.phase === 'completed' ? (
         <NeedsOrWantsResult
           answers={session.answers}
           onAgain={restart}
-          onExit={exit}
+          onExit={() => navigation.popTo('Games')}
         />
       ) : (
         <>
@@ -93,6 +91,7 @@ export function NeedsOrWantsScreen({
               </Text>
               <AppButton
                 title="Need"
+                variant="secondary"
                 onPress={() =>
                   dispatch({ type: 'answer', classification: 'need' })
                 }
@@ -128,12 +127,7 @@ export function NeedsOrWantsScreen({
               />
             </>
           )}
-          <AppButton
-            title="Restart Practice"
-            variant="secondary"
-            onPress={restart}
-          />
-          <AppButton title="Back to Games" variant="secondary" onPress={exit} />
+          <GameTextAction title="Restart Practice" onPress={restart} />
         </>
       )}
     </ScreenContainer>

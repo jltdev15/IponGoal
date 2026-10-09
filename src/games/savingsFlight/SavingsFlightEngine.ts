@@ -17,6 +17,10 @@ import {
 } from './SavingsFlightPhysics';
 import { formatCurrency } from '../../utils/currency';
 
+export type FlightEvent =
+  | { type: 'coin'; amount: number; y: number }
+  | { type: 'savings'; amount: number }
+  | { type: 'collision' };
 export type DecisionRecord = {
   scenarioId: string;
   prompt: string;
@@ -89,6 +93,14 @@ export class SavingsFlightEngine {
   private collected = false;
   private gateX = 260;
   private invulnerable = 0;
+  private events: FlightEvent[] = [];
+
+  // Transient presentation events are deliberately excluded from checkpoints.
+  drainEvents(): FlightEvent[] {
+    const events = this.events;
+    this.events = [];
+    return events;
+  }
 
   constructor(levelId: FlightLevelId, mode: FlightMode) {
     this.level = getFlightLevel(levelId);
@@ -244,6 +256,8 @@ export class SavingsFlightEngine {
         'There is not enough practice money for this choice. No money was moved. Earlier spending can leave later needs or savings unfunded.';
     } else {
       s.practiceSavings += outcome.savingsDelta;
+      if (outcome.savingsDelta > 0)
+        this.events.push({ type: 'savings', amount: outcome.savingsDelta });
       s.practiceSpent += outcome.spent;
       s.practiceReserved += outcome.reserved;
       if (s.budgetRemaining !== null) {
@@ -305,6 +319,7 @@ export class SavingsFlightEngine {
     this.changed();
   }
   private hit() {
+    this.events.push({ type: 'collision' });
     const lives = this.state.lives - 1;
     Object.assign(this.state, this.checkpoint, {
       lives,
@@ -419,6 +434,11 @@ export class SavingsFlightEngine {
       this.collected = true;
       this.state.coinsCollected += 1;
       this.state.practiceSavings += frame.coinValue;
+      this.events.push({
+        type: 'coin',
+        amount: frame.coinValue,
+        y: this.playerY,
+      });
       this.changed();
     }
     if (frame.coinX < -24) {

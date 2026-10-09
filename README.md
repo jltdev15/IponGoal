@@ -202,7 +202,8 @@ See [Architecture](docs/ARCHITECTURE.md) and [Database schema](docs/DATABASE.md)
 - Android is the verified target; the generated iOS scaffold has not been configured or tested.
 - Local data has no export, backup, password recovery, encryption, or cross-device sync. Uninstall/reset erases records.
 - Reset intentionally erases **all** accounts on the device after two confirmations.
-- Date entry uses a labeled YYYY-MM-DD field rather than an additional native picker dependency.
+- Create/Edit Goal uses an optional calendar picker for target dates; saving/history date entry still uses labeled YYYY-MM-DD fields.
+- Create Goal uses four guided steps and supports one optional camera/gallery cover photo; Edit Goal keeps a single form. Goal photos are saved privately on this device and shown on Home and Goal Details.
 - Unsaved form input is not restored after process termination.
 - A plain view chart keeps dependencies low; it is not an interactive analytics dashboard.
 - Averages are rounded to the nearest centavo.
