@@ -9,17 +9,26 @@ export function SavingsSummary({
   note,
   stacked,
   children,
+  variant = 'default',
 }: {
   label: string;
   amount: string;
   note: string;
   stacked: boolean;
   children?: ReactNode;
+  variant?: 'default' | 'home';
 }) {
-  const stackAmount = stacked || amount.length > 8;
+  const home = variant === 'home';
+  const stackAmount = home || stacked || amount.length > 8;
   return (
-    <View style={summaryStyles.card}>
-      <View style={[summaryStyles.top, stackAmount && summaryStyles.stacked]}>
+    <View style={[summaryStyles.card, home && styles.homeCard]}>
+      <View
+        style={[
+          summaryStyles.top,
+          stackAmount && summaryStyles.stacked,
+          home && styles.homeTop,
+        ]}
+      >
         <View
           style={[
             summaryStyles.labelRow,
@@ -35,13 +44,28 @@ export function SavingsSummary({
           </View>
           <Text style={[summaryStyles.label, summaryStyles.flex]}>{label}</Text>
         </View>
-        <Text style={summaryStyles.amount}>{amount}</Text>
+        <Text
+          style={[
+            summaryStyles.amount,
+            home && styles.homeAmount,
+            home && amount.length > 12 && styles.homeLongAmount,
+          ]}
+        >
+          {amount}
+        </Text>
       </View>
       {children}
       <Text style={summaryStyles.note}>{note}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  homeCard: { borderRadius: 24, padding: 20, gap: 12 },
+  homeTop: { gap: 4 },
+  homeAmount: { fontSize: 36, lineHeight: 44, fontVariant: ['tabular-nums'] },
+  homeLongAmount: { fontSize: 28, lineHeight: 36, letterSpacing: -0.6 },
+});
 
 export const summaryStyles = StyleSheet.create({
   card: {

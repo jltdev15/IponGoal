@@ -12,10 +12,31 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GamesScreen } from '../src/screens/GamesScreen';
+import { ScreenContainer } from '../src/components/ScreenContainer';
+import { AppButton } from '../src/components/AppButton';
 import { SavingsFlightSetupScreen } from '../src/games/savingsFlight/SavingsFlightSetupScreen';
 import { SavingsFlightScreen } from '../src/games/savingsFlight/SavingsFlightScreen';
 
 const Stack = createNativeStackNavigator();
+function QAGamesMenu({ navigation }) {
+  return (
+    <ScreenContainer responsive>
+      {['NeedsOrWants', 'BudgetChallenge', 'SaveOrSpend', 'GoalBuilder'].map(
+        route => (
+          <AppButton
+            key={route}
+            title={`QA ${route}`}
+            onPress={() => navigation.navigate(route)}
+          />
+        ),
+      )}
+      <AppButton
+        title="QA Savings Flight"
+        onPress={() => navigation.navigate('SavingsFlightSetup')}
+      />
+    </ScreenContainer>
+  );
+}
 function LearningGamesQA() {
   return (
     <SafeAreaProvider>
@@ -29,7 +50,7 @@ function LearningGamesQA() {
           />
           <Stack.Screen
             name="Games"
-            component={GamesScreen}
+            component={QAGamesMenu}
             options={{ title: 'Learning Games · QA only' }}
           />
           <Stack.Screen

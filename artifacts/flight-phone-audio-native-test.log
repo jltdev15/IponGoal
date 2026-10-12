@@ -1,0 +1,208 @@
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option setting 'android.r8.optimizedResourceShrinking=true' is experimental.
+The current default is 'false'.
+
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateAutolinkingNewArchitectureFiles UP-TO-DATE
+> Task :app:generateAutolinkingPackageList UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :app:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :app:generateReactNativeEntryPoint UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :op-engineering_op-sqlite:prepareHeaders UP-TO-DATE
+> Task :op-engineering_op-sqlite:preBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :react-native-get-random-values:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-get-random-values:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-get-random-values:preBuild UP-TO-DATE
+> Task :react-native-image-picker:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-image-picker:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-image-picker:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-screens:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-svg:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-svg:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-svg:preBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseBuildConfig UP-TO-DATE
+> Task :op-engineering_op-sqlite:preReleaseBuild UP-TO-DATE
+> Task :op-engineering_op-sqlite:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-community_datetimepicker:preReleaseBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-get-random-values:preReleaseBuild UP-TO-DATE
+> Task :react-native-get-random-values:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-image-picker:preReleaseBuild UP-TO-DATE
+> Task :react-native-image-picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:preReleaseBuild UP-TO-DATE
+> Task :react-native-safe-area-context:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-screens:preReleaseBuild UP-TO-DATE
+> Task :react-native-screens:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-svg:preReleaseBuild UP-TO-DATE
+> Task :react-native-svg:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:createBundleReleaseJsAndAssets UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateReleaseResValues UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateReleaseResources UP-TO-DATE
+> Task :op-engineering_op-sqlite:packageReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:packageReleaseResources UP-TO-DATE
+> Task :react-native-get-random-values:generateReleaseResValues UP-TO-DATE
+> Task :react-native-get-random-values:generateReleaseResources UP-TO-DATE
+> Task :react-native-get-random-values:packageReleaseResources UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseResources UP-TO-DATE
+> Task :react-native-image-picker:packageReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResValues UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseResources UP-TO-DATE
+> Task :react-native-screens:generateReleaseResValues UP-TO-DATE
+> Task :react-native-screens:generateReleaseResources UP-TO-DATE
+> Task :react-native-screens:packageReleaseResources UP-TO-DATE
+> Task :react-native-svg:generateReleaseResValues UP-TO-DATE
+> Task :react-native-svg:generateReleaseResources UP-TO-DATE
+> Task :react-native-svg:packageReleaseResources UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :op-engineering_op-sqlite:extractDeepLinksRelease UP-TO-DATE
+> Task :op-engineering_op-sqlite:processReleaseManifest UP-TO-DATE
+> Task :react-native-community_datetimepicker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:processReleaseManifest UP-TO-DATE
+> Task :react-native-get-random-values:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-get-random-values:processReleaseManifest UP-TO-DATE
+> Task :react-native-image-picker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-image-picker:processReleaseManifest UP-TO-DATE
+> Task :react-native-safe-area-context:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseManifest UP-TO-DATE
+> Task :react-native-screens:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-screens:processReleaseManifest UP-TO-DATE
+> Task :react-native-svg:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-svg:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :op-engineering_op-sqlite:parseReleaseLocalResources UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateReleaseRFile UP-TO-DATE
+> Task :react-native-community_datetimepicker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-get-random-values:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-get-random-values:generateReleaseRFile UP-TO-DATE
+> Task :react-native-image-picker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-safe-area-context:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseRFile UP-TO-DATE
+> Task :react-native-screens:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-screens:generateReleaseRFile UP-TO-DATE
+> Task :react-native-svg:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-svg:generateReleaseRFile UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :op-engineering_op-sqlite:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :op-engineering_op-sqlite:generateReleaseBuildConfig UP-TO-DATE
+> Task :op-engineering_op-sqlite:compileReleaseKotlin UP-TO-DATE
+> Task :op-engineering_op-sqlite:javaPreCompileRelease UP-TO-DATE
+> Task :op-engineering_op-sqlite:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :op-engineering_op-sqlite:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-community_datetimepicker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-community_datetimepicker:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-community_datetimepicker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-community_datetimepicker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-get-random-values:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-get-random-values:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-get-random-values:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-get-random-values:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-image-picker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-image-picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-image-picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-safe-area-context:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-safe-area-context:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-screens:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-screens:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-screens:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-screens:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-screens:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-screens:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-svg:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-svg:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-svg:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-svg:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:preReleaseUnitTestBuild UP-TO-DATE
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:javaPreCompileReleaseUnitTest
+> Task :op-engineering_op-sqlite:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :op-engineering_op-sqlite:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-community_datetimepicker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-get-random-values:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-get-random-values:processReleaseJavaRes NO-SOURCE
+> Task :react-native-image-picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-image-picker:processReleaseJavaRes NO-SOURCE
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-screens:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :app:bundleReleaseClassesToCompileJar
+> Task :app:bundleReleaseClassesToRuntimeJar
+> Task :react-native-screens:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-svg:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-svg:processReleaseJavaRes NO-SOURCE
+> Task :app:compileReleaseUnitTestKotlin
+> Task :app:compileReleaseUnitTestJavaWithJavac
+> Task :app:processReleaseUnitTestJavaRes
+> Task :app:testReleaseUnitTest
+
+[Incubating] Problems report is available at: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 12s
+156 actionable tasks: 7 executed, 149 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.0.0/userguide/configuration_cache_enabling.html

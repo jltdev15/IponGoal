@@ -231,7 +231,7 @@ export function RootNavigator() {
           <Auth.Screen
             name="Welcome"
             component={WelcomeScreen}
-            options={{ title: '' }}
+            options={{ title: '', headerShown: false }}
           />
           <Auth.Screen
             name="Register"

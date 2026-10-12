@@ -17,6 +17,8 @@ ios/build/
 # Local tools and private keys
 .android-sdk/
 .android-avd/
+# Local QA build archive (saved during Android SDK cleanup)
+artifacts/primary-screens-qa.apk
 .env*
 *.jks
 coverage/

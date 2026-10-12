@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const root = path.resolve(__dirname, '..');
-const adb = path.join(root, '.android-sdk/platform-tools/adb.exe');
+const adb = require('./android-sdk.cjs').adbPath();
 const run = args =>
   execFileSync(adb, args, { timeout: 20000, windowsHide: true });
 const [action = 'read', value] = process.argv.slice(2);

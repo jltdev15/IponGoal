@@ -1,0 +1,552 @@
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option setting 'android.r8.optimizedResourceShrinking=true' is experimental.
+The current default is 'false'.
+
+> Task :app:generateAutolinkingNewArchitectureFiles
+> Task :app:generateAutolinkingPackageList
+> Task :app:generateCodegenSchemaFromJavaScript
+> Task :app:generateCodegenArtifactsFromSchema
+> Task :app:generateReactNativeEntryPoint
+> Task :op-engineering_op-sqlite:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :op-engineering_op-sqlite:prepareHeaders UP-TO-DATE
+> Task :op-engineering_op-sqlite:preBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :react-native-get-random-values:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-get-random-values:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-get-random-values:preBuild UP-TO-DATE
+> Task :react-native-image-picker:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-image-picker:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-image-picker:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-screens:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-svg:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-svg:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-svg:preBuild UP-TO-DATE
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :op-engineering_op-sqlite:preDebugBuild UP-TO-DATE
+
+> Task :op-engineering_op-sqlite:configureCMakeDebug[x86_64]
+C/C++: CMake Warning:
+C/C++:   Manually-specified variables were not used by the project:
+C/C++:     USER_DEFINED_TOKENIZERS_HEADER_PATH
+
+> Task :op-engineering_op-sqlite:generateJsonModelDebug
+> Task :op-engineering_op-sqlite:prefabDebugConfigurePackage
+> Task :app:configureCMakeDebug[x86_64]
+
+> Task :op-engineering_op-sqlite:buildCMakeDebug[x86_64]
+C/C++: ninja: Entering directory `C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\@op-engineering\op-sqlite\android\.cxx\Debug\g4h2yo5y\x86_64'
+C/C++: C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/@op-engineering/op-sqlite/cpp/OPBridge.cpp:94:9: warning: unused variable 'errMsg' [-Wunused-variable]
+C/C++:    94 |   char *errMsg;
+C/C++:       |         ^~~~~~
+C/C++: 1 warning generated.
+
+> Task :op-engineering_op-sqlite:externalNativeBuildDebug
+> Task :op-engineering_op-sqlite:prefabDebugPackage
+> Task :app:buildCMakeDebug[x86_64]
+> Task :app:mergeDebugJniLibFolders
+> Task :op-engineering_op-sqlite:mergeDebugJniLibFolders
+> Task :react-native-community_datetimepicker:preDebugBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeDebugJniLibFolders
+> Task :react-native-community_datetimepicker:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-get-random-values:preDebugBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:copyDebugJniLibsProjectOnly
+> Task :react-native-get-random-values:mergeDebugJniLibFolders
+> Task :react-native-get-random-values:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-image-picker:preDebugBuild UP-TO-DATE
+> Task :react-native-get-random-values:copyDebugJniLibsProjectOnly
+> Task :react-native-image-picker:mergeDebugJniLibFolders
+> Task :react-native-image-picker:mergeDebugNativeLibs NO-SOURCE
+> Task :op-engineering_op-sqlite:mergeDebugNativeLibs
+> Task :react-native-image-picker:copyDebugJniLibsProjectOnly
+> Task :react-native-safe-area-context:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:mergeDebugJniLibFolders
+> Task :react-native-safe-area-context:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-screens:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:copyDebugJniLibsProjectOnly
+> Task :op-engineering_op-sqlite:copyDebugJniLibsProjectOnly
+> Task :react-native-screens:configureCMakeDebug[x86_64]
+> Task :react-native-screens:buildCMakeDebug[x86_64]
+> Task :react-native-screens:mergeDebugJniLibFolders
+> Task :react-native-svg:preDebugBuild UP-TO-DATE
+> Task :react-native-svg:mergeDebugJniLibFolders
+> Task :react-native-svg:mergeDebugNativeLibs NO-SOURCE
+> Task :react-native-svg:copyDebugJniLibsProjectOnly
+> Task :react-native-screens:mergeDebugNativeLibs
+> Task :op-engineering_op-sqlite:prepareDebugArtProfile
+> Task :react-native-community_datetimepicker:prepareDebugArtProfile
+> Task :react-native-get-random-values:prepareDebugArtProfile
+> Task :react-native-image-picker:prepareDebugArtProfile
+> Task :react-native-screens:copyDebugJniLibsProjectOnly
+> Task :react-native-safe-area-context:prepareDebugArtProfile
+> Task :react-native-screens:prepareDebugArtProfile
+> Task :react-native-svg:prepareDebugArtProfile
+> Task :op-engineering_op-sqlite:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :op-engineering_op-sqlite:generateDebugBuildConfig
+> Task :op-engineering_op-sqlite:generateDebugResValues
+> Task :app:mergeDebugArtProfile
+> Task :op-engineering_op-sqlite:generateDebugResources
+> Task :op-engineering_op-sqlite:packageDebugResources
+> Task :react-native-community_datetimepicker:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-community_datetimepicker:generateDebugBuildConfig
+> Task :react-native-community_datetimepicker:generateDebugResValues
+> Task :op-engineering_op-sqlite:javaPreCompileDebug
+> Task :react-native-community_datetimepicker:generateDebugResources
+> Task :op-engineering_op-sqlite:parseDebugLocalResources
+> Task :react-native-community_datetimepicker:packageDebugResources
+> Task :react-native-safe-area-context:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-community_datetimepicker:javaPreCompileDebug
+> Task :react-native-safe-area-context:generateDebugBuildConfig
+> Task :react-native-safe-area-context:generateDebugResValues
+> Task :react-native-safe-area-context:generateDebugResources
+> Task :op-engineering_op-sqlite:generateDebugRFile
+> Task :react-native-safe-area-context:packageDebugResources
+> Task :react-native-community_datetimepicker:parseDebugLocalResources
+> Task :react-native-screens:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-safe-area-context:javaPreCompileDebug
+> Task :react-native-community_datetimepicker:generateDebugRFile
+> Task :react-native-safe-area-context:parseDebugLocalResources
+> Task :react-native-screens:generateDebugBuildConfig
+> Task :react-native-screens:generateDebugResValues
+> Task :react-native-safe-area-context:generateDebugRFile
+> Task :react-native-screens:generateDebugResources
+> Task :react-native-screens:packageDebugResources
+> Task :react-native-screens:javaPreCompileDebug
+> Task :react-native-get-random-values:generateDebugBuildConfig
+> Task :react-native-screens:parseDebugLocalResources
+> Task :react-native-get-random-values:generateDebugResValues
+> Task :react-native-get-random-values:generateDebugResources
+> Task :react-native-screens:generateDebugRFile
+> Task :react-native-get-random-values:packageDebugResources
+> Task :app:mergeDebugNativeLibs
+> Task :react-native-image-picker:generateDebugBuildConfig
+> Task :react-native-image-picker:generateDebugResValues
+> Task :react-native-image-picker:generateDebugResources
+> Task :react-native-image-picker:packageDebugResources
+> Task :react-native-get-random-values:parseDebugLocalResources
+> Task :react-native-get-random-values:javaPreCompileDebug
+> Task :react-native-svg:generateDebugBuildConfig
+> Task :react-native-image-picker:javaPreCompileDebug
+> Task :react-native-image-picker:parseDebugLocalResources
+> Task :react-native-svg:generateDebugResValues
+> Task :react-native-image-picker:generateDebugRFile
+> Task :react-native-svg:generateDebugResources
+> Task :react-native-get-random-values:generateDebugRFile
+> Task :app:stripDebugDebugSymbols
+> Task :react-native-get-random-values:compileDebugJavaWithJavac
+> Task :react-native-get-random-values:bundleLibRuntimeToJarDebug
+> Task :app:extractDebugNativeSymbolTables
+> Task :op-engineering_op-sqlite:compileDebugKotlin
+> Task :react-native-community_datetimepicker:compileDebugKotlin
+> Task :react-native-safe-area-context:compileDebugKotlin
+> Task :react-native-screens:compileDebugKotlin
+
+> Task :react-native-image-picker:compileDebugJavaWithJavac
+Note: C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\react-native-image-picker\android\src\main\java\com\imagepicker\ImagePickerPackage.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-image-picker:bundleLibRuntimeToJarDebug
+> Task :react-native-svg:packageDebugResources
+> Task :react-native-svg:javaPreCompileDebug
+> Task :react-native-svg:parseDebugLocalResources
+> Task :app:desugarDebugFileDependencies
+> Task :app:buildKotlinToolingMetadata
+> Task :react-native-svg:generateDebugRFile
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :op-engineering_op-sqlite:compileDebugKotlin
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/@op-engineering/op-sqlite/android/src/main/java/com/op/sqlite/OPSQLiteBridge.kt:24:38 'val jsCallInvokerHolder: CallInvokerHolder' is deprecated. Use ReactContext.getJSCallInvokerHolder instead.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/@op-engineering/op-sqlite/android/src/main/java/com/op/sqlite/OPSQLitePackage.kt:9:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+
+> Task :react-native-safe-area-context:compileDebugKotlin
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:8:8 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:46:54 'class UIManagerModule : ReactContextBaseJavaModule, LifecycleEventListener, UIManager' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaViewShadowNode.kt:9:32 'class LayoutShadowNode : ReactShadowNodeImpl' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaViewShadowNode.kt:110:61 'class NativeViewHierarchyOptimizer : Any' is deprecated. Deprecated in Java.
+
+> Task :app:mergeDebugNativeDebugMetadata
+> Task :react-native-svg:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :op-engineering_op-sqlite:compileDebugJavaWithJavac
+> Task :op-engineering_op-sqlite:bundleLibRuntimeToJarDebug
+
+> Task :react-native-community_datetimepicker:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :react-native-community_datetimepicker:bundleLibRuntimeToJarDebug
+> Task :react-native-safe-area-context:compileDebugJavaWithJavac
+> Task :app:generateDebugBuildConfig
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarDebug
+> Task :react-native-community_datetimepicker:writeDebugAarMetadata
+> Task :op-engineering_op-sqlite:writeDebugAarMetadata
+> Task :react-native-get-random-values:writeDebugAarMetadata
+> Task :react-native-image-picker:writeDebugAarMetadata
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-svg:writeDebugAarMetadata
+> Task :react-native-svg:bundleLibRuntimeToJarDebug
+> Task :app:checkDebugAarMetadata
+
+> Task :app:createBundleDebugJsAndAssets
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+ WARN  the transform cache was reset.
+                Welcome to Metro v0.83.8
+              Fast - Scalable - Integrated
+
+
+transform[stderr]: (node:5316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:9908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+
+> Task :react-native-screens:compileDebugKotlin
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:70:9 The corresponding parameter in the supertype 'BaseReactPackage' is named 'name'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:71:9 The corresponding parameter in the supertype 'BaseReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:83:17 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:54:77 Unchecked cast of '(CoordinatorLayout.Behavior<View!>?..CoordinatorLayout.Behavior<*>?)' to 'BottomSheetBehavior<Screen>'.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:236:31 'var targetElevation: Float' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:239:13 'fun setHasOptionsMenu(p0: Boolean): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:450:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:457:22 'fun onPrepareOptionsMenu(p0: Menu): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:460:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:465:22 'fun onCreateOptionsMenu(p0: Menu, p1: MenuInflater): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:48:42 'fun replaceSystemWindowInsets(p0: Int, p1: Int, p2: Int, p3: Int): @NonNull() WindowInsetsCompat' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:49:39 'val systemWindowInsetLeft: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:51:39 'val systemWindowInsetRight: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:52:39 'val systemWindowInsetBottom: Int' is deprecated. Deprecated in Java.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:7:8 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:25:13 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:32:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'left'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:33:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'top'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:34:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'right'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:35:9 The corresponding parameter in the supertype 'ReactViewGroup' is named 'bottom'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:71:9 The corresponding parameter in the supertype 'RootView' is named 'childView'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:72:9 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:79:46 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:83:9 The corresponding parameter in the supertype 'RootView' is named 'childView'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:84:9 The corresponding parameter in the supertype 'RootView' is named 'ev'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:95:34 The corresponding parameter in the supertype 'RootView' is named 't'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:64:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:65:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:69:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/DimmingView.kt:70:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:64:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:65:9 The corresponding parameter in the supertype 'ReactCompoundView' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:69:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchX'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/dimmingview/DimmingView.kt:70:9 The corresponding parameter in the supertype 'ReactCompoundViewGroup' is named 'touchY'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:11:8 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:44:13 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetHostViewManager.kt:38:9 The corresponding parameter in the supertype 'FormSheetHostViewManager' is named 'view'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/host/TabsHostViewManager.kt:44:9 The corresponding parameter in the supertype 'TabsHostViewManager' is named 'view'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:143:45 'fun consumeDisplayCutout(): @NonNull() WindowInsetsCompat' is deprecated. Deprecated in Java.
+
+> Task :app:createBundleDebugJsAndAssets
+LOG:Writing bundle output to: android\build\home-design-qa\app\generated\assets\react\debug\index.android.bundle
+LOG:Writing sourcemap output to: android\build\home-design-qa\app\intermediates\sourcemaps\react\debug\index.android.bundle.packager.map
+LOG:Done writing bundle output
+LOG:Done writing sourcemap output
+Copying 36 asset files
+Done copying assets
+
+> Task :react-native-screens:compileDebugJavaWithJavac
+> Task :app:generateDebugResValues
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :react-native-screens:bundleLibRuntimeToJarDebug
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :op-engineering_op-sqlite:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :react-native-community_datetimepicker:extractDeepLinksDebug
+> Task :op-engineering_op-sqlite:processDebugManifest
+> Task :react-native-get-random-values:extractDeepLinksDebug
+> Task :react-native-community_datetimepicker:processDebugManifest
+> Task :react-native-image-picker:extractDeepLinksDebug
+> Task :react-native-get-random-values:processDebugManifest
+> Task :react-native-safe-area-context:extractDeepLinksDebug
+
+> Task :react-native-image-picker:processDebugManifest
+package="com.imagepicker" found in source AndroidManifest.xml: C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\react-native-image-picker\android\src\main\AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.imagepicker" from the source AndroidManifest.xml: C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\react-native-image-picker\android\src\main\AndroidManifest.xml.
+
+> Task :react-native-safe-area-context:processDebugManifest
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\react-native-safe-area-context\android\src\main\AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: C:\Users\JLT\Desktop\Mobile-apps\IponGoal\node_modules\react-native-safe-area-context\android\src\main\AndroidManifest.xml.
+
+> Task :react-native-screens:extractDeepLinksDebug
+> Task :react-native-svg:extractDeepLinksDebug
+> Task :react-native-screens:processDebugManifest
+> Task :react-native-svg:processDebugManifest
+> Task :op-engineering_op-sqlite:compileDebugLibraryResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :react-native-community_datetimepicker:compileDebugLibraryResources
+> Task :react-native-get-random-values:compileDebugLibraryResources
+> Task :react-native-image-picker:compileDebugLibraryResources
+> Task :react-native-safe-area-context:compileDebugLibraryResources
+> Task :app:processDebugManifestForPackage
+> Task :react-native-svg:compileDebugLibraryResources
+> Task :op-engineering_op-sqlite:bundleLibCompileToJarDebug
+> Task :react-native-screens:compileDebugLibraryResources
+> Task :react-native-get-random-values:bundleLibCompileToJarDebug
+> Task :react-native-image-picker:bundleLibCompileToJarDebug
+> Task :react-native-community_datetimepicker:bundleLibCompileToJarDebug
+> Task :react-native-safe-area-context:bundleLibCompileToJarDebug
+> Task :app:javaPreCompileDebug
+> Task :op-engineering_op-sqlite:bundleLibRuntimeToDirDebug
+> Task :react-native-get-random-values:bundleLibRuntimeToDirDebug
+> Task :react-native-image-picker:bundleLibRuntimeToDirDebug
+> Task :react-native-community_datetimepicker:bundleLibRuntimeToDirDebug
+> Task :react-native-safe-area-context:bundleLibRuntimeToDirDebug
+> Task :app:mergeDebugStartupProfile
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :react-native-svg:bundleLibCompileToJarDebug
+> Task :op-engineering_op-sqlite:mergeDebugShaders
+> Task :op-engineering_op-sqlite:compileDebugShaders NO-SOURCE
+> Task :op-engineering_op-sqlite:generateDebugAssets UP-TO-DATE
+> Task :op-engineering_op-sqlite:mergeDebugAssets
+> Task :react-native-community_datetimepicker:mergeDebugShaders
+> Task :react-native-community_datetimepicker:compileDebugShaders NO-SOURCE
+> Task :react-native-community_datetimepicker:generateDebugAssets UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeDebugAssets
+> Task :react-native-get-random-values:mergeDebugShaders
+> Task :react-native-get-random-values:compileDebugShaders NO-SOURCE
+> Task :react-native-get-random-values:generateDebugAssets UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :react-native-get-random-values:mergeDebugAssets
+> Task :react-native-screens:bundleLibCompileToJarDebug
+> Task :react-native-image-picker:mergeDebugShaders
+> Task :react-native-image-picker:compileDebugShaders NO-SOURCE
+> Task :react-native-image-picker:generateDebugAssets UP-TO-DATE
+> Task :react-native-image-picker:mergeDebugAssets
+> Task :react-native-safe-area-context:mergeDebugShaders
+> Task :react-native-safe-area-context:compileDebugShaders NO-SOURCE
+> Task :react-native-safe-area-context:generateDebugAssets UP-TO-DATE
+> Task :react-native-safe-area-context:mergeDebugAssets
+> Task :react-native-screens:mergeDebugShaders
+> Task :react-native-screens:compileDebugShaders NO-SOURCE
+> Task :react-native-screens:generateDebugAssets UP-TO-DATE
+> Task :react-native-screens:mergeDebugAssets
+> Task :react-native-svg:mergeDebugShaders
+> Task :react-native-svg:compileDebugShaders NO-SOURCE
+> Task :react-native-svg:generateDebugAssets UP-TO-DATE
+> Task :react-native-svg:bundleLibRuntimeToDirDebug
+> Task :react-native-svg:mergeDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:extractDebugVersionControlInfo
+> Task :app:extractProguardFiles
+> Task :op-engineering_op-sqlite:processDebugJavaRes
+> Task :op-engineering_op-sqlite:createFullJarDebug
+> Task :op-engineering_op-sqlite:extractProguardFiles UP-TO-DATE
+> Task :op-engineering_op-sqlite:generateDebugLintModel
+> Task :op-engineering_op-sqlite:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-community_datetimepicker:processDebugJavaRes
+> Task :react-native-community_datetimepicker:createFullJarDebug
+> Task :react-native-community_datetimepicker:extractProguardFiles UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateDebugLintModel
+> Task :react-native-community_datetimepicker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-get-random-values:processDebugJavaRes NO-SOURCE
+> Task :react-native-get-random-values:createFullJarDebug
+> Task :react-native-get-random-values:extractProguardFiles UP-TO-DATE
+> Task :react-native-get-random-values:generateDebugLintModel
+> Task :react-native-get-random-values:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-image-picker:processDebugJavaRes NO-SOURCE
+> Task :react-native-image-picker:createFullJarDebug
+> Task :react-native-image-picker:extractProguardFiles UP-TO-DATE
+> Task :react-native-image-picker:generateDebugLintModel
+> Task :react-native-image-picker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-safe-area-context:processDebugJavaRes
+> Task :react-native-safe-area-context:createFullJarDebug
+> Task :react-native-safe-area-context:extractProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:generateDebugLintModel
+> Task :react-native-safe-area-context:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-screens:bundleLibRuntimeToDirDebug
+> Task :react-native-screens:processDebugJavaRes
+> Task :react-native-screens:createFullJarDebug
+> Task :react-native-screens:extractProguardFiles UP-TO-DATE
+> Task :react-native-screens:generateDebugLintModel
+> Task :react-native-screens:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-svg:processDebugJavaRes NO-SOURCE
+> Task :react-native-svg:createFullJarDebug
+> Task :react-native-svg:extractProguardFiles UP-TO-DATE
+> Task :react-native-svg:generateDebugLintModel
+> Task :react-native-svg:prepareLintJarForPublish UP-TO-DATE
+> Task :op-engineering_op-sqlite:extractDebugAnnotations
+> Task :op-engineering_op-sqlite:extractDeepLinksForAarDebug
+> Task :op-engineering_op-sqlite:mergeDebugGeneratedProguardFiles
+> Task :op-engineering_op-sqlite:stripDebugDebugSymbols
+> Task :op-engineering_op-sqlite:mergeDebugConsumerProguardFiles
+> Task :op-engineering_op-sqlite:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-community_datetimepicker:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-community_datetimepicker:copyDebugJniLibsProjectAndLocalJars
+> Task :app:processDebugResources
+> Task :react-native-community_datetimepicker:extractDebugAnnotations
+> Task :op-engineering_op-sqlite:mergeDebugJavaResource
+> Task :op-engineering_op-sqlite:syncDebugLibJars
+> Task :op-engineering_op-sqlite:bundleDebugLocalLintAar
+> Task :react-native-community_datetimepicker:extractDeepLinksForAarDebug
+> Task :react-native-community_datetimepicker:mergeDebugGeneratedProguardFiles
+> Task :react-native-community_datetimepicker:mergeDebugConsumerProguardFiles
+> Task :react-native-safe-area-context:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-safe-area-context:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-safe-area-context:extractDebugAnnotations
+> Task :react-native-safe-area-context:extractDeepLinksForAarDebug
+> Task :react-native-safe-area-context:mergeDebugGeneratedProguardFiles
+> Task :react-native-safe-area-context:mergeDebugConsumerProguardFiles
+> Task :react-native-community_datetimepicker:mergeDebugJavaResource
+> Task :react-native-safe-area-context:mergeDebugJavaResource
+> Task :react-native-community_datetimepicker:syncDebugLibJars
+> Task :react-native-community_datetimepicker:bundleDebugLocalLintAar
+> Task :react-native-safe-area-context:syncDebugLibJars
+> Task :react-native-safe-area-context:bundleDebugLocalLintAar
+> Task :react-native-screens:stripDebugDebugSymbols
+> Task :react-native-screens:extractDebugAnnotations
+> Task :react-native-screens:extractDeepLinksForAarDebug
+> Task :react-native-screens:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-screens:mergeDebugGeneratedProguardFiles
+> Task :react-native-screens:mergeDebugConsumerProguardFiles
+> Task :react-native-get-random-values:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-get-random-values:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-get-random-values:extractDebugAnnotations
+> Task :react-native-screens:mergeDebugJavaResource
+> Task :react-native-screens:syncDebugLibJars
+> Task :react-native-screens:bundleDebugLocalLintAar
+> Task :react-native-get-random-values:extractDeepLinksForAarDebug
+> Task :react-native-get-random-values:mergeDebugGeneratedProguardFiles
+> Task :react-native-get-random-values:mergeDebugConsumerProguardFiles
+> Task :react-native-image-picker:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-image-picker:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-get-random-values:mergeDebugJavaResource
+> Task :react-native-image-picker:extractDebugAnnotations
+> Task :react-native-get-random-values:syncDebugLibJars
+> Task :react-native-get-random-values:bundleDebugLocalLintAar
+> Task :react-native-image-picker:extractDeepLinksForAarDebug
+> Task :react-native-image-picker:mergeDebugGeneratedProguardFiles
+> Task :react-native-image-picker:mergeDebugConsumerProguardFiles
+> Task :react-native-svg:stripDebugDebugSymbols NO-SOURCE
+> Task :react-native-svg:copyDebugJniLibsProjectAndLocalJars
+> Task :react-native-image-picker:mergeDebugJavaResource
+> Task :react-native-svg:extractDebugAnnotations
+> Task :react-native-image-picker:syncDebugLibJars
+> Task :react-native-image-picker:bundleDebugLocalLintAar
+> Task :react-native-svg:extractDeepLinksForAarDebug
+> Task :react-native-svg:mergeDebugGeneratedProguardFiles
+> Task :react-native-svg:mergeDebugConsumerProguardFiles
+> Task :react-native-svg:mergeDebugJavaResource
+> Task :react-native-svg:syncDebugLibJars
+> Task :react-native-svg:bundleDebugLocalLintAar
+> Task :op-engineering_op-sqlite:writeDebugLintModelMetadata
+> Task :react-native-community_datetimepicker:writeDebugLintModelMetadata
+> Task :react-native-get-random-values:writeDebugLintModelMetadata
+> Task :react-native-image-picker:writeDebugLintModelMetadata
+> Task :react-native-safe-area-context:writeDebugLintModelMetadata
+> Task :react-native-screens:writeDebugLintModelMetadata
+> Task :react-native-svg:writeDebugLintModelMetadata
+> Task :op-engineering_op-sqlite:generateDebugLintVitalModel
+> Task :react-native-community_datetimepicker:generateDebugLintVitalModel
+> Task :react-native-get-random-values:generateDebugLintVitalModel
+> Task :react-native-image-picker:generateDebugLintVitalModel
+> Task :react-native-safe-area-context:generateDebugLintVitalModel
+> Task :react-native-screens:generateDebugLintVitalModel
+> Task :react-native-svg:generateDebugLintVitalModel
+> Task :app:mergeExtDexDebug
+
+> Task :app:compileDebugKotlin
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/android/app/src/main/java/com/ipongoal/sound/WelcomeSoundPackage.kt:9:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/android/app/src/main/java/com/ipongoal/sound/WelcomeSoundPackage.kt:9:36 The corresponding parameter in the supertype 'ReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/android/app/src/main/java/com/ipongoal/sound/WelcomeSoundPackage.kt:11:35 The corresponding parameter in the supertype 'ReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+
+> Task :react-native-get-random-values:lintVitalAnalyzeDebug
+> Task :op-engineering_op-sqlite:lintVitalAnalyzeDebug
+> Task :app:collectDebugDependencies
+> Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug
+> Task :app:optimizeDebugResources
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:generateDebugLintVitalReportModel
+> Task :app:processDebugJavaRes
+> Task :app:sdkDebugDependencyData
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :react-native-image-picker:lintVitalAnalyzeDebug
+> Task :react-native-community_datetimepicker:lintVitalAnalyzeDebug
+> Task :app:mergeDebugJavaResource
+> Task :react-native-safe-area-context:lintVitalAnalyzeDebug
+> Task :app:mergeDexDebug
+> Task :app:compileDebugArtProfile
+> Task :react-native-svg:lintVitalAnalyzeDebug
+> Task :react-native-screens:lintVitalAnalyzeDebug
+> Task :app:lintVitalAnalyzeDebug
+> Task :app:lintVitalReportDebug
+> Task :app:lintVitalDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+[Incubating] Problems report is available at: file:///C:/Users/JLT/Desktop/Mobile-apps/IponGoal/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 11m 1s
+348 actionable tasks: 309 executed, 39 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.0.0/userguide/configuration_cache_enabling.html

@@ -30,9 +30,12 @@ class FlightSoundModule(private val context: ReactApplicationContext) :
   private var wanted = false
   private var focused = false
   private var music: MediaPlayer? = null
+  private var soundCheck: MediaPlayer? = null
+  private var soundCheckResult: Promise? = null
   private var pool: SoundPool? = null
   private var coin = 0
   private var bump = 0
+  private val choices = mutableMapOf<String, Int>()
   private val loaded = mutableSetOf<Int>()
   private val streams = mutableListOf<Int>()
   private val focusListener = AudioManager.OnAudioFocusChangeListener { change ->
@@ -75,19 +78,76 @@ class FlightSoundModule(private val context: ReactApplicationContext) :
     updateMusic()
   }
   @ReactMethod fun playEffect(effect: String) = onMain {
-    if (!audible() || !acquireFocus()) return@onMain
+    if (!audible()) return@onMain
     preparePlayers()
-    val sample = if (effect == "coin") coin else if (effect == "bump") bump else 0
+    val sample = if (effect == "coin") coin else if (effect == "bump") bump else choices[effect] ?: 0
     // Never queue late effects: a loading callback must not replay a stale game event.
-    if (loaded.contains(sample)) {
+    if (loaded.contains(sample) && acquireFocus()) {
       if (streams.size >= 8) { streams.forEach { pool?.stop(it) }; streams.clear() }
-      streams.add(pool?.play(sample, 0.55f, 0.55f, 1, 0, 1f) ?: 0)
+      val volume = if (effect == "bump") 0.7f else 0.55f
+      val stream = pool?.play(sample, volume, volume, 1, 0, 1f) ?: 0
+      if (stream != 0) {
+        streams.add(stream)
+        if (effect.startsWith("choice_")) Log.d("FlightSound", "Choice effect played=$effect")
+      } else Log.w("FlightSound", "Effect playback unavailable: $effect")
       handler.removeCallbacks(finishEffect)
       handler.postDelayed(finishEffect, 400)
     }
   }
   @ReactMethod fun stop() = onMain { wanted = false; stopPlayers(true) }
   @ReactMethod fun dispose() = onMain { releasePlayers() }
+  @ReactMethod fun testSound(promise: Promise) {
+    UiThreadUtil.runOnUiThread {
+      finishSoundCheck("inactive")
+      when {
+        closed || !active -> promise.resolve("inactive")
+        !enabled -> promise.resolve("muted")
+        manager.isStreamMute(AudioManager.STREAM_MUSIC) ||
+          manager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0 -> promise.resolve("volume_zero")
+        else -> {
+          // This explicit foreground action can retry after an interruption.
+          interrupted = false
+          if (!acquireFocus()) {
+            promise.resolve("focus_denied")
+          } else {
+            soundCheckResult = promise
+            try {
+              soundCheck = MediaPlayer.create(context, R.raw.flight_coin, attributes, 0)
+              val player = soundCheck
+              if (player == null) {
+                finishSoundCheck("load_failed")
+              } else {
+                handler.removeCallbacks(finishEffect)
+                player.setVolume(0.55f, 0.55f)
+                player.setOnCompletionListener { current ->
+                  if (current === soundCheck) finishSoundCheck("completed")
+                }
+                player.setOnErrorListener { current, what, extra ->
+                  Log.e("FlightSound", "Sound check failed: what=$what extra=$extra")
+                  if (current === soundCheck) finishSoundCheck("playback_failed")
+                  true
+                }
+                player.start()
+              }
+            } catch (error: Exception) {
+              Log.e("FlightSound", "Sound check failed", error)
+              finishSoundCheck("playback_failed")
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private fun finishSoundCheck(result: String) {
+    val player = soundCheck
+    val promise = soundCheckResult
+    soundCheck = null
+    soundCheckResult = null
+    try { player?.release() } catch (_: Exception) { }
+    promise?.resolve(result)
+    if (promise != null && !wanted) abandonFocus()
+  }
 
   private fun onMain(action: () -> Unit) {
     UiThreadUtil.runOnUiThread {
@@ -136,6 +196,10 @@ class FlightSoundModule(private val context: ReactApplicationContext) :
       }
       coin = player.load(context, R.raw.flight_coin, 1)
       bump = player.load(context, R.raw.flight_bump, 1)
+      choices["choice_1"] = player.load(context, R.raw.choice_1, 1)
+      choices["choice_2"] = player.load(context, R.raw.choice_2, 1)
+      choices["choice_3"] = player.load(context, R.raw.choice_3, 1)
+      choices["choice_4"] = player.load(context, R.raw.choice_4, 1)
     }
   }
   private fun updateMusic() {
@@ -152,6 +216,7 @@ class FlightSoundModule(private val context: ReactApplicationContext) :
     }
   }
   private fun stopPlayers(rewind: Boolean) {
+    finishSoundCheck("inactive")
     music?.let { if (it.isPlaying) it.pause(); if (rewind) it.seekTo(0) }
     streams.forEach { pool?.stop(it) }; streams.clear()
     handler.removeCallbacks(finishEffect)
@@ -171,6 +236,7 @@ class FlightSoundModule(private val context: ReactApplicationContext) :
     music?.release(); music = null
     pool?.release(); pool = null
     loaded.clear(); coin = 0; bump = 0
+    choices.clear()
   }
   override fun onHostPause() = onMain { active = false; interrupt() }
   override fun onHostResume() = onMain { active = true }

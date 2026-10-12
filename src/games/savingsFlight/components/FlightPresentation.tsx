@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
 import {
   Animated,
-  Easing,
   Image,
   StyleSheet,
   Text,
@@ -148,55 +147,6 @@ export function FlightHero({
   );
 }
 
-export function FlightClouds({ moving }: { moving: boolean }) {
-  const drift = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!moving) return;
-    const loop = Animated.loop(
-      Animated.timing(drift, {
-        toValue: 1,
-        duration: 14000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-        isInteraction: false,
-      }),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [moving, drift]);
-  return (
-    <Animated.View
-      pointerEvents="none"
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-      style={[
-        StyleSheet.absoluteFillObject,
-        {
-          transform: [
-            {
-              translateX: drift.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, -500],
-              }),
-            },
-          ],
-        },
-      ]}
-    >
-      {[0, 500].map(offset => (
-        <React.Fragment key={offset}>
-          <View
-            style={[styles.cloud, { left: 40 + offset, top: 50, width: 110 }]}
-          />
-          <View
-            style={[styles.cloud, { left: 280 + offset, top: 270, width: 130 }]}
-          />
-        </React.Fragment>
-      ))}
-    </Animated.View>
-  );
-}
-
 export function CollisionNotice({ enabled }: { enabled: boolean }) {
   const highlight = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -307,13 +257,6 @@ const styles = StyleSheet.create({
   collisionText: { color: colors.primary, fontSize: 15, fontWeight: '600' },
   hero: { alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
   confetti: { position: 'absolute', width: 8, height: 12, borderRadius: 3 },
-  cloud: {
-    position: 'absolute',
-    height: 48,
-    borderRadius: 28,
-    backgroundColor: colors.white,
-    opacity: 0.55,
-  },
   collection: {
     position: 'absolute',
     left: 102,

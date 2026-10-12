@@ -1,0 +1,32 @@
+{
+  "width": 320,
+  "font": 1.8,
+  "scenario": "Empty",
+  "firstActionAboveTabs": false,
+  "labels": [
+    "Good afternoon,",
+    "Alexandra",
+    "Open your profile",
+    "Alexandra Marie's initials",
+    "Saved so far",
+    "₱0",
+    "0 in progress",
+    "View completed goals, 0 completed",
+    "0 completed",
+    "Includes completed and archived goals.",
+    "Your savings goals",
+    "View all goals",
+    "Start your first savings goal",
+    "Tap + below to choose what you’re saving for.",
+    "Home",
+    "Create new goal",
+    "Statistics",
+    "History",
+    "Profile",
+    "Explore learning games",
+    "Learning games",
+    "Practice everyday money choices.",
+    "Saving tip",
+    "Tracking your savings helps you understand your financial habits."
+  ]
+}

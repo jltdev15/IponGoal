@@ -214,3 +214,15 @@ Home → Learning Games now exposes manual/assisted controls and all four Saving
 Enablement validation: typecheck, lint, and **133 tests in thirteen suites** pass, including enabled manual/assisted routes for every level and the disabled-flag guard. Normal Android debug/release builds pass for ARM32 and ARM64. The updated normal release was installed with `install -r`, preserving its existing database; the APK and SHA-256 metadata are updated in `artifacts/`.
 
 Normal-release native smoke check: opened Assisted flight → Goal Rush from the real Games menu, verified the fictional phone goal setup, and returned to Games. Screenshot: `docs/screenshots/flight-enabled-normal-release.png`. The check did not create or change financial records.
+
+## Learning-game controls and selection sounds — 2026-10-11
+
+Budget Challenge, Save or Spend and Goal Builder now use large colored choice cards, untimed progress, explicit next/review actions and direct replay. Needs or Wants retains its redesigned cards and gains the shared Sound control. Goal Builder's weekly amounts expose radio checked state and cannot begin an unaffordable plan. Flight answer buttons use the shared cards, and answer gates/buttons emit one option-specific sound event.
+
+Four original 0.36-second PCM chimes identify option positions, rather than correctness. Repeated/stale/invalid quiz callbacks are silent; mute persists across games, and screen/app exit stops sounds. Android preview logs confirmed successful SoundPool playback of all four choice IDs. Physical-phone hearing checks for these new tones remain pending because the phone was disconnected. iOS resources and playback paths were updated; iOS compilation was not available on Windows.
+
+Validation: 127 game/audio tests passed across 14 suites; the separate real-savings isolation test passed (30 unrelated tests skipped), bringing relevant Jest coverage to 128 passing tests. After the final layout adjustment, all 25 affected game/audio tests passed again. Typecheck and targeted source/test lint passed; the audio generator retains its existing seeded-noise bitwise lint warning. The Android native bridge unit test and normal/isolated release builds passed.
+
+Native screenshots cover Budget Challenge introduction, all three visible answers, feedback, and 1.6x text at 390 dp; Save or Spend answer cards; and Goal Builder's selected fourth amount and unaffordable-plan feedback. Flight event/answer-card behavior was covered by automated regression tests. The isolated QA package never opened the real account database. The dedicated emulator was closed with its original font scale restored.
+
+The normal APK package, ARM32/ARM64 libraries, existing signing certificate, final game bundle, and uncompressed bytes of all four choice WAVs were verified. Final normal APK SHA-256: `f1ebc3a3dadacefd459cafe2b005f02d8b843bd5e9a47a26198ac62436b1ce3c`. Download: `artifacts/PiggyPath-release.apk`; installation on the physical phone was not performed during this update.

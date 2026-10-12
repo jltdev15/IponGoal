@@ -76,7 +76,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-android.ps1
 # For a different JDK 17 location, append: -JavaHome 'C:\path\to\jdk-17'
 ```
 
-The script downloads Google's command-line tools, verifies their checksum, accepts SDK licenses, installs the required packages under `%LOCALAPPDATA%\Android\Sdk`, and creates `IponGoal_API_36`. It sets user environment variables and writes the ignored `android/local.properties` file. Open a new terminal after setup. Hardware virtualization and Windows Hypervisor Platform must be available for accelerated emulation.
+The script downloads Google's command-line tools, verifies their checksum, accepts SDK licenses, installs the required packages under `%LOCALAPPDATA%\Android\Sdk`, and creates `IponGoal_API_36` under `%USERPROFILE%\.android\avd`. These tools and emulator data are shared outside the project. It sets user environment variables and writes the ignored `android/local.properties` file. Open a new terminal after setup. Hardware virtualization and Windows Hypervisor Platform must be available for accelerated emulation.
 
 ```powershell
 npm run emulators
@@ -105,7 +105,9 @@ npm start -- --no-emulator
 npm run start:metro
 ```
 
-SDK discovery checks `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `android/local.properties`, and the standard SDK location for macOS, Windows, or Linux. Noninteractive terminals start Metro without prompting. Metro flags such as `--reset-cache` still work: `npm start -- --reset-cache`.
+SDK discovery checks `android/local.properties`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and the standard SDK location for macOS, Windows, or Linux. Build, emulator, and QA scripts use the same SDK discovery. Emulator storage follows `ANDROID_AVD_HOME` or Android's default user directory. Noninteractive terminals start Metro without prompting. Metro flags such as `--reset-cache` still work: `npm start -- --reset-cache`.
+
+Native build output in `android/build`, `android/app/build`, `android/app/.cxx`, their QA variants, and dependency `android/build` / `android/.cxx` folders is generated and can be removed with Android builds stopped. The next build recreates it and takes longer. Keep `artifacts` for saved APKs, and preserve emulator virtual disks when cleaning up because they contain installed apps and data.
 
 ### Physical Android phone
 
@@ -231,7 +233,11 @@ Savings Flight adds four offline practice levels with native tap-to-fly controls
 
 Open **Home → Learning Games → Play Needs or Wants**. Each untimed round draws five situations from ten authored examples, explains every answer, and ends with a review of your choices. A basic school notebook and an extra decorated notebook illustrate why context matters. Wants can be reasonable when needs and planned savings are covered. Practice answers are session memory only and never change real goals, savings, or statistics.
 
+Tap **Start playing**, then choose **It's a need** (essential for daily life) or **It's a want** (an extra for enjoyment). Answer cards stay at the bottom on portrait phones and move into the scrolling content on short screens or with large text. Read the explanation, tap **Next question**, and finish with **See my results**. **Play Again** starts a new round immediately.
+
 For isolated native QA, build from `android/` with `./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a --offline -I ../scripts/learning-games-qa.gradle`. This uses the standalone `scripts/learning-games-qa-entry.js` navigator, the separate `com.ipongoal.learningqa` package, and the normal Savings Flight configuration. Rebuild without the init script before taking a regular APK from the variant output directory.
+
+Use `x86_64` for the dedicated Android emulator on port 5556. `node scripts/needs-wants-design-qa.cjs` reads its visible controls; `tap "Start playing"`, `scroll`, and `shot <name>` exercise the isolated package and save screenshots. The helper refuses to operate when the regular app is foreground.
 
 ## Budget Challenge
 
@@ -241,17 +247,21 @@ Open **Home → Learning Games → Play Budget Challenge**. Plan a fictional ₱
 
 ## Save or Spend
 
-Open **Home → Learning Games → Play Save or Spend**. Five untimed, separate fictional examples teach saving extra allowance, splitting allowance between a need and saving, delaying optional entertainment, paying an essential repair from existing practice savings, and enjoying an affordable planned want. Both choices in the planned-treat example are reasonable.
+The registered `SaveOrSpend` practice route contains five untimed, separate fictional examples that teach saving extra allowance, splitting allowance between a need and saving, delaying optional entertainment, paying an essential repair from existing practice savings, and enjoying an affordable planned want. Both choices in the planned-treat example are reasonable. This legacy route is available in the isolated QA menu, rather than the current game hub.
 
 Each example labels its starting savings and new money. Feedback shows the exact savings and spending effects; results review choices and explanations without adding independent example balances together. `src/games/saveOrSpend/` separates scenarios, the in-memory session reducer, screen, and results. No real money or records are accessed, and no rewards or results are persisted. Restart or leaving discards the practice session.
 
 ## Goal Builder
 
-Open **Home → Learning Games → Play Goal Builder**. Choose a fictional book collection, schoolbag, or bicycle, set one of two practice target prices, and plan weekly saving from a fictional ₱300 allowance. Regular essentials of ₱200 and a separate ₱40 reserve leave ₱60 for goal contributions or extras. A ₱100 weekly contribution is shown as unaffordable and cannot begin the simulation.
+The registered `GoalBuilder` practice route lets you choose a fictional book collection, schoolbag, or bicycle, set one of two practice target prices, and plan weekly saving from a fictional ₱300 allowance. Regular essentials of ₱200 and a separate ₱40 reserve leave ₱60 for goal contributions or extras. A ₱100 weekly contribution is shown as unaffordable and cannot begin the simulation. This legacy route is available in the isolated QA menu, rather than the current game hub.
 
 Three untimed practice weeks explore extra required school materials, an essential repair paid from existing goal savings, and an affordable optional treat. The review separates goal savings, spending, reserves, and unallocated money, and explains the updated whole-week estimate. Estimates assume steady future contributions without additional expenses or income; they are not deadlines or guarantees. `src/games/goalBuilder/` contains the authored examples, pure in-memory reducer, screen, and review. No real goals are created and no records or rewards are persisted. Exit removes the practice route; reopening starts fresh.
 
-All four introductory games and Savings Flight are available. The user confirmed the remaining accessibility, manual-play, and physical-device acceptance checks passed; see docs/QA.md for the release record.
+The game hub currently exposes Needs or Wants, Budget Challenge and Savings Flight (when enabled). The two legacy practice routes remain registered. The learning QA menu exposes all four quiz routes and the flight setup without opening real account data.
+
+Quiz games use large colored answer cards, untimed progress indicators, explicit Next/Review actions and one-tap replay. Controls move into the scrollable content on small screens or with enlarged text. Weekly savings amounts use accessible radio selection, with an unaffordable plan blocking Continue.
+
+Every accepted answer plays an option-specific original tone: `choice_1` through `choice_4` have different pitches and rhythms. Goal/price/weekly amount selections also use these tones; flight answer gates and buttons emit the same choice event. Sounds identify selections, not correctness. Repeated or stale answer callbacks cannot play twice. All games share the device-local Sound on/off setting and stop audio when leaving the app or screen. See `assets/audio/flight/README.md` for asset generation and platform behavior.
 
 ## Profile overview and editing
 

@@ -102,8 +102,12 @@ const props = { navigation } as unknown as NativeStackScreenProps<
 async function press(title: string) {
   await act(async () =>
     renderer!.root
-      .findAllByType(AppButton)
-      .find(b => b.props.title === title)!
+      .findAll(
+        b =>
+          b.props.accessibilityRole === 'button' &&
+          typeof b.props.onPress === 'function',
+      )
+      .find(b => b.props.accessibilityLabel === title)!
       .props.onPress(),
   );
 }
@@ -141,7 +145,7 @@ test('untimed screen supports supportive feedback, five answers, review, replay,
     ),
   ).toHaveLength(4);
   await press('Play Again');
-  await press('Start Save or Spend');
+  await press(SAVE_OR_SPEND_SCENARIOS[0].options[0].label);
   await press('Restart Practice');
   expect(
     renderer!.root

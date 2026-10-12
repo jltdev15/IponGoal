@@ -72,9 +72,10 @@ test.each(LEVELS)(
         const before = e.getSnapshot().practiceSavings;
         e.resolveDecision(choice);
         const increase = e.getSnapshot().practiceSavings - before;
-        expect(e.drainEvents()).toEqual(
-          increase > 0 ? [{ type: 'savings', amount: increase }] : [],
-        );
+        expect(e.drainEvents()).toEqual([
+          ...(increase > 0 ? [{ type: 'savings', amount: increase }] : []),
+          { type: 'choice', optionIndex: choice },
+        ]);
         e.resolveDecision(choice);
         e.continueFlight();
         expect(e.drainEvents()).toEqual([]);

@@ -7,6 +7,7 @@
 @property(nonatomic, strong) AVAudioPlayer *music;
 @property(nonatomic, strong) AVAudioPlayer *coin;
 @property(nonatomic, strong) AVAudioPlayer *bump;
+@property(nonatomic, strong) NSMutableDictionary<NSString *, AVAudioPlayer *> *choices;
 @property(nonatomic) BOOL enabled;
 @property(nonatomic) BOOL interrupted;
 @property(nonatomic) BOOL wanted;
@@ -44,13 +45,20 @@ RCT_EXPORT_METHOD(prepare) {
   [AVAudioSession.sharedInstance setCategory:AVAudioSessionCategoryAmbient error:nil];
   if (!self.music) { self.music = [self player:@"flight_music" volume:0.18]; self.music.numberOfLoops = -1; }
   if (!self.coin) self.coin = [self player:@"flight_coin" volume:0.55];
-  if (!self.bump) self.bump = [self player:@"flight_bump" volume:0.55];
+  if (!self.bump) self.bump = [self player:@"flight_bump" volume:0.70];
+  if (!self.choices) {
+    self.choices = [NSMutableDictionary new];
+    for (NSString *name in @[@"choice_1", @"choice_2", @"choice_3", @"choice_4"]) {
+      AVAudioPlayer *choice = [self player:name volume:0.55];
+      if (choice) self.choices[name] = choice;
+    }
+  }
 }
 RCT_EXPORT_METHOD(getEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) { resolve(@(self.enabled)); }
 RCT_EXPORT_METHOD(setEnabled:(BOOL)enabled) {
   self.enabled = enabled;
   [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"flight.sound.enabled"];
-  if (!enabled) { [self.music pause]; [self.coin stop]; [self.bump stop]; }
+  if (!enabled) { [self.music pause]; [self.coin stop]; [self.bump stop]; for (AVAudioPlayer *choice in self.choices.allValues) [choice stop]; }
   else [self setMusic:self.wanted];
 }
 - (BOOL)audible { return self.enabled && !self.interrupted && UIApplication.sharedApplication.applicationState == UIApplicationStateActive; }
@@ -67,16 +75,17 @@ RCT_EXPORT_METHOD(setMusic:(BOOL)playing) {
 RCT_EXPORT_METHOD(playEffect:(NSString *)effect) {
   if (![self audible]) return;
   [self prepare];
-  AVAudioPlayer *player = [effect isEqualToString:@"coin"] ? self.coin : ([effect isEqualToString:@"bump"] ? self.bump : nil);
+  AVAudioPlayer *player = [effect isEqualToString:@"coin"] ? self.coin : ([effect isEqualToString:@"bump"] ? self.bump : self.choices[effect]);
   [player stop]; player.currentTime = 0; [player play];
 }
 RCT_EXPORT_METHOD(stop) {
   self.wanted = NO;
   [self.music stop]; self.music.currentTime = 0;
   [self.coin stop]; [self.bump stop];
+  for (AVAudioPlayer *choice in self.choices.allValues) [choice stop];
 }
 RCT_EXPORT_METHOD(dispose) {
-  [self stop]; self.music = nil; self.coin = nil; self.bump = nil;
+  [self stop]; self.music = nil; self.coin = nil; self.bump = nil; self.choices = nil;
 }
 - (void)interrupt:(NSNotification *)notification {
   if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification] &&

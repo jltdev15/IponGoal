@@ -11,7 +11,7 @@ if (onlyTab && !['Home', 'History', 'Statistics', 'Profile'].includes(onlyTab))
   throw new Error('Choose Home, History, Statistics, or Profile');
 if (fixedWidth && ![320, 390, 412].includes(fixedWidth))
   throw new Error('Use 320, 390, or 412 as the preconfigured width');
-const adb = path.join(root, '.android-sdk/platform-tools/adb.exe');
+const adb = require('./android-sdk.cjs').adbPath();
 const run = args =>
   execFileSync(adb, ['-s', 'emulator-5556', ...args], {
     timeout: 20000,

@@ -11,6 +11,9 @@ jest.mock(
   () => require('react-native-safe-area-context/jest/mock').default,
 );
 jest.mock('../src/components/Icon', () => ({ Icon: () => null }));
+jest.mock('../src/components/CalendarDateField', () => ({
+  CalendarDateField: () => null,
+}));
 const mockAddSavings = jest.fn();
 jest.mock('../src/database/repositories/savingsRepository', () => ({
   addSavings: (...args: unknown[]) => mockAddSavings(...args),

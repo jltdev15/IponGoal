@@ -28,7 +28,6 @@ import { HUD } from './components/HUD';
 import {
   CoinBurst,
   CollisionNotice,
-  FlightClouds,
   FlightHero,
   MotionEntrance,
 } from './components/FlightPresentation';
@@ -36,9 +35,12 @@ import { useFlightMotion } from './useFlightMotion';
 import { GameReview } from '../GameReview';
 import { Pause } from 'lucide-react-native';
 import { flightSound } from '../../services/flightSound';
+import { GameChoiceCard } from '../GameControls';
 import { useFlightAudio } from './useFlightAudio';
 import { SoundControl } from './components/SoundControl';
+import { FlightSoundCheck } from './components/FlightSoundCheck';
 import { FlightGuide } from './components/FlightGuide';
+import { FlightSky } from './components/FlightSky';
 
 type Props = NativeStackScreenProps<MainStackParams, 'SavingsFlight'>;
 export function SavingsFlightScreen(props: Props) {
@@ -86,7 +88,9 @@ function FlightSession({ navigation, route }: Props) {
   const frame = engine.getFrame();
   const consumeEvents = useCallback(() => {
     for (const event of engine.drainEvents()) {
-      flightSound.effect(event.type === 'collision' ? 'bump' : 'coin');
+      if (event.type === 'choice') flightSound.choice(event.optionIndex);
+      else if (event.type === 'collision') flightSound.effect('bump');
+      else if (event.type === 'coin') flightSound.effect('coin');
       if (event.type === 'coin')
         setCollection(current => ({
           event: current.event + 1,
@@ -265,6 +269,7 @@ function FlightSession({ navigation, route }: Props) {
         </Text>
         <HUD state={state} level={engine.level} mode={mode} />
         <SoundControl enabled={sound.enabled} onPress={sound.toggle} />
+        <FlightSoundCheck enabled={sound.enabled} />
         <FlightGuide
           mode={mode}
           hasCoins={mode === 'manual' && levelId !== 'budget'}
@@ -293,10 +298,10 @@ function FlightSession({ navigation, route }: Props) {
   const answers =
     scenario &&
     scenario.options.map((option, index) => (
-      <AppButton
+      <GameChoiceCard
         key={option.id}
         title={option.label}
-        variant="secondary"
+        index={index}
         onPress={() => {
           engine.resolveDecision(index);
           sync();
@@ -371,7 +376,7 @@ function FlightSession({ navigation, route }: Props) {
                   testID="flight-scene"
                   style={[
                     styles.scene,
-                    { height: Math.max(180, playHeight - hudHeight - 24) },
+                    { maxHeight: Math.max(180, playHeight - hudHeight - 24) },
                   ]}
                   onLayout={measure}
                 >
@@ -409,7 +414,7 @@ function FlightSession({ navigation, route }: Props) {
                       }
                       onPress={() => engine.tap()}
                     >
-                      <FlightClouds moving={motion && engine.isAdvancing()} />
+                      <FlightSky moving={motion && engine.isAdvancing()} />
                       {!choosing && (
                         <>
                           <Animated.View
@@ -490,6 +495,7 @@ function FlightSession({ navigation, route }: Props) {
                         enabled={sound.enabled}
                         onPress={sound.toggle}
                       />
+                      <FlightSoundCheck enabled={sound.enabled} />
                       <AppButton
                         title="Resume"
                         onPress={() => {
@@ -635,22 +641,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   scene: {
+    width: '100%',
+    aspectRatio: FLIGHT.width / FLIGHT.height,
     minHeight: 180,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primarySoft,
-
+    backgroundColor: '#D5EDF6',
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#BAD7E5',
   },
   stage: {
     width: FLIGHT.width,
     height: FLIGHT.height,
     flexShrink: 0,
     overflow: 'hidden',
-    backgroundColor: colors.primarySoft,
+    backgroundColor: '#D5EDF6',
   },
   object: { position: 'absolute', left: 0, top: 0 },
   overlay: {

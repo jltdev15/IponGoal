@@ -13,6 +13,7 @@ import { completeGoal } from '../database/repositories/goalRepository';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { EmptyState } from '../components/EmptyState';
 import { AppInput } from '../components/AppInput';
+import { CalendarDateField } from '../components/CalendarDateField';
 import { AmountInput } from '../components/AmountInput';
 import { AppButton } from '../components/AppButton';
 import { Icon } from '../components/Icon';
@@ -115,13 +116,13 @@ export function SavingsFormScreen({
           : 'Every small amount brings your goal closer.'}
       </Text>
       <AmountInput label="Amount" value={amount} onChangeText={setAmount} />
-      <AppInput
+      <CalendarDateField
         label="Date"
         value={date}
-        onChangeText={setDate}
-        placeholder="YYYY-MM-DD"
-        maxLength={10}
-        keyboardType="numbers-and-punctuation"
+        onChange={setDate}
+        disabled={busy}
+        allowClear={false}
+        dateLabel="savings date"
         helper="The day you saved this amount."
       />
       <AppInput

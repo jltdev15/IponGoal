@@ -20,6 +20,7 @@ import { formatCurrency } from '../../utils/currency';
 export type FlightEvent =
   | { type: 'coin'; amount: number; y: number }
   | { type: 'savings'; amount: number }
+  | { type: 'choice'; optionIndex: number }
   | { type: 'collision' };
 export type DecisionRecord = {
   scenarioId: string;
@@ -297,6 +298,7 @@ export class SavingsFlightEngine {
     s.decisionCount += 1;
     s.correctDecisionCount += thoughtful ? 1 : 0;
     s.decisionPhase = 'feedback';
+    this.events.push({ type: 'choice', optionIndex });
     this.section = 0;
     this.checkpoint = this.saveCheckpoint();
     this.accumulator = 0;

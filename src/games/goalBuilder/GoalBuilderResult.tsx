@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { AppButton } from '../../components/AppButton';
+import { GameReview } from '../GameReview';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../utils/currency';
 import {
@@ -11,10 +11,8 @@ import {
 } from './GoalBuilderSession';
 export function GoalBuilderResult({
   session,
-  onAgain,
 }: {
   session: GoalBuilderSession;
-  onAgain: () => void;
 }) {
   const goal = PRACTICE_GOALS.find(g => g.id === session.goalId)!;
   const initialWeeks = weeksToGoal(
@@ -88,24 +86,22 @@ export function GoalBuilderResult({
         with no further withdrawals or extra income. It rounds up to whole
         weeks. Unallocated money and reserves are not counted toward the goal.
       </Text>
-      <AppButton title="Build Another Goal" onPress={onAgain} />
-      <Text accessibilityRole="header" style={theme.heading}>
-        Review the three practice weeks
-      </Text>
-      {session.answers.map(answer => (
-        <View key={answer.event.id} style={theme.card}>
-          <Text style={theme.heading}>{answer.event.title}</Text>
-          <Text style={theme.body}>You chose: {answer.option.label}</Text>
-          <Text style={theme.body}>{answer.option.explanation}</Text>
-          <Text style={theme.body}>
-            Goal contribution: {formatCurrency(answer.contribution)}
-          </Text>
-          <Text style={theme.body}>
-            Goal savings: {formatCurrency(answer.savingsBefore)} →{' '}
-            {formatCurrency(answer.savingsAfter)}
-          </Text>
-        </View>
-      ))}
+      <GameReview>
+        {session.answers.map(answer => (
+          <View key={answer.event.id} style={theme.card}>
+            <Text style={theme.heading}>{answer.event.title}</Text>
+            <Text style={theme.body}>You chose: {answer.option.label}</Text>
+            <Text style={theme.body}>{answer.option.explanation}</Text>
+            <Text style={theme.body}>
+              Goal contribution: {formatCurrency(answer.contribution)}
+            </Text>
+            <Text style={theme.body}>
+              Goal savings: {formatCurrency(answer.savingsBefore)} →{' '}
+              {formatCurrency(answer.savingsAfter)}
+            </Text>
+          </View>
+        ))}
+      </GameReview>
       <Text style={theme.muted}>
         This fictional goal was never added to your real goals. Nothing was
         saved to your account.

@@ -3,6 +3,11 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawn, spawnSync } = require('node:child_process');
 const { createInterface } = require('node:readline/promises');
+const {
+  configureAndroidEnvironment,
+  findSdk: discoverSdk,
+  sdkCandidates,
+} = require('./android-sdk.cjs');
 
 const root = path.resolve(__dirname, '..');
 const executable = name =>
@@ -10,25 +15,11 @@ const executable = name =>
 
 function findSdk() {
   const properties = path.join(root, 'android', 'local.properties');
-  const configured = fs.existsSync(properties)
-    ? fs.readFileSync(properties, 'utf8').match(/^sdk\.dir\s*=\s*(.+)$/m)?.[1]
-    : undefined;
-  const candidates = [
-    path.join(root, '.android-sdk'),
-    configured?.trim().replace(/\\([\\: ])/g, '$1'),
-    process.env.ANDROID_HOME,
-    process.env.ANDROID_SDK_ROOT,
-    process.platform === 'darwin'
-      ? path.join(os.homedir(), 'Library', 'Android', 'sdk')
-      : process.platform === 'win32'
-      ? path.join(process.env.LOCALAPPDATA || os.homedir(), 'Android', 'Sdk')
-      : path.join(os.homedir(), 'Android', 'Sdk'),
-  ];
+  const candidates = sdkCandidates();
   if (process.argv.includes('--diagnose')) {
     console.log(`Node: ${process.execPath} (${process.platform})`);
     console.log(`Project: ${root}`);
     console.log(`SDK properties file: ${properties}`);
-    console.log(`Configured SDK: ${configured || '(none)'}`);
     for (const candidate of candidates.filter(Boolean)) {
       const emulatorPath = path.join(
         candidate,
@@ -43,11 +34,7 @@ function findSdk() {
       }
     }
   }
-  return candidates.find(
-    candidate =>
-      candidate &&
-      fs.existsSync(path.join(candidate, 'emulator', executable('emulator'))),
-  );
+  return discoverSdk();
 }
 
 function listEmulators(sdk) {
@@ -172,10 +159,7 @@ async function launchEmulator(sdk, name) {
 
 async function main() {
   const flags = process.argv.slice(2);
-  const projectAvds = path.join(root, '.android-avd');
-  if (fs.existsSync(projectAvds)) {
-    process.env.ANDROID_AVD_HOME = projectAvds;
-  }
+  configureAndroidEnvironment();
   if (flags.includes('--help')) {
     console.log(
       'npm start                         Choose an emulator, then start Metro\nnpm start -- --no-emulator         Start Metro only\nnpm start -- --emulator=AVD_NAME    Launch a specific installed emulator\nnpm run emulators                 List installed emulators\n\nOther flags, such as --reset-cache or --port, are passed to Metro.\nAfter the emulator boots, run npm run android in a second terminal.',

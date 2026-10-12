@@ -9,7 +9,7 @@ class FlightSoundModuleTest {
     val methods = FlightSoundModule::class.java.declaredMethods.filter {
       it.isAnnotationPresent(ReactMethod::class.java)
     }
-    assertEquals(setOf("prepare", "activate", "getEnabled", "setEnabled", "setMusic", "playEffect", "stop", "dispose", "addListener", "removeListeners"), methods.map { it.name }.toSet())
+    assertEquals(setOf("prepare", "activate", "getEnabled", "setEnabled", "setMusic", "playEffect", "stop", "dispose", "testSound", "addListener", "removeListeners"), methods.map { it.name }.toSet())
     methods.forEach { assertEquals(Void.TYPE, it.returnType) }
   }
 }

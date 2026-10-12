@@ -23,7 +23,7 @@ function WelcomeQA() {
           <Stack.Screen
             name="Welcome"
             component={WelcomeScreen}
-            options={{ title: '' }}
+            options={{ title: '', headerShown: false }}
           />
           <Stack.Screen name="Login" component={Destination} />
           <Stack.Screen name="Register" component={Destination} />

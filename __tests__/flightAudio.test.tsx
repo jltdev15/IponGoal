@@ -41,6 +41,7 @@ beforeEach(() => {
 });
 afterEach(async () => {
   if (renderer) await act(async () => renderer.unmount());
+  jest.useRealTimers();
   jest.restoreAllMocks();
   delete NativeModules.FlightSound;
 });
@@ -102,6 +103,60 @@ test('interruptions pause the game and remove their subscription on exit', async
   DeviceEventEmitter.emit('FlightSoundInterrupted');
   expect(interrupt).toHaveBeenCalledTimes(1);
   expect(native.dispose).toHaveBeenCalled();
+});
+
+test('a failed accessibility query does not permanently suppress flight music', async () => {
+  jest
+    .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
+    .mockRejectedValue(new Error('Accessibility service unavailable'));
+  await act(async () => {
+    renderer = create(
+      <Harness state={{ ...engine.getSnapshot(), gameStatus: 'playing' }} />,
+    );
+  });
+  expect(native.setMusic).toHaveBeenLastCalledWith(true);
+});
+
+test('a stalled accessibility query stops blocking music after a bounded wait', async () => {
+  jest.useFakeTimers();
+  jest
+    .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
+    .mockImplementation(() => new Promise<boolean>(() => {}));
+  await act(async () => {
+    renderer = create(
+      <Harness state={{ ...engine.getSnapshot(), gameStatus: 'playing' }} />,
+    );
+  });
+  expect(native.setMusic).toHaveBeenLastCalledWith(false);
+  await act(async () => {
+    jest.advanceTimersByTime(2000);
+  });
+  expect(native.setMusic).toHaveBeenLastCalledWith(true);
+});
+
+test('a screen-reader change takes precedence over the accessibility timeout', async () => {
+  jest.useFakeTimers();
+  const events = jest.spyOn(AccessibilityInfo, 'addEventListener');
+  jest
+    .spyOn(AccessibilityInfo, 'isScreenReaderEnabled')
+    .mockImplementation(() => new Promise<boolean>(() => {}));
+  await act(async () => {
+    renderer = create(
+      <Harness state={{ ...engine.getSnapshot(), gameStatus: 'playing' }} />,
+    );
+  });
+  const readerEvents = events.mock.calls as unknown as [
+    string,
+    (value: boolean) => void,
+  ][];
+  const changed = readerEvents.find(
+    ([event]) => event === 'screenReaderChanged',
+  )![1];
+  await act(async () => {
+    changed(true);
+    jest.advanceTimersByTime(2000);
+  });
+  expect(native.setMusic).toHaveBeenLastCalledWith(false);
 });
 
 test('missing or throwing native audio never blocks flight operations', () => {

@@ -13,10 +13,10 @@ import { Player } from '../src/games/savingsFlight/components/Player';
 import {
   CoinBurst,
   CollisionNotice,
-  FlightClouds,
   FlightHero,
   MotionEntrance,
 } from '../src/games/savingsFlight/components/FlightPresentation';
+import { FlightSky } from '../src/games/savingsFlight/components/FlightSky';
 import { SavingsFlightResult } from '../src/games/savingsFlight/SavingsFlightResult';
 import { SavingsFlightEngine } from '../src/games/savingsFlight/SavingsFlightEngine';
 import { useFlightMotion } from '../src/games/savingsFlight/useFlightMotion';
@@ -145,17 +145,19 @@ test('coin feedback responds only to new collections, stops on pause, and does n
   expect(Animated.timing).toHaveBeenCalledTimes(1);
 });
 
-test('cloud loop stops when frozen and on unmount', async () => {
+test('both cloud layers stop when frozen and on unmount', async () => {
   const loop = { start: jest.fn(), stop: jest.fn(), reset: jest.fn() };
   jest.spyOn(Animated, 'loop').mockReturnValue(loop);
-  await mount(<FlightClouds moving />);
-  expect(loop.start).toHaveBeenCalledTimes(1);
-  await update(<FlightClouds moving={false} />);
-  expect(loop.stop).toHaveBeenCalledTimes(1);
-  await update(<FlightClouds moving />);
+  await mount(<FlightSky moving={false} />);
+  expect(loop.start).not.toHaveBeenCalled();
+  await update(<FlightSky moving />);
+  expect(loop.start).toHaveBeenCalledTimes(2);
+  await update(<FlightSky moving={false} />);
+  expect(loop.stop).toHaveBeenCalledTimes(2);
+  await update(<FlightSky moving />);
   await act(async () => renderer!.unmount());
   renderer = undefined;
-  expect(loop.stop).toHaveBeenCalledTimes(2);
+  expect(loop.stop).toHaveBeenCalledTimes(4);
 });
 
 test.each(['completed', 'gameOver'] as const)(

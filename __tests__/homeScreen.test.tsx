@@ -12,6 +12,7 @@ import { GoalCollectionScreen } from '../src/screens/GoalCollectionScreen';
 import { HomeGoalRow } from '../src/components/HomeGoalRow';
 import { ProgressBar } from '../src/components/ProgressBar';
 import { ScreenContainer } from '../src/components/ScreenContainer';
+import { SavingsSummary } from '../src/components/SavingsSummary';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Goal, Saving, User } from '../src/types/models';
 
@@ -211,9 +212,7 @@ test('Home preserves totals and active order and routes every action', async () 
   mockSavings = [10000, 20000, 5000].map(amount => ({ amount } as Saving));
   await mount();
   expect(textContent()).toContain('₱350');
-  expect(textContent()).toContain(
-    'Recorded across all your goals, including completed and archived ones.',
-  );
+  expect(textContent()).toContain('Includes completed and archived goals.');
   expect(textContent()).toContain('Saved so far');
   expect(textContent()).toContain('2 in progress');
   expect(textContent()).toContain('1 completed');
@@ -272,7 +271,69 @@ test.each([0, 25000, 100000, 125000])(
   },
 );
 
-test('many goals remain virtualized; narrow enlarged text stacks actions and hides art', async () => {
+test.each([0, 1, 3, 4, 30])(
+  'Home previews up to three of %s active goals and counts the complete dataset',
+  async count => {
+    const activeGoals = Array.from({ length: count }, (_, index) =>
+      goal(String(index)),
+    );
+    mockGoals = [
+      goal('completed', { status: 'completed' }),
+      ...activeGoals,
+      goal('archived', { status: 'archived' }),
+    ];
+    mockSavings = mockGoals.map(item => ({
+      goalId: item.id,
+      amount: 10000,
+    })) as Saving[];
+    await mount();
+    expect(
+      renderer.root
+        .findByType(FlatList)
+        .props.data.map((item: Goal) => item.id),
+    ).toEqual(activeGoals.slice(0, 3).map(item => item.id));
+    expect(textContent()).toContain(`${count} in progress`);
+    expect(textContent()).toContain('1 completed');
+    expect(renderer.root.findByType(SavingsSummary).props.amount).toBe(
+      `₱${((count + 2) * 100).toLocaleString('en-PH')}`,
+    );
+    if (count > 3) {
+      expect(textContent()).toContain(`Showing 3 of ${count} active goals`);
+    } else {
+      expect(textContent()).not.toContain('Showing ');
+    }
+    await press('View all goals');
+    expect(mockNavigate).toHaveBeenLastCalledWith('AllGoals');
+    if (count > 0) {
+      const text = textContent();
+      expect(
+        text.indexOf(activeGoals[Math.min(count, 3) - 1].name),
+      ).toBeLessThan(text.indexOf('Learning games'));
+    }
+    expect(textContent().indexOf('Learning games')).toBeLessThan(
+      textContent().indexOf('Saving tip'),
+    );
+  },
+);
+
+test('Home summary variant leaves the shared default appearance intact', async () => {
+  await mount();
+  expect(renderer.root.findByType(SavingsSummary).props.variant).toBe('home');
+  const summaryProps = {
+    label: 'Saved so far',
+    amount: '₱250',
+    note: 'Summary note',
+    stacked: false,
+  };
+  await act(async () => renderer.update(<SavingsSummary {...summaryProps} />));
+  const defaultTree = renderer.toJSON();
+  await act(async () =>
+    renderer.update(<SavingsSummary {...summaryProps} variant="default" />),
+  );
+  expect(renderer.toJSON()).toEqual(defaultTree);
+});
+
+test('three-goal preview keeps narrow enlarged text readable with stacked actions', async () => {
   jest
     .mocked(useWindowDimensions)
     .mockReturnValue({ width: 320, height: 568, scale: 2, fontScale: 1.8 });
@@ -286,7 +347,9 @@ test('many goals remain virtualized; narrow enlarged text stacks actions and hid
   );
   await mount();
   const list = renderer.root.findByType(FlatList);
-  expect(list.props.data).toHaveLength(30);
+  expect(list.props.data).toHaveLength(3);
+  expect(textContent()).toContain('30 in progress');
+  expect(textContent()).toContain('Showing 3 of 30 active goals');
   expect(StyleSheet.flatten(list.props.contentContainerStyle)).toMatchObject({
     paddingHorizontal: 16,
     maxWidth: 480,
@@ -310,7 +373,7 @@ test('many goals remain virtualized; narrow enlarged text stacks actions and hid
     alignItems: 'stretch',
   });
   expect(textContent()).not.toContain('Aim for ');
-  expect(textContent().indexOf('Learning games')).toBeLessThan(
+  expect(textContent().indexOf('Learning games')).toBeGreaterThan(
     textContent().indexOf('Your savings goals'),
   );
   expect(textContent().indexOf('Your savings goals')).toBeLessThan(
@@ -328,11 +391,11 @@ test('completed goals remain reachable with no completed goals or active goals',
   const header = list.props.ListHeaderComponent as React.ReactElement;
   const footer = list.props.ListFooterComponent as React.ReactElement;
   await act(async () => renderer.update(header));
-  expect(textContent()).toContain('Learning games');
+  expect(textContent()).not.toContain('Learning games');
   expect(textContent()).not.toContain('Saving tip');
   await act(async () => renderer.update(footer));
   expect(textContent()).toContain('Saving tip');
-  expect(textContent()).not.toContain('Learning games');
+  expect(textContent()).toContain('Learning games');
 });
 
 test.each([

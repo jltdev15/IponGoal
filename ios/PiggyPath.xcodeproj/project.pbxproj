@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C401CE000000000000000001 /* choice_1.wav in Resources */ = {isa = PBXBuildFile; fileRef = C401CE000000000000000002; };
+		C401CE000000000000000003 /* choice_2.wav in Resources */ = {isa = PBXBuildFile; fileRef = C401CE000000000000000004; };
+		C401CE000000000000000005 /* choice_3.wav in Resources */ = {isa = PBXBuildFile; fileRef = C401CE000000000000000006; };
+		C401CE000000000000000007 /* choice_4.wav in Resources */ = {isa = PBXBuildFile; fileRef = C401CE000000000000000008; };
 		B7125A000000000000000001 /* WelcomeSound.m in Sources */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000002 /* WelcomeSound.m */; };
 		B7125A000000000000000003 /* welcome-oink.wav in Resources */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000004 /* welcome-oink.wav */; };
 		B7125A000000000000000005 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7125A000000000000000006 /* AVFoundation.framework */; };
@@ -21,6 +25,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C401CE000000000000000002 /* choice_1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "choice_1.wav"; path = "../assets/audio/flight/choice_1.wav"; sourceTree = "<group>"; };
+		C401CE000000000000000004 /* choice_2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "choice_2.wav"; path = "../assets/audio/flight/choice_2.wav"; sourceTree = "<group>"; };
+		C401CE000000000000000006 /* choice_3.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "choice_3.wav"; path = "../assets/audio/flight/choice_3.wav"; sourceTree = "<group>"; };
+		C401CE000000000000000008 /* choice_4.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "choice_4.wav"; path = "../assets/audio/flight/choice_4.wav"; sourceTree = "<group>"; };
 		B7125A000000000000000002 /* WelcomeSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WelcomeSound.m; path = PiggyPath/WelcomeSound.m; sourceTree = "<group>"; };
 		B7125A000000000000000004 /* welcome-oink.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "welcome-oink.wav"; path = "../assets/audio/welcome-oink.wav"; sourceTree = "<group>"; };
 		B7125A000000000000000006 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -60,6 +68,10 @@
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				B7125A000000000000000002 /* WelcomeSound.m */,
 				F119A0000000000000000008 /* flight_bump.wav */,
+				C401CE000000000000000002 /* choice_1.wav */,
+				C401CE000000000000000004 /* choice_2.wav */,
+				C401CE000000000000000006 /* choice_3.wav */,
+				C401CE000000000000000008 /* choice_4.wav */,
 				F119A0000000000000000006 /* flight_coin.wav */,
 				F119A0000000000000000004 /* flight_music.wav */,
 				F119A0000000000000000002 /* FlightSound.m */,
@@ -183,6 +195,10 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B7125A000000000000000003 /* welcome-oink.wav in Resources */,
 				F119A0000000000000000007 /* flight_bump.wav in Resources */,
+				C401CE000000000000000001 /* choice_1.wav in Resources */,
+				C401CE000000000000000003 /* choice_2.wav in Resources */,
+				C401CE000000000000000005 /* choice_3.wav in Resources */,
+				C401CE000000000000000007 /* choice_4.wav in Resources */,
 				F119A0000000000000000005 /* flight_coin.wav in Resources */,
 				F119A0000000000000000003 /* flight_music.wav in Resources */,
 			);

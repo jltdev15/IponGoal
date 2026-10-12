@@ -431,7 +431,7 @@ test('three pages advance in order and offer registration only on the final page
     expect(progress().props.accessibilityLabel).toBe(`Step ${step + 1} of 3`);
     expect(progress().props.accessibilityValue.now).toBe(step + 1);
     expect(titles()).toEqual(
-      step === 2 ? ['Login', 'Get Started'] : ['Skip', 'Next'],
+      step === 2 ? ['Get Started', 'Login'] : ['Skip', 'Next'],
     );
     expect(
       renderer.root.findAllByProps({ accessibilityLabel: 'Back' }),
@@ -463,7 +463,7 @@ test.each([0, 1])(
     }
     await press('Skip');
     expect(progress().props.accessibilityValue.now).toBe(3);
-    expect(titles()).toEqual(['Login', 'Get Started']);
+    expect(titles()).toEqual(['Get Started', 'Login']);
     expect(navigate).not.toHaveBeenCalled();
     await press('Login');
     expect(navigate).toHaveBeenLastCalledWith('Login');
@@ -507,7 +507,7 @@ test.each([
   { width: 320, height: 568, fontScale: 1 },
   { width: 800, height: 1280, fontScale: 1.5 },
 ])(
-  'final actions use a row at normal text and stack at large text: %o',
+  'final actions stack with Get Started above Login at every text size: %o',
   async dimensions => {
     Dimensions.set({
       window: { ...dimensions, scale: 1 },
@@ -519,7 +519,7 @@ test.each([
         testID: 'onboarding-controls',
       });
       expect(StyleSheet.flatten(controls.props.style).flexDirection).toBe(
-        step === 2 && dimensions.fontScale > 1.2 ? 'column' : 'row',
+        step === 2 ? 'column' : 'row',
       );
       expect(controls.findAllByType(AppButton)).toHaveLength(
         step === 2 ? 2 : 0,
@@ -527,17 +527,15 @@ test.each([
       if (step === 2) {
         const actions = controls.findAllByType(AppButton);
         expect(actions.map(action => action.props.title)).toEqual([
-          'Login',
           'Get Started',
+          'Login',
         ]);
-        expect(StyleSheet.flatten(actions[0].props.style)).toMatchObject({
+        expect(StyleSheet.flatten(actions[1].props.style)).toMatchObject({
           borderWidth: 1,
           backgroundColor: 'transparent',
         });
         actions.forEach(action => {
-          expect(StyleSheet.flatten(action.props.style)?.flex).toBe(
-            dimensions.fontScale > 1.2 ? undefined : 1,
-          );
+          expect(StyleSheet.flatten(action.props.style)?.flex).toBeUndefined();
         });
       }
       if (step < 2) {

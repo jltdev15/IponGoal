@@ -54,7 +54,7 @@ export function FlightGuide({
         <Text style={styles.copy}>
           {automatic
             ? 'Pass through gaps automatically.'
-            : 'Fly through the gaps. Avoid the pink obstacles. You have 3 hearts.'}
+            : 'Fly through the gaps between buildings. You have 3 hearts.'}
         </Text>
       </View>
       <View style={styles.row}>

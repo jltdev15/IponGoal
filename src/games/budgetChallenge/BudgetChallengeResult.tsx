@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { AppButton } from '../../components/AppButton';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../utils/currency';
 import { GameReview } from '../GameReview';
@@ -14,12 +13,8 @@ import {
 
 export function BudgetChallengeResult({
   answers,
-  onAgain,
-  onExit,
 }: {
   answers: readonly BudgetAnswer[];
-  onAgain: () => void;
-  onExit: () => void;
 }) {
   const summary = budgetSummary(answers);
   const complete = !summary.shortfall && !summary.unmetNeeds.length;
@@ -60,8 +55,6 @@ export function BudgetChallengeResult({
         Cover needs first, then balance treats and savings. More than one plan
         can work.
       </Text>
-      <AppButton title="Play Again" onPress={onAgain} />
-      <AppButton title="Back to Games" variant="secondary" onPress={onExit} />
       <GameReview>
         <View style={theme.card}>
           <Text style={theme.heading}>Your ₱300 plan</Text>

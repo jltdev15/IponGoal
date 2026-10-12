@@ -137,8 +137,12 @@ const props = { navigation } as unknown as NativeStackScreenProps<
 async function press(title: string) {
   await act(async () =>
     renderer!.root
-      .findAllByType(AppButton)
-      .find(b => b.props.title === title)!
+      .findAll(
+        b =>
+          ['button', 'radio'].includes(b.props.accessibilityRole) &&
+          typeof b.props.onPress === 'function',
+      )
+      .find(b => b.props.accessibilityLabel === title)!
       .props.onPress(),
   );
 }
@@ -173,7 +177,6 @@ test('screen builds a plan, flags an unaffordable contribution, completes weeks,
     renderer!.root.findByType(GoalBuilderResult).props.session.savings,
   ).toBe(14000);
   await press('Build Another Goal');
-  await press('Start Goal Builder');
   await press('Restart Practice');
   expect(
     renderer!.root

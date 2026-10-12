@@ -50,7 +50,7 @@ export function HomeGoalRow({
             <ArrowRight size={18} color={colors.muted} strokeWidth={1.8} />
           </View>
         </View>
-        <Text style={theme.muted}>
+        <Text style={styles.balance}>
           <Text style={styles.saved}>
             {formatCurrency(goal.savedAmount, true)}
           </Text>
@@ -95,7 +95,7 @@ export function HomeGoalRow({
             accessibilityElementsHidden
             importantForAccessibility="no-hide-descendants"
           >
-            <Plus size={18} color={colors.primary} strokeWidth={1.8} />
+            <Plus size={18} color={colors.white} strokeWidth={2} />
           </View>
           <Text style={styles.addText}>Record savings</Text>
         </Pressable>
@@ -115,8 +115,14 @@ const styles = StyleSheet.create({
   details: { gap: 12, minHeight: 48 },
   pressed: { opacity: 0.75 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  name: { flex: 1, minWidth: 0, fontSize: 17 },
-  saved: { fontWeight: '700', color: colors.text },
+  name: { flex: 1, minWidth: 0, fontSize: 18, lineHeight: 26 },
+  balance: { color: colors.muted, fontSize: 14, lineHeight: 28 },
+  saved: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.text,
+    fontVariant: ['tabular-nums'],
+  },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   stacked: { flexDirection: 'column', alignItems: 'stretch' },
   metadata: { flex: 1, gap: 4 },
@@ -136,14 +142,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: colors.primarySoft,
+    borderRadius: 14,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   addText: {
     flexShrink: 1,
-    color: colors.primary,
+    color: colors.white,
     fontSize: 14,
     lineHeight: 22,
     fontWeight: '700',

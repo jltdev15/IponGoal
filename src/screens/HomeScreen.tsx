@@ -1,5 +1,12 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -28,12 +35,15 @@ import { formatCurrency } from '../utils/currency';
 
 export function HomeScreen() {
   const { contentStyle, stacked } = usePrimaryScreenLayout();
+  const { fontScale } = useWindowDimensions();
+  const stackOverview = fontScale > 1.2;
   const navigation =
     useNavigation<NativeStackNavigationProp<MainStackParams>>();
   const user = useAuthStore(s => s.user)!;
   const goals = useGoalStore(s => s.goals);
   const savings = useSavingsStore(s => s.savings);
   const active = goals.filter(g => g.status === 'active');
+  const preview = active.slice(0, 3);
   const total = savings.reduce((n, s) => n + s.amount, 0);
   const totalLabel = formatCurrency(total, true);
   const completed = goals.filter(g => g.status === 'completed').length;
@@ -45,8 +55,8 @@ export function HomeScreen() {
     <ScreenContainer scroll={false} bottomSafeArea={false}>
       <FlatList
         style={primaryStyles.list}
-        contentContainerStyle={[contentStyle, { gap: 12 }]}
-        data={active}
+        contentContainerStyle={[contentStyle, styles.listContent]}
+        data={preview}
         keyExtractor={g => g.id}
         ListHeaderComponent={
           <View style={styles.header}>
@@ -59,13 +69,17 @@ export function HomeScreen() {
               label="Saved so far"
               amount={totalLabel}
               stacked={stacked}
-              note="Recorded across all your goals, including completed and archived ones."
+              variant="home"
+              note="Includes completed and archived goals."
             >
-              <View style={[summaryStyles.counts, stacked && styles.stacked]}>
+              <View
+                style={[summaryStyles.counts, stackOverview && styles.stacked]}
+              >
                 <View
                   style={[
                     summaryStyles.countChip,
-                    stacked && summaryStyles.unflex,
+                    styles.activeCount,
+                    stackOverview && summaryStyles.unflex,
                   ]}
                 >
                   <View
@@ -88,7 +102,7 @@ export function HomeScreen() {
                   style={({ pressed }) => [
                     summaryStyles.countChip,
                     summaryStyles.actionChip,
-                    stacked && summaryStyles.unflex,
+                    stackOverview && summaryStyles.unflex,
                     pressed && styles.pressed,
                   ]}
                 >
@@ -109,58 +123,37 @@ export function HomeScreen() {
                 </Pressable>
               </View>
             </SavingsSummary>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Explore learning games"
-              onPress={() => navigation.navigate('Games')}
-              style={({ pressed }) => [
-                primaryStyles.card,
-                styles.games,
-                pressed && styles.pressed,
-              ]}
-            >
+            <View style={styles.goalsSection}>
               <View
-                style={styles.gamesIcon}
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
+                style={[styles.goalsHeading, stackOverview && styles.stacked]}
               >
-                <Gamepad2 size={24} color={colors.primary} strokeWidth={1.8} />
-              </View>
-              <View style={styles.flex}>
-                <Text style={styles.gamesTitle}>Learning games</Text>
-                <Text style={theme.muted}>
-                  Practice everyday money choices.
+                <Text
+                  accessibilityRole="header"
+                  style={[
+                    theme.heading,
+                    styles.flex,
+                    stackOverview && { flex: 0 },
+                  ]}
+                >
+                  Your savings goals
                 </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="View all goals"
+                  onPress={() => navigation.navigate('AllGoals')}
+                  style={({ pressed }) => [
+                    styles.allGoalsButton,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={styles.allGoalsLabel}>View all goals</Text>
+                </Pressable>
               </View>
-              <View
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-              >
-                <ArrowRight
-                  size={20}
-                  color={colors.primary}
-                  strokeWidth={1.8}
-                />
-              </View>
-            </Pressable>
-            <View style={[styles.goalsHeading, stacked && styles.stacked]}>
-              <Text
-                accessibilityRole="header"
-                style={[theme.heading, styles.flex, stacked && { flex: 0 }]}
-              >
-                Your savings goals
-              </Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="View all goals"
-                onPress={() => navigation.navigate('AllGoals')}
-                style={({ pressed }) => [
-                  styles.allGoalsButton,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <Text style={styles.allGoalsLabel}>View all goals</Text>
-              </Pressable>
+              {active.length > preview.length && (
+                <Text style={theme.muted}>
+                  Showing {preview.length} of {active.length} active goals
+                </Text>
+              )}
             </View>
           </View>
         }
@@ -195,25 +188,65 @@ export function HomeScreen() {
           </View>
         }
         ListFooterComponent={
-          <View style={[primaryStyles.card, styles.tip]}>
-            <View style={styles.tipHeading}>
-              <View
-                style={styles.tipIcon}
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-              >
-                <Lightbulb size={20} color={colors.text} strokeWidth={1.8} />
+          <View style={styles.footer}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Explore learning games"
+              onPress={() => navigation.navigate('Games')}
+              style={({ pressed }) => [
+                primaryStyles.card,
+                styles.games,
+                pressed && styles.pressed,
+              ]}
+            >
+              <View style={styles.cardHeading}>
+                <View
+                  style={styles.gamesIcon}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  <Gamepad2
+                    size={20}
+                    color={colors.primary}
+                    strokeWidth={1.8}
+                  />
+                </View>
+                <Text style={[styles.gamesTitle, styles.flex]}>
+                  Learning games
+                </Text>
+                <View
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  <ArrowRight
+                    size={18}
+                    color={colors.muted}
+                    strokeWidth={1.8}
+                  />
+                </View>
               </View>
-              <Text
-                accessibilityRole="header"
-                style={[styles.tipTitle, styles.flex]}
-              >
-                Saving tip
+              <Text style={theme.muted}>Practice everyday money choices.</Text>
+            </Pressable>
+            <View style={[primaryStyles.card, styles.tip]}>
+              <View style={styles.cardHeading}>
+                <View
+                  style={styles.tipIcon}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  <Lightbulb size={20} color={colors.text} strokeWidth={1.8} />
+                </View>
+                <Text
+                  accessibilityRole="header"
+                  style={[styles.tipTitle, styles.flex]}
+                >
+                  Saving tip
+                </Text>
+              </View>
+              <Text style={theme.muted}>
+                {financialTips[now.getDate() % financialTips.length]}
               </Text>
             </View>
-            <Text style={theme.muted}>
-              {financialTips[now.getDate() % financialTips.length]}
-            </Text>
           </View>
         }
       />
@@ -221,25 +254,25 @@ export function HomeScreen() {
   );
 }
 const styles = StyleSheet.create({
-  header: { gap: 16 },
+  listContent: { gap: 12 },
+  header: { gap: 20 },
+  goalsSection: { gap: 4 },
   goalsHeading: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  activeCount: { backgroundColor: 'transparent', paddingHorizontal: 0 },
   allGoalsButton: {
     minHeight: 48,
     justifyContent: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 0,
   },
   allGoalsLabel: { color: colors.primary, fontSize: 14, fontWeight: '700' },
   flex: { flex: 1, minWidth: 0 },
   pressed: { opacity: 0.75 },
-  games: {
-    minHeight: 48,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
+  footer: { gap: 20, marginTop: 8 },
+  games: { minHeight: 48, gap: 8 },
+  cardHeading: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   gamesIcon: {
-    padding: 10,
-    borderRadius: 14,
+    padding: 8,
+    borderRadius: 12,
     backgroundColor: colors.primarySoft,
   },
   gamesTitle: { fontSize: 16, fontWeight: '700', color: colors.text },
@@ -258,13 +291,13 @@ const styles = StyleSheet.create({
   stacked: { flexDirection: 'column', alignItems: 'stretch' },
   tip: {
     gap: 8,
-    marginTop: 4,
+    backgroundColor: colors.goldSoft,
+    borderColor: colors.goldSoft,
   },
   tipIcon: {
-    backgroundColor: colors.goldSoft,
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 8,
   },
   tipTitle: { fontSize: 16, fontWeight: '700', color: colors.text },
-  tipHeading: { flexDirection: 'row', alignItems: 'center', gap: 10 },
 });

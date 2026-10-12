@@ -368,7 +368,7 @@ test.each([
           .findAllByType(Text)
           .find(n => n.props.children === 'Your savings goals')!;
         expect(StyleSheet.flatten(heading.props.style).flex).toBe(
-          width < 380 || fontScale > 1.2 ? 0 : 1,
+          fontScale > 1.2 ? 0 : 1,
         );
       }
       if (Screen === StatisticsScreen)

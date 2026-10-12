@@ -13,6 +13,7 @@ import {
 import { NeedsOrWantsScreen } from '../src/games/needsOrWants/NeedsOrWantsScreen';
 import { NeedsOrWantsResult } from '../src/games/needsOrWants/NeedsOrWantsResult';
 import { AppButton } from '../src/components/AppButton';
+import { ScreenContainer } from '../src/components/ScreenContainer';
 import { GamesScreen } from '../src/screens/GamesScreen';
 import { GameGridCard } from '../src/components/GameGridCard';
 import { appConfig } from '../src/config/appConfig';
@@ -20,6 +21,7 @@ jest.mock(
   'react-native-safe-area-context',
   () => require('react-native-safe-area-context/jest/mock').default,
 );
+jest.mock('../src/components/Icon', () => ({ Icon: () => null }));
 const rounds = createNeedsOrWantsRound(() => 0.5);
 
 test('rounds contain five unique situations covering needs and wants without mutating the bank', () => {
@@ -130,16 +132,21 @@ test('screen supports five answers, feedback, review, replay and exit with no ti
   await act(async () => {
     renderer = create(<NeedsOrWantsScreen {...props} />);
   });
-  await press('Start Practice');
+  await press('Start playing');
   for (let index = 0; index < 5; index++) {
-    const label = rounds[index].classification === 'need' ? 'Need' : 'Want';
+    const label =
+      rounds[index].classification === 'need' ? "It's a need" : "It's a want";
     await press(label);
     expect(
       renderer!.root
-        .findAllByType(AppButton)
-        .some(b => b.props.title === 'Need' || b.props.title === 'Want'),
+        .findAll(node => node.props.accessibilityRole === 'button')
+        .some(
+          b =>
+            b.props.accessibilityLabel === "It's a need" ||
+            b.props.accessibilityLabel === "It's a want",
+        ),
     ).toBe(false);
-    await press(index === 4 ? 'See Learning Summary' : 'Next Situation');
+    await press(index === 4 ? 'See my results' : 'Next question');
   }
   const result = renderer!.root.findByType(NeedsOrWantsResult);
   expect(result.props.answers).toHaveLength(5);
@@ -152,17 +159,77 @@ test('screen supports five answers, feedback, review, replay and exit with no ti
   await press('Back to Games');
   expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await press('Play Again');
-  await press('Start Practice');
-  await press('Restart Practice');
   expect(
     renderer!.root
       .findAllByType(AppButton)
-      .some(b => b.props.title === 'Start Practice'),
+      .some(button => button.props.title === 'Start playing'),
+  ).toBe(false);
+  await press("It's a need");
+  await press('Start over');
+  expect(
+    renderer!.root
+      .findAllByType(AppButton)
+      .some(b => b.props.title === 'Start playing'),
   ).toBe(true);
   expect(
     renderer!.root.findAllByType(AppButton).map(button => button.props.title),
   ).not.toContain('Back to Games');
 });
+
+test.each([
+  { width: 390, height: 840, fontScale: 1, fixed: true },
+  { width: 320, height: 480, fontScale: 1, fixed: false },
+  { width: 390, height: 840, fontScale: 1.6, fixed: false },
+])(
+  'answer cards stay reachable with height $height and text scale $fontScale',
+  async ({ width, height, fontScale, fixed }) => {
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({ width, height, fontScale, scale: 2 });
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    await act(async () => {
+      renderer = create(<NeedsOrWantsScreen {...props} />);
+    });
+    await press('Start playing');
+    expect(!!renderer!.root.findByType(ScreenContainer).props.footer).toBe(
+      fixed,
+    );
+    const buttons = renderer!.root.findAll(
+      node =>
+        node.props.accessibilityRole === 'button' &&
+        typeof node.props.onPress === 'function',
+    );
+    expect(buttons.map(button => button.props.accessibilityLabel)).toEqual([
+      "It's a need",
+      "It's a want",
+    ]);
+    expect(buttons[0].props.accessibilityHint).toContain(
+      'Essential for daily life',
+    );
+    expect(buttons[1].props.accessibilityHint).toContain(
+      'An extra for enjoyment',
+    );
+    const wrong = rounds[0].classification === 'need' ? buttons[1] : buttons[0];
+    await act(async () => {
+      wrong.props.onPress();
+      wrong.props.onPress();
+    });
+    expect(JSON.stringify(renderer!.toJSON())).toContain(
+      'Let’s learn together',
+    );
+    expect(JSON.stringify(renderer!.toJSON())).toContain(rounds[0].explanation);
+    expect(
+      renderer!.root.findByProps({ accessibilityLabel: 'Questions answered' })
+        .props.accessibilityValue.now,
+    ).toBe(1);
+    await press('Next question');
+    expect(JSON.stringify(renderer!.toJSON())).toContain(rounds[1].context);
+    expect(
+      renderer!.root.findByProps({ accessibilityLabel: 'Questions answered' })
+        .props.accessibilityValue.now,
+    ).toBe(1);
+  },
+);
 test('Games exposes Needs or Wants while Savings Flight remains disabled', async () => {
   Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: false });
   await act(async () => {

@@ -3,8 +3,8 @@ param([string]$JavaHome = 'C:\Program Files\Java\jdk-17')
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$sdkRoot = Join-Path $projectRoot '.android-sdk'
-$env:ANDROID_AVD_HOME = Join-Path $projectRoot '.android-avd'
+$sdkRoot = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
+$env:ANDROID_AVD_HOME = Join-Path $env:USERPROFILE '.android\avd'
 New-Item -ItemType Directory -Force -Path $env:ANDROID_AVD_HOME | Out-Null
 $env:JAVA_HOME = $JavaHome
 $ErrorActionPreference = 'Continue'

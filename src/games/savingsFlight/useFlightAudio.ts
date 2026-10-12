@@ -25,15 +25,23 @@ export function useFlightAudio(
     let alive = true;
     let changed = false;
     flightSound.prepare();
+    const readerTimeout = setTimeout(() => {
+      if (alive && !changed) setReader(false);
+    }, 2000);
     AccessibilityInfo.isScreenReaderEnabled()
       .then(value => {
+        clearTimeout(readerTimeout);
         if (alive && !changed) setReader(value);
       })
-      .catch(() => {});
+      .catch(() => {
+        clearTimeout(readerTimeout);
+        if (alive && !changed) setReader(false);
+      });
     const screenReader = AccessibilityInfo.addEventListener(
       'screenReaderChanged',
       value => {
         changed = true;
+        clearTimeout(readerTimeout);
         setReader(value);
       },
     );
@@ -51,6 +59,7 @@ export function useFlightAudio(
     });
     return () => {
       alive = false;
+      clearTimeout(readerTimeout);
       screenReader.remove();
       audio.remove();
       app.remove();

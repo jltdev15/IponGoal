@@ -21,11 +21,17 @@ export function CalendarDateField({
   value,
   onChange,
   disabled = false,
+  allowClear = true,
+  helper = "Leave unset if you don't have a deadline.",
+  dateLabel = 'target date',
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  allowClear?: boolean;
+  helper?: string;
+  dateLabel?: string;
 }) {
   const [iosOpen, setIosOpen] = useState(false);
   const [draft, setDraft] = useState(new Date());
@@ -112,11 +118,11 @@ export function CalendarDateField({
           <CalendarDays size={22} color={colors.primary} />
         </View>
       </Pressable>
-      <Text style={theme.muted}>Leave unset if you don't have a deadline.</Text>
-      {!!value && (
+      {!!helper && <Text style={theme.muted}>{helper}</Text>}
+      {allowClear && !!value && (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Clear target date"
+          accessibilityLabel={`Clear ${dateLabel}`}
           disabled={disabled}
           accessibilityState={{ disabled }}
           onPress={() => onChange('')}
@@ -144,7 +150,7 @@ export function CalendarDateField({
           <View style={styles.overlay}>
             <View style={styles.dialog} accessibilityViewIsModal>
               <Text accessibilityRole="header" style={theme.heading}>
-                Choose target date
+                Choose {dateLabel}
               </Text>
               <DateTimePicker
                 value={draft}
@@ -155,7 +161,7 @@ export function CalendarDateField({
               <View style={styles.dialogActions}>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Cancel target date selection"
+                  accessibilityLabel={`Cancel ${dateLabel} selection`}
                   onPress={() => setIosOpen(false)}
                   style={styles.clear}
                 >
@@ -163,7 +169,7 @@ export function CalendarDateField({
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Confirm target date"
+                  accessibilityLabel={`Confirm ${dateLabel}`}
                   onPress={() => {
                     onChange(localDate(draft));
                     setIosOpen(false);

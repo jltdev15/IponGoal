@@ -5,6 +5,7 @@ import { MainStackParams } from '../src/navigation/types';
 import { AppButton } from '../src/components/AppButton';
 import { BudgetChallengeScreen } from '../src/games/budgetChallenge/BudgetChallengeScreen';
 import { BudgetChallengeResult } from '../src/games/budgetChallenge/BudgetChallengeResult';
+import { GameChoiceCard } from '../src/games/GameControls';
 import {
   BUDGET_CATEGORIES,
   budgetReducer,
@@ -152,7 +153,7 @@ test('untimed screen completes five choices with feedback, review, replay, resta
   await press('Back to Games');
   expect(navigation.popTo).toHaveBeenCalledWith('Games');
   await press('Play Again');
-  await press('Start Budget Challenge');
+  await press(BUDGET_CATEGORIES[0].options[0].label);
   await press('Restart Budget');
   expect(
     renderer.root
@@ -173,10 +174,9 @@ test('budget shows pending essentials before answers and distinguishes covered f
   await press('Start Budget Challenge');
   expect(text()).toContain('Pending');
   expect(text()).not.toContain('Unfunded');
-  const choices = renderer.root.findAllByType(AppButton);
-  expect(choices.every(button => button.props.variant === 'secondary')).toBe(
-    true,
-  );
+  const choices = renderer.root.findAllByType(GameChoiceCard);
+  expect(choices).toHaveLength(3);
+  expect(choices.map(button => button.props.index)).toEqual([0, 1, 2]);
   await press(BUDGET_CATEGORIES[0].options[2].label);
   expect(text()).toContain('Unfunded');
   expect(text()).toContain('Pending');

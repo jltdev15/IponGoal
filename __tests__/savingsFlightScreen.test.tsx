@@ -19,6 +19,8 @@ import { AppButton } from '../src/components/AppButton';
 import { HUD } from '../src/games/savingsFlight/components/HUD';
 import { SavingsFlightResult } from '../src/games/savingsFlight/SavingsFlightResult';
 import { SavingsFlightEngine } from '../src/games/savingsFlight/SavingsFlightEngine';
+import { flightSound } from '../src/services/flightSound';
+import { FLIGHT } from '../src/games/savingsFlight/SavingsFlightConfig';
 
 jest.mock('lucide-react-native', () => ({
   Pause: 'PauseIcon',
@@ -163,6 +165,58 @@ test('native interruption pauses flight until Resume and restart stops audio', a
   } finally {
     delete NativeModules.FlightSound;
   }
+});
+
+test('block collisions play one bump per life, including game over, without replaying on Continue', async () => {
+  Object.assign(appConfig, { ENABLE_SAVINGS_FLIGHT: true });
+  const sound = jest.spyOn(flightSound, 'effect').mockImplementation(() => {});
+  const advance = SavingsFlightEngine.prototype.advance;
+  const collisions: ReturnType<SavingsFlightEngine['getFrame']>[] = [];
+  jest
+    .spyOn(SavingsFlightEngine.prototype, 'advance')
+    .mockImplementation(function (this: SavingsFlightEngine, seconds: number) {
+      // Fly above the opening to hit the upper block without touching the ceiling.
+      if (this.getFrame().playerY > 85) this.tap();
+      const before = this.getFrame();
+      advance.call(this, seconds);
+      if (['hit', 'gameOver'].includes(this.getSnapshot().gameStatus))
+        collisions.push(before);
+    });
+  await mount(
+    <SavingsFlightScreen
+      {...props}
+      route={{ ...props.route, params: { levelId: 'needs', mode: 'manual' } }}
+    />,
+  );
+  await press('Start Flight');
+  for (let hit = 1; hit <= FLIGHT.lives; hit++) {
+    await tick(240);
+    expect(collisions).toHaveLength(hit);
+    const impact = collisions[hit - 1];
+    expect(impact.playerY).toBeGreaterThan(0);
+    expect(impact.playerY + FLIGHT.hitInset).toBeLessThan(impact.gapTop);
+    expect(impact.obstacleX).toBeLessThan(FLIGHT.playerX + FLIGHT.playerSize);
+    expect(impact.obstacleX + FLIGHT.obstacleWidth).toBeGreaterThan(
+      FLIGHT.playerX,
+    );
+    expect(
+      sound.mock.calls.filter(([effect]) => effect === 'bump'),
+    ).toHaveLength(hit);
+    await tick(120);
+    expect(
+      sound.mock.calls.filter(([effect]) => effect === 'bump'),
+    ).toHaveLength(hit);
+    if (hit < FLIGHT.lives) {
+      expect(renderer!.root.findByType(HUD).props.state.gameStatus).toBe('hit');
+      await press('Continue Flight');
+      expect(
+        sound.mock.calls.filter(([effect]) => effect === 'bump'),
+      ).toHaveLength(hit);
+    }
+  }
+  expect(
+    renderer!.root.findByType(SavingsFlightResult).props.result.gameStatus,
+  ).toBe('gameOver');
 });
 
 test('backgrounding and navigation blur pause, restart clears state, exit returns to Games, and unmount cancels callbacks', async () => {

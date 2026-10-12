@@ -1,10 +1,12 @@
 // Isolated Home preview with synthetic records. Never distribute this APK.
 gradle.beforeProject { p ->
     if (p.path == ':app') {
+        p.layout.buildDirectory.set(new File(p.rootDir, 'build/home-design-qa/app'))
         p.pluginManager.withPlugin('com.android.application') {
             p.extensions.getByName('androidComponents').finalizeDsl { android ->
                 android.defaultConfig.applicationId = 'com.ipongoal.homeqa'
                 android.buildTypes.debug.debuggable = false
+                android.externalNativeBuild.cmake.buildStagingDirectory = new File(p.rootDir, 'build/home-design-qa/cxx')
                 android.sourceSets.main.java.srcDir(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native'))
                 android.sourceSets.debug.manifest.srcFile(new File(p.rootDir.parentFile, 'scripts/welcome-qa-native/AndroidManifest.xml'))
             }

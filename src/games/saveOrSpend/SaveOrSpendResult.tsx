@@ -1,15 +1,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { AppButton } from '../../components/AppButton';
+import { GameReview } from '../GameReview';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../utils/currency';
 import { SaveOrSpendAnswer } from './SaveOrSpendSession';
 export function SaveOrSpendResult({
   answers,
-  onAgain,
 }: {
   answers: readonly SaveOrSpendAnswer[];
-  onAgain: () => void;
 }) {
   return (
     <>
@@ -33,24 +31,23 @@ export function SaveOrSpendResult({
         These were five separate examples. Their balances are not combined into
         a wallet, and no real money was moved.
       </Text>
-      <AppButton title="Play Again" onPress={onAgain} />
-      <Text accessibilityRole="header" style={theme.heading}>
-        Review your choices
-      </Text>
-      {answers.map(answer => (
-        <View key={answer.scenario.id} style={theme.card}>
-          <Text style={theme.heading}>{answer.scenario.title}</Text>
-          <Text style={theme.body}>You chose: {answer.option.label}</Text>
-          <Text style={theme.body}>{answer.option.explanation}</Text>
-          <Text style={theme.body}>
-            Practice savings: {formatCurrency(answer.scenario.savingsBefore)} →{' '}
-            {formatCurrency(answer.savingsAfter)}
-          </Text>
-          <Text style={theme.body}>
-            Practice spending: {formatCurrency(answer.option.outcome.spending)}
-          </Text>
-        </View>
-      ))}
+      <GameReview>
+        {answers.map(answer => (
+          <View key={answer.scenario.id} style={theme.card}>
+            <Text style={theme.heading}>{answer.scenario.title}</Text>
+            <Text style={theme.body}>You chose: {answer.option.label}</Text>
+            <Text style={theme.body}>{answer.option.explanation}</Text>
+            <Text style={theme.body}>
+              Practice savings: {formatCurrency(answer.scenario.savingsBefore)}{' '}
+              → {formatCurrency(answer.savingsAfter)}
+            </Text>
+            <Text style={theme.body}>
+              Practice spending:{' '}
+              {formatCurrency(answer.option.outcome.spending)}
+            </Text>
+          </View>
+        ))}
+      </GameReview>
     </>
   );
 }
