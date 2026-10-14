@@ -1,6 +1,7 @@
 # Dependencies and native outputs
 node_modules/
 android/.gradle/
+android/.kotlin/
 android/build/
 android/app/build/
 android/app/.cxx/
@@ -19,6 +20,9 @@ ios/build/
 .android-avd/
 # Local QA build archive (saved during Android SDK cleanup)
 artifacts/primary-screens-qa.apk
+# Generated local Node and Jest caches
+artifacts/node-compile-cache/
+artifacts/jest-temp/
 .env*
 *.jks
 coverage/

@@ -15,6 +15,8 @@ import {
 import { ScreenContainer } from '../components/ScreenContainer';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
+import { PrivacyPolicyModal } from '../components/PrivacyPolicyModal';
+import { Check } from 'lucide-react-native';
 import { theme } from '../theme/theme';
 import { colors } from '../theme/colors';
 import { useAuthStore } from '../stores/authStore';
@@ -61,6 +63,8 @@ export function RegisterScreen({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [privacyVisible, setPrivacyVisible] = useState(false);
   const [fieldError, setFieldError] = useState('');
   const [showSubmitError, setShowSubmitError] = useState(false);
   const { busy, error, run } = useFormAction();
@@ -152,6 +156,14 @@ export function RegisterScreen({
     }
   }
   function submit() {
+    if (busy || privacyVisible) {
+      return;
+    }
+    if (!privacyAccepted) {
+      setFieldError('Please read and agree to the Privacy Policy to continue.');
+      return;
+    }
+    setFieldError('');
     setShowSubmitError(true);
     void run(async () => {
       validateRegistration(name, username, password, confirm);
@@ -178,195 +190,263 @@ export function RegisterScreen({
   }
 
   return (
-    <ScreenContainer
-      key={step}
-      responsive
-      keepActionsInFooter
-      footer={({ columns }) => (
-        <AppButton
-          style={columns ? { flex: 1 } : undefined}
-          title={step === 3 ? 'Create Account' : 'Continue'}
-          loading={busy}
-          disabled={busy}
-          onPress={step === 3 ? submit : continueStep}
-        />
-      )}
-      secondaryFooter={({ columns }) => (
-        <AppButton
-          style={columns ? { flex: 1 } : undefined}
-          title="Back"
-          variant="secondary"
-          disabled={busy}
-          onPress={back}
-        />
-      )}
-    >
-      {({ compact }) => (
-        <>
-          <View
-            accessibilityRole="progressbar"
-            accessibilityLabel="Account creation progress"
-            accessibilityValue={{
-              min: 1,
-              max: 4,
-              now: step + 1,
-              text: `Step ${step + 1} of 4`,
-            }}
-            style={styles.progress}
-          >
-            <Text style={styles.stepLabel}>Step {step + 1} of 4</Text>
-            <View style={styles.track} accessible={false}>
-              {steps.map((_, index) => (
-                <View
-                  key={index}
-                  style={[styles.segment, index <= step && styles.complete]}
-                />
-              ))}
-            </View>
-          </View>
-          <View style={styles.hero}>
-            <Image
-              source={current.image}
-              style={[
-                styles.mascot,
-                compact && styles.compactMascot,
-                smallArtwork && styles.smallMascot,
-              ]}
-              resizeMode="contain"
-              accessible={false}
-              importantForAccessibility="no"
-            />
-            <Text
-              accessibilityRole="header"
-              style={[theme.title, styles.centered, styles.title]}
+    <>
+      <ScreenContainer
+        key={step}
+        responsive
+        keepActionsInFooter
+        footer={({ columns }) => (
+          <AppButton
+            style={columns ? { flex: 1 } : undefined}
+            title={step === 3 ? 'Create Account' : 'Continue'}
+            loading={busy}
+            disabled={busy || (step === 3 && !privacyAccepted)}
+            onPress={step === 3 ? submit : continueStep}
+          />
+        )}
+        secondaryFooter={({ columns }) => (
+          <AppButton
+            style={columns ? { flex: 1 } : undefined}
+            title="Back"
+            variant="secondary"
+            disabled={busy}
+            onPress={back}
+          />
+        )}
+      >
+        {({ compact }) => (
+          <>
+            <View
+              accessibilityRole="progressbar"
+              accessibilityLabel="Account creation progress"
+              accessibilityValue={{
+                min: 1,
+                max: 4,
+                now: step + 1,
+                text: `Step ${step + 1} of 4`,
+              }}
+              style={styles.progress}
             >
-              {current.title}
-            </Text>
-            <Text style={[theme.muted, styles.centered]}>
-              {current.message}
-            </Text>
-          </View>
-          <View style={[styles.fields, compact && styles.compactFields]}>
-            {step === 0 && (
-              <AppInput
-                label="Full Name"
-                placeholder="Enter your full name"
-                editable={!busy}
-                value={name}
-                onChangeText={value => {
-                  setName(value);
-                  clearFieldError();
-                }}
-                autoComplete="name"
-                maxLength={80}
-                returnKeyType="done"
-                onSubmitEditing={continueStep}
+              <Text style={styles.stepLabel}>Step {step + 1} of 4</Text>
+              <View style={styles.track} accessible={false}>
+                {steps.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[styles.segment, index <= step && styles.complete]}
+                  />
+                ))}
+              </View>
+            </View>
+            <View style={styles.hero}>
+              <Image
+                source={current.image}
+                style={[
+                  styles.mascot,
+                  compact && styles.compactMascot,
+                  smallArtwork && styles.smallMascot,
+                ]}
+                resizeMode="contain"
+                accessible={false}
+                importantForAccessibility="no"
               />
-            )}
-            {step === 1 && (
-              <AppInput
-                label="Username"
-                placeholder="Choose a username"
-                editable={!busy}
-                value={username}
-                onChangeText={value => {
-                  setUsername(value);
-                  clearFieldError();
-                }}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="username"
-                helper="4–32 letters, numbers, or underscores."
-                maxLength={32}
-                returnKeyType="done"
-                onSubmitEditing={continueStep}
-              />
-            )}
-            {step === 2 && (
-              <>
+              <Text
+                accessibilityRole="header"
+                style={[theme.title, styles.centered, styles.title]}
+              >
+                {current.title}
+              </Text>
+              <Text style={[theme.muted, styles.centered]}>
+                {current.message}
+              </Text>
+            </View>
+            <View style={[styles.fields, compact && styles.compactFields]}>
+              {step === 0 && (
                 <AppInput
-                  label="Password"
-                  placeholder="Create a password"
+                  label="Full Name"
+                  placeholder="Enter your full name"
                   editable={!busy}
-                  value={password}
+                  value={name}
                   onChangeText={value => {
-                    setPassword(value);
+                    setName(value);
                     clearFieldError();
                   }}
-                  secureTextEntry
-                  autoComplete="new-password"
-                  helper="6–128 characters."
-                />
-                <AppInput
-                  label="Confirm Password"
-                  placeholder="Re-enter your password"
-                  editable={!busy}
-                  value={confirm}
-                  onChangeText={value => {
-                    setConfirm(value);
-                    clearFieldError();
-                  }}
-                  secureTextEntry
-                  autoComplete="new-password"
+                  autoComplete="name"
+                  maxLength={80}
                   returnKeyType="done"
                   onSubmitEditing={continueStep}
                 />
-              </>
-            )}
-            {step === 3 && (
-              <>
-                <View style={[theme.card, styles.reviewCard]}>
-                  {[
-                    { label: 'Full Name', value: name.trim(), target: 0 },
-                    {
-                      label: 'Username',
-                      value: username.trim().toLowerCase(),
-                      target: 1,
-                    },
-                    { label: 'Password', value: 'Password set', target: 2 },
-                  ].map(item => (
-                    <View key={item.label} style={styles.reviewRow}>
-                      <View style={styles.reviewValue}>
-                        <Text style={theme.muted}>{item.label}</Text>
-                        <Text style={theme.body}>{item.value}</Text>
+              )}
+              {step === 1 && (
+                <AppInput
+                  label="Username"
+                  placeholder="Choose a username"
+                  editable={!busy}
+                  value={username}
+                  onChangeText={value => {
+                    setUsername(value);
+                    clearFieldError();
+                  }}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="username"
+                  helper="4–32 letters, numbers, or underscores."
+                  maxLength={32}
+                  returnKeyType="done"
+                  onSubmitEditing={continueStep}
+                />
+              )}
+              {step === 2 && (
+                <>
+                  <AppInput
+                    label="Password"
+                    placeholder="Create a password"
+                    editable={!busy}
+                    value={password}
+                    onChangeText={value => {
+                      setPassword(value);
+                      clearFieldError();
+                    }}
+                    secureTextEntry
+                    autoComplete="new-password"
+                    helper="6–128 characters."
+                  />
+                  <AppInput
+                    label="Confirm Password"
+                    placeholder="Re-enter your password"
+                    editable={!busy}
+                    value={confirm}
+                    onChangeText={value => {
+                      setConfirm(value);
+                      clearFieldError();
+                    }}
+                    secureTextEntry
+                    autoComplete="new-password"
+                    returnKeyType="done"
+                    onSubmitEditing={continueStep}
+                  />
+                </>
+              )}
+              {step === 3 && (
+                <>
+                  <View style={[theme.card, styles.reviewCard]}>
+                    {[
+                      { label: 'Full Name', value: name.trim(), target: 0 },
+                      {
+                        label: 'Username',
+                        value: username.trim().toLowerCase(),
+                        target: 1,
+                      },
+                      { label: 'Password', value: 'Password set', target: 2 },
+                    ].map(item => (
+                      <View key={item.label} style={styles.reviewRow}>
+                        <View style={styles.reviewValue}>
+                          <Text style={theme.muted}>{item.label}</Text>
+                          <Text style={theme.body}>{item.value}</Text>
+                        </View>
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Edit ${item.label}`}
+                          accessibilityState={{ disabled: busy }}
+                          disabled={busy}
+                          onPress={() => edit(item.target)}
+                          style={styles.editButton}
+                        >
+                          <Text style={styles.editText}>Edit</Text>
+                        </Pressable>
                       </View>
-                      <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel={`Edit ${item.label}`}
-                        accessibilityState={{ disabled: busy }}
-                        disabled={busy}
-                        onPress={() => edit(item.target)}
-                        style={styles.editButton}
+                    ))}
+                  </View>
+                  <View style={styles.explanation}>
+                    <Text style={theme.heading}>Before we begin</Text>
+                    <Text style={theme.body}>
+                      Your account and savings are saved on this device. Use
+                      your username and password to sign in. After creating your
+                      account, you can set your first savings goal.
+                    </Text>
+                  </View>
+                  <View style={[theme.card, styles.privacyCard]}>
+                    <Pressable
+                      accessibilityRole="checkbox"
+                      accessibilityLabel="I have read and agree to the Privacy Policy"
+                      accessibilityHint="Required to create your account. Read the policy using the link below."
+                      accessibilityState={{
+                        checked: privacyAccepted,
+                        disabled: busy,
+                      }}
+                      disabled={busy}
+                      onPress={() => {
+                        if (!busy) {
+                          setPrivacyAccepted(accepted => !accepted);
+                          clearFieldError();
+                        }
+                      }}
+                      style={({ pressed }) => [
+                        styles.privacyCheckboxRow,
+                        (pressed || busy) && styles.dimmed,
+                      ]}
+                    >
+                      <View
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                        style={[
+                          styles.checkbox,
+                          privacyAccepted && styles.checked,
+                        ]}
                       >
-                        <Text style={styles.editText}>Edit</Text>
-                      </Pressable>
-                    </View>
-                  ))}
-                </View>
-                <View style={styles.explanation}>
-                  <Text style={theme.heading}>Before we begin</Text>
-                  <Text style={theme.body}>
-                    Your account and savings are saved on this device. Use your
-                    username and password to sign in. After creating your
-                    account, you can set your first savings goal.
-                  </Text>
-                </View>
-              </>
+                        {privacyAccepted && (
+                          <Check
+                            size={20}
+                            strokeWidth={3}
+                            color={colors.white}
+                          />
+                        )}
+                      </View>
+                      <Text style={[theme.body, styles.privacyLabel]}>
+                        I have read and agree to the Privacy Policy.
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="link"
+                      accessibilityLabel="Read Privacy Policy"
+                      accessibilityState={{ disabled: busy }}
+                      disabled={busy}
+                      onPress={() => {
+                        if (!busy) {
+                          Keyboard.dismiss();
+                          setPrivacyVisible(true);
+                        }
+                      }}
+                      style={styles.policyLink}
+                    >
+                      <Text style={styles.policyLinkText}>
+                        Read Privacy Policy
+                      </Text>
+                    </Pressable>
+                    <Text style={theme.muted}>
+                      Required before creating your account.
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+            {!!visibleError && (
+              <Text accessibilityRole="alert" style={theme.error}>
+                {visibleError}
+              </Text>
             )}
-          </View>
-          {!!visibleError && (
-            <Text accessibilityRole="alert" style={theme.error}>
-              {visibleError}
-            </Text>
-          )}
-          {busy && (
-            <Text accessibilityRole="alert" style={theme.muted}>
-              Creating your account securely. This may take a few seconds.
-            </Text>
-          )}
-        </>
-      )}
-    </ScreenContainer>
+            {busy && (
+              <Text accessibilityRole="alert" style={theme.muted}>
+                Creating your account securely. This may take a few seconds.
+              </Text>
+            )}
+          </>
+        )}
+      </ScreenContainer>
+      <PrivacyPolicyModal
+        visible={privacyVisible}
+        onClose={() => setPrivacyVisible(false)}
+      />
+    </>
   );
 }
 const styles = StyleSheet.create({
@@ -405,6 +485,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editText: { color: colors.primary, fontWeight: '600', fontSize: 16 },
+  privacyCard: { gap: 4 },
+  privacyCheckboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 48,
+    paddingVertical: 8,
+  },
+  checkbox: {
+    width: 26,
+    height: 26,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.muted,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+  },
+  checked: { backgroundColor: colors.primary, borderColor: colors.primary },
+  privacyLabel: { flex: 1 },
+  policyLink: {
+    minHeight: 48,
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
+  policyLinkText: {
+    ...theme.body,
+    color: colors.primary,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  dimmed: { opacity: 0.6 },
   explanation: {
     padding: 20,
     borderRadius: 20,

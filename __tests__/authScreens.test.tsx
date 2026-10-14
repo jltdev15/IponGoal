@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AccessibilityInfo,
   Keyboard,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -121,6 +122,71 @@ async function review() {
   await press('Continue');
 }
 
+const privacyCheckbox = () =>
+  renderer.root.findAll(
+    node =>
+      node.props.accessibilityRole === 'checkbox' &&
+      typeof node.props.onPress === 'function' &&
+      node.props.accessibilityLabel ===
+        'I have read and agree to the Privacy Policy',
+  )[0];
+async function togglePrivacy() {
+  await act(async () => privacyCheckbox().props.onPress());
+}
+async function openPrivacy() {
+  await act(async () =>
+    renderer.root
+      .findAll(
+        node =>
+          node.props.accessibilityRole === 'link' &&
+          typeof node.props.onPress === 'function' &&
+          node.props.accessibilityLabel === 'Read Privacy Policy',
+      )[0]
+      .props.onPress(),
+  );
+}
+
+test('registration requires an explicit privacy agreement and blocks submission when unchecked', async () => {
+  await mountRegistration();
+  await review();
+  expect(privacyCheckbox().props.accessibilityState.checked).toBe(false);
+  expect(button('Create Account').props.disabled).toBe(true);
+  await press('Create Account');
+  expect(mockAuth.register).not.toHaveBeenCalled();
+  expect(texts()).toContain('Please read and agree to the Privacy Policy');
+  await togglePrivacy();
+  expect(button('Create Account').props.disabled).toBe(false);
+  expect(texts()).not.toContain('Please read and agree');
+  await togglePrivacy();
+  expect(button('Create Account').props.disabled).toBe(true);
+  await press('Create Account');
+  expect(mockAuth.register).not.toHaveBeenCalled();
+});
+
+test('reading or dismissing the policy does not accept it or discard registration details', async () => {
+  await mountRegistration();
+  await review();
+  await openPrivacy();
+  expect(texts()).toContain('Storage and sharing');
+  expect(texts()).toContain('Managing and removing your information');
+  expect(texts()).toContain('does not upload these records');
+  // Hardware back dismisses the policy without navigating away from the form.
+  await act(async () => renderer.root.findByType(Modal).props.onRequestClose());
+  expect(renderer.root.findAllByType(Modal)).toHaveLength(0);
+  expect(privacyCheckbox().props.accessibilityState.checked).toBe(false);
+  expect(texts()).toContain('Alex Student');
+  await togglePrivacy();
+  await edit('Username');
+  await fill('Username', 'changed_user');
+  await press('Continue');
+  expect(privacyCheckbox().props.accessibilityState.checked).toBe(true);
+  await openPrivacy();
+  await press('Close Privacy Policy');
+  expect(texts()).toContain('changed_user');
+  expect(privacyCheckbox().props.accessibilityState.checked).toBe(true);
+  expect(mockAuth.register).not.toHaveBeenCalled();
+});
+
 test('the first registration step can exit through the footer back button', async () => {
   await mountRegistration();
   await fill('Full Name', 'Alex');
@@ -203,6 +269,7 @@ test('registration locks submission and edits, retains failures for retry, and c
   );
   await mountRegistration();
   await review();
+  await togglePrivacy();
   await act(async () => {
     button('Create Account').props.onPress();
     button('Create Account').props.onPress();
@@ -216,6 +283,11 @@ test('registration locks submission and edits, retains failures for retry, and c
     '',
   );
   expect(button('Back').props.disabled).toBe(true);
+  expect(privacyCheckbox().props.disabled).toBe(true);
+  await togglePrivacy();
+  expect(privacyCheckbox().props.accessibilityState.checked).toBe(true);
+  await openPrivacy();
+  expect(renderer.root.findAllByType(Modal)).toHaveLength(0);
   expect(
     renderer.root
       .findAll(node => typeof node.props.onPress === 'function')
@@ -243,6 +315,7 @@ test('duplicate usernames return to the username step and preserve the rest of t
   );
   await mountRegistration();
   await review();
+  await togglePrivacy();
   await press('Create Account');
   expect(texts()).toContain('Step 2 of 4');
   expect(texts()).toContain('This username is already used');
